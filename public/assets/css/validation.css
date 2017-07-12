@@ -1,0 +1,12 @@
+input { border: 1px solid black; margin-bottom: .5em;  }
+input.error { border: 1px solid red; color:black; }
+input.valid { border: 1px solid green; }
+select.error { border: 1px solid red; color:black; }
+select.valid { border: 1px solid green; }
+
+.error {
+    color: red;
+}
+.valid {
+    color: green;
+}

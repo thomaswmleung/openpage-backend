@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
+        <group>
+            <file>file:/C:/wamp/www/talentoweb/resources/views/includes/header.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Http/routes.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Http/Controllers/homeController.php</file>
+            <file>file:/C:/wamp/www/talentoweb/resources/views/login.php</file>
+            <file>file:/C:/wamp/www/talentoweb/resources/views/includes/top_menu.php</file>
+            <file>file:/C:/wamp/www/talentoweb/public/assets/plugins/webrtc/lib/js/c_main.js</file>
+            <file>file:/C:/wamp/www/talentoweb/resources/views/home.php</file>
+            <file>file:/C:/wamp/www/talentoweb/resources/views/includes/css_header.php</file>
+            <file>file:/C:/wamp/www/talentoweb/resources/views/includes/footer_js.php</file>
+            <file>file:/C:/wamp/www/talentoweb/config/database.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Http/Controllers/loginController.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Http/Middleware/VerifyCsrfToken.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Http/Controllers/RestApi/ApiLoginController.php</file>
+            <file>file:/C:/wamp/www/talentoweb/config/constants.php</file>
+            <file>file:/C:/wamp/www/talentoweb/resources/views/subviews/registration_subview.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Http/Middleware/LoginAuth.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/User.php</file>
+            <file>file:/C:/wamp/www/talentoweb/config/app.php</file>
+            <file>file:/C:/wamp/www/talentoweb/config/auth.php</file>
+            <file>file:/C:/wamp/www/talentoweb/config/broadcasting.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Http/Controllers/Controller.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Helpers/Language_helper.php</file>
+            <file>file:/C:/wamp/www/talentoweb/resources/lang/en/login_page_lables.php</file>
+            <file>file:/C:/wamp/www/talentoweb/resources/lang/es/login_page_lables.php</file>
+            <file>file:/C:/wamp/www/talentoweb/public/assets/js/ajax_login.js</file>
+            <file>file:/C:/wamp/www/talentoweb/app/CandidateModel.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Http/Middleware/EncryptCookies.php</file>
+            <file>file:/C:/wamp/www/talentoweb/app/Http/Middleware/Authenticate.php</file>
+            <file>file:/C:/wamp/www/talentoweb/config/mail.php</file>
+        </group>
+    </open-files>
+</project-private>
