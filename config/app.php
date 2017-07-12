@@ -13,7 +13,7 @@ return [
       |
      */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
     /*
       |--------------------------------------------------------------------------
       | Application URL
@@ -69,7 +69,7 @@ return [
       | will not be safe. Please do this before deploying an application!
       |
      */
-    'key' => env('APP_KEY', 'SomeRandomString'),
+    'key' => env('APP_KEY', 'lkEVUSMZ7M4UNR8rxRdVd1v37N1LUyzi'),
     'cipher' => 'AES-256-CBC',
     /*
       |--------------------------------------------------------------------------
@@ -129,7 +129,7 @@ return [
         App\Providers\AuthServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        
+
         Jenssegers\Mongodb\MongodbServiceProvider::class,
 		Intervention\Image\ImageServiceProvider::class,
     ],
@@ -179,6 +179,6 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 	'Image' => Intervention\Image\Facades\Image::class,
-        
+
     ],
 ];
