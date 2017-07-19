@@ -29,3 +29,6 @@ Route::group(['middleware' => 'rest_api_auth'], function () {
 });
 
 Route::get('fpdf', 'PdfController@generate_pdf');
+Route::get('test', 'PdfController@test');
+
+Route::get('page_group', 'PageGroupController@create_page_group');
