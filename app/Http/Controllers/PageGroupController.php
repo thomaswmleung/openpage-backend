@@ -18,10 +18,15 @@ use App\Helpers\tFPDF;
 use App\QuestionsModel;
 use App\SectionModel;
 use App\MainModel;
+use App\OverlayModel;
+use App\BackgroundModel;
+use App\PageModel;
+use App\PageGroupModel;
+use App\Helpers\Pdf_helper;
 
 /*
  *  Class Name : PageGroupController
- *  Description : This controller handles parsing of JSON DATA
+ *  Description : This controller handles parsing of JSON DATA and save to DB
  * 
  * 
  */
@@ -34,23 +39,33 @@ class PageGroupController extends Controller {
         $json_data = file_get_contents(url('pdf_page.json'));
         $page_data_array = json_decode($json_data, true);
 
+        $page_group_model = new PageGroupModel();
+        $page_group_id = $page_group_model->create_page_group();
+
+        $page_data_array['_id'] = $page_group_id;
+        $req_json = json_encode($page_data_array);
+        $pdf_helper = new Pdf_helper();
+        
+        $response_array = array();
+        $response_array['page_group_id'] = $page_group_id;
+        if (sizeof($page_data_array['page_group']['page']) > 0) {
+            $pdf_response_json = $pdf_helper->generate_pdf_from_json($req_json);
+
+            $page_data_array = json_decode($pdf_response_json, true);
+
+            if (isset($page_data_array['page_group'])) {
+
+                $page_array = $page_data_array['page_group']['page'];
 
 
-        if (isset($page_data_array['page_group']['page'])) {
+                $page_ids = array();
 
-            $page_array = $page_data_array['page_group']['page'];
+                foreach ($page_array as $page) {
 
-            foreach ($page_array as $page) {
+                    $main = $page['main'];
 
-                $background_data = $page['background'];
-                $main_data_array = $page['main'];
 
-                //$page_header_text = $page['main']['header_text'];
-                
-                $main_ids = array();
 
-                foreach ($main_data_array as $main) {                    
-                
                     $section_ids = array();
                     $page_section_array = $main['section'];
 
@@ -59,16 +74,16 @@ class PageGroupController extends Controller {
                         $questions_ids = array();
                         $section_question_array = $section['question'];
 
-                        foreach ($section_question_array as $questions) {
+                        foreach ($section_question_array as $question) {
 
-                            $question_number = $questions['question_no'];
-                            $question_text = $questions['question_text'];
+                            $question_number = $question['question_no'];
+                            $question_text = $question['question_text'];
 
-                            $question_type = $questions['question_type'];
-                            $answer_col = $questions['answer_cols'];
+                            $question_type = $question['question_type'];
+                            $answer_col = $question['answer_cols'];
 
-                            $question_image_url = $questions['image'];
-                            $answer_array = $questions['answer'];
+                            $question_image_url = $question['image'];
+                            $answer_array = $question['answer'];
 
 
 
@@ -78,23 +93,26 @@ class PageGroupController extends Controller {
                                 'question_text' => $question_text,
                                 'image' => $question_image_url,
                                 'answer' => $answer_array,
-                                'question_type' => $question_type
+                                'question_type' => $question_type,
+                                'x' => $question['x'],
+                                'y' => $question['y']
                             );
 
-                            $questionModel = new QuestionsModel();
-                            $result_id = $questionModel->add_questions($insert_data);
 
-                            array_push($questions_ids, $result_id['_id']);
+                            $question_id = $this->create_question($insert_data);
+                            ;
+
+                            array_push($questions_ids, $question_id);
                         }
 
-                      
+
 
                         $section_instruction_text = $section['instruction_text'];
                         $section_type = $section['section_type'];
                         $section_start_question_no = $section['start_question_no'];
                         $section_with_sample_question = $section['with_sample_question'];
                         $section_answer_cols = $section['answer_cols'];
-                        $section_suggestion_box = $section['suggestion_box'];                        
+                        $section_suggestion_box = $section['suggestion_box'];
                         $section_question = $questions_ids;
 
                         $insert_data = array(
@@ -107,13 +125,10 @@ class PageGroupController extends Controller {
                             'question' => $section_question
                         );
 
-
-                        $sectionModel = new SectionModel();
-                        $result_id = $sectionModel->add_section($insert_data);
-
-                        array_push($section_ids, $result_id['_id']);
+                        $section_id = $this->create_section($insert_data);
 
 
+                        array_push($section_ids, $section_id);
                     }
 
                     $main_header_text = $main['header_text'];
@@ -125,15 +140,89 @@ class PageGroupController extends Controller {
                         'section' => $section_ids
                     );
 
-                    $mainModel = new MainModel();
-                    $result_id = $mainModel->add_main($insert_main_data);
+                    $main_id = $this->create_main($insert_main_data);
 
-                    array_push($main_ids, $result_id['_id']);
+
+
+                    $ovelay_data = $page['overlay'];
+                    $page_ovelay_id = $this->create_overlay($ovelay_data);
+
+
+                    $back_ground_data = $page['background'];
+
+
+                    $page_back_ground_id = $this->create_background($back_ground_data);
+                    $page_remark = $page['remark'];
+
+
+
+                    $insert_page_data = array(
+                        'ovelay' => $page_ovelay_id,
+                        'main' => $main_id,
+                        'background' => $page_back_ground_id,
+                        'remark' => $page_remark
+                    );
+
+                    $page_id = $this->create_page($insert_page_data);
+
+                    array_push($page_ids, $page_id);
                 }
-            }
-        } else {
+
+                $page_group_insert_data = array(
+                    'page' => $page_ids
+                );
+
+
+
+                $pageGroup_result = $page_group_model->update_page_group($page_group_insert_data, $page_group_id);
+
+               
+
+                //echo '<pre>';var_dump($page_ids);
+            } else {
 // page is not defined.
+            }
+            
+            
+            $response_array['preview_url'] = $page_data_array['preview_url'];
+            return json_encode($response_array);
         }
+    }
+
+    function create_question($insert_data) {
+        $questionModel = new QuestionsModel();
+        $questionDetails = $questionModel->add_questions($insert_data);
+        return $questionDetails->_id;
+    }
+
+    function create_section($insert_data) {
+        $sectionModel = new SectionModel();
+        $sectionDetails = $sectionModel->add_section($insert_data);
+        return $sectionDetails->_id;
+    }
+
+    function create_main($insert_data) {
+        $mainModel = new MainModel();
+        $model_details = $mainModel->add_main($insert_main_data);
+        return $model_details->_id;
+    }
+
+    function create_overlay($insert_data) {
+        $overlayModel = new OverlayModel();
+        $overlay_result = $overlayModel->add_overlay(array('overlay' => $ovelay_data));
+        return $overlay_result->_id;
+    }
+
+    function create_background($insert_data) {
+        $backgroundModel = new BackgroundModel();
+        $back_ground_result = $backgroundModel->add_back_ground(array('background' => $insert_data));
+        return $back_ground_result->_id;
+    }
+
+    function create_page($insert_page_data) {
+        $pageModel = new PageModel();
+        $page_result = $pageModel->add_page($insert_page_data);
+        return $page_result->_id;
     }
 
 }
