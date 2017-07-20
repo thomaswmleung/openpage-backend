@@ -7,7 +7,7 @@ use Jenssegers\Mongodb\Model as Eloquent;
 class QuestionsModel extends Eloquent {
 
     protected $collection = 'questions';
-    protected $fillable = array('question_no','answer_cols','question_text','image','answer','question_type');
+    protected $fillable = array('question_no','answer_cols','question_text','image','answer','question_type','x','y');
     
     
      public function add_questions($insert_data) {       
@@ -15,7 +15,7 @@ class QuestionsModel extends Eloquent {
         return $result;
     }
 
-
+    
     
 
 }
