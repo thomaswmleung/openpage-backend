@@ -3,13 +3,17 @@
 namespace App\Helpers;
 
 use App\Helpers\tFPDF;
+use Google\Cloud\Storage\StorageClient;
+use Google\Cloud\ServiceBuilder;
+use Illuminate\Support\Facades\Config;
 
 class Pdf_helper {
 
     public function generate_pdf_from_json($json_data) {
 
         $page_data_array = json_decode($json_data, true);
-//       dd($page_data_array);
+        $isValidJson = TRUE;
+
         $fpdf = new tFPDF();
         $fpdf->AddFont('msjh', '', 'msjh.ttf', true);
         $fpdf->SetFont('msjh', '', 14);
@@ -72,6 +76,11 @@ class Pdf_helper {
                     $fpdf->SetXY(10, $fpdf->GetY() + 5);
                     $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
                     $section_question_array = $section['question'];
+
+//                    if (sizeof($section_question_array) == 0) {
+//                        $isValidJson = FALSE;
+//                    }
+
                     $currentY = $fpdf->GetY() + 5;
 
                     $questionsRespoonseArray = array();
@@ -103,6 +112,9 @@ class Pdf_helper {
                         $currentY = $fpdf->GetY() + 3;
 
                         $answer_array = $question['answer'];
+//                        if (sizeof($answer_array) == 0) {
+//                            $isValidJson = FALSE;
+//                        }
 
                         $responseAnswersArray = array();
                         foreach ($answer_array as $answer) {
@@ -173,18 +185,59 @@ class Pdf_helper {
             }
         } else {
             // page is not defined.
+            $isValidJson = FALSE;
+        }
+
+        if (!$isValidJson) {
+            $responseArray['error'] = "INVALID JSON RECIEVED";
+            return $responseArray;
         }
 
         $pdf_name = uniqid() . ".pdf";
         if (!file_exists(public_path('pdfs'))) {
             mkdir(public_path('pdfs'), 0777, true);
         }
-        $pdf_path = public_path('pdfs' .DIRECTORY_SEPARATOR. $pdf_name);
-        $pdf_url = url('pdfs/'. $pdf_name);
+        $pdf_path = public_path('pdfs' . DIRECTORY_SEPARATOR . $pdf_name);
         $fpdf->Output($pdf_path, 'F');
 
+        // upload to GCS
+        $gcs_result = $this->upload_to_gcs('pdfs/' . $pdf_name);
+        if (!$gcs_result) {
+            $responseArray['error'] = "Error in upload of GCS";
+            return $responseArray;
+        }
+        // delete your local pdf file here
+        unlink($pdf_path);
+        
+        $pdf_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $pdf_name;
         $responseArray['preview_url'] = $pdf_url;
+      
         return $responseArray;
+    }
+
+    public function upload_to_gcs($file_path) {
+        $gcloud = new ServiceBuilder([
+            'keyFilePath' => Config::get('constants.gcs_key'),
+            'projectId' => Config::get('constants.gcs_bucket_name')
+        ]);
+
+        // Fetch an instance of the Storage Client
+        $storage = $gcloud->storage();
+
+        $bucket = $storage->bucket(Config::get('constants.gcs_bucket_name'));
+
+        // Upload a file to the bucket.
+        try {
+            $bucket->upload(
+                    fopen($file_path, 'r'), [
+                'predefinedAcl' => 'publicRead'
+                    ]
+            );
+        } catch (Exception $e) {
+            return FALSE;
+        }
+
+        return TRUE;
     }
 
 }
