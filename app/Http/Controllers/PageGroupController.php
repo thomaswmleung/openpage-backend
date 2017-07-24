@@ -39,8 +39,6 @@ class PageGroupController extends Controller {
         $json_data = file_get_contents(url('pdf_page.json'));
         $page_data_array = json_decode($json_data, true);
 
-        //dd($page_data_array);
-
         $page_group_id = $page_data_array['_id'];
         $page_group_model = new PageGroupModel();
 
@@ -52,12 +50,14 @@ class PageGroupController extends Controller {
 
 
         $req_json = json_encode($page_data_array);
+
         $pdf_helper = new Pdf_helper();
 
         $response_array = array();
         $response_array['page_group_id'] = $page_group_id;
         if (sizeof($page_data_array['page_group']['page']) > 0) {
 
+            //The response would have the calculations of x& y coordinates and a preview url
             $pdf_response_json = $pdf_helper->generate_pdf_from_json($req_json);
             $page_data_array = json_decode($pdf_response_json, true);
 
@@ -67,6 +67,7 @@ class PageGroupController extends Controller {
                 $page_ids = array();
 
                 foreach ($page_array as $page) {
+
 
                     $main = $page['main'];
                     $section_ids = array();
@@ -154,10 +155,19 @@ class PageGroupController extends Controller {
                         'section' => $section_ids
                     );
 
-                    $main_id = "";
-                    if (isset($main['main_id']) && $main['main_id'] != "") {
 
-                        $main_id = $main['main_id'];
+
+
+                    $main_id = "";
+//                    if (isset($main['main_id']) && $main['main_id'] != "") {
+//                        // get page_id from main collection
+//                        $main_id = $main['main_id'];
+//                    }
+                    if (isset($page['page_id']) && $page['page_id'] != "") {
+                        // get page_id from main collection
+                        $page_id = $page['page_id'];
+                        $pageModel = new PageModel();
+                        $main_id = $pageModel->fetch_main_id($page_id);
                     }
 
                     $main_id = $this->create_main($insert_main_data, $main_id);
@@ -173,7 +183,7 @@ class PageGroupController extends Controller {
 
                     $insert_page_data = array(
                         'overlay' => $ovelay_data,
-                        'main' => $main_id,
+                        'main_id' => $main_id,
                         'background' => $back_ground_data,
                         'remark' => $page_remark
                     );
@@ -203,6 +213,34 @@ class PageGroupController extends Controller {
         }
     }
 
+    /*
+     * get_page_group() fetches details of the page group with pid passed in the
+     * parameters.
+     * params: pid - which is the page_group_id
+     * response: json with the deatils of page group
+     * 
+     */
+
+    function get_page_group(Request $request) {
+        
+        if (isset($request->pid) && $request->pid != "") {
+            $page_group_id = $request->pid;
+            $page_group_details = $this->fetch_page_group_details($page_group_id);
+            return json_encode($page_group_details);
+            
+            
+        }else{
+            
+           //TODO throw error response 
+        }
+    }
+    
+    function fetch_page_group_details($page_group_id){
+        $page_group = new PageGroupModel;
+        return $page_group->get_details($page_group_id);
+        
+    }
+    
     function create_question($insert_data, $question_id) {
         $questionModel = new QuestionsModel();
         $questionDetails = $questionModel->add_questions($insert_data, $question_id);
