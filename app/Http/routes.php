@@ -11,8 +11,12 @@
   |
  */
 
-Route::get('/', 'loginController@getIndex');
-Route::controller('login', 'loginController');
+Route::post('login', 'LoginController@login');
+Route::get('log_out', 'LoginController@log_out');
+
+Route::get('user/{uid}', 'UserController@user');
+Route::get('user', 'UserController@user');
+Route::post('register', 'UserController@register');
 
 Route::group(['middleware' => 'rest_api_auth'], function () {
 
@@ -24,11 +28,13 @@ Route::group(['middleware' => 'rest_api_auth'], function () {
 
     // This Middleware will be used to check the token if it was generated within given time ago
     Route::group(['middleware' => 'login_auth'], function () {
-        Route::post('api_user_info', 'ApiLoginController@user_information');
+    // Route::post('api_user_info', 'ApiLoginController@user_information');
     });
 });
 
 Route::get('fpdf', 'PdfController@generate_pdf');
-Route::get('test', 'PdfController@test');
+
 
 Route::get('page_group', 'PageGroupController@create_page_group');
+
+Route::get('api_user_info/{id}', 'ApiLoginController@user_information');
