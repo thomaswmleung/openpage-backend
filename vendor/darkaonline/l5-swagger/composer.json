@@ -1,0 +1,43 @@
+{
+  "name": "darkaonline/l5-swagger",
+  "description": "Swagger integration to Laravel 5",
+  "keywords": [
+    "laravel",
+    "swagger",
+    "api"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Darius Matulionis",
+      "email": "darius@matulionis.lt"
+    }
+  ],
+  "require": {
+    "php": "^7.0",
+    "laravel/framework": "5.4.*",
+    "zircote/swagger-php": "~2.0",
+    "swagger-api/swagger-ui": "^3.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "6.*",
+    "mockery/mockery": "0.9.*",
+    "orchestra/testbench": "~3.4",
+    "satooshi/php-coveralls": "^1.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "L5Swagger\\": "src"
+    },
+    "files": [
+      "src/helpers.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}

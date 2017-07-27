@@ -1,0 +1,13 @@
+/vendor
+/node_modules
+composer.phar
+composer.lock
+composer-extra-assets.lock
+.DS_Store
+.idea
+.env
+/tests/storage/api-docs/*
+/tests/storage/logs/*
+.bowerrc
+bower.json
+package.json
