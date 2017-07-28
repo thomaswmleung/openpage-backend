@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Helpers\Token_helper;
 use App\UsersModel;
-
+use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller {
 
@@ -45,32 +45,39 @@ class LoginController extends Controller {
      */
     public function login(Request $request) {
 
-        $username = $request->username;
-        $password = $request->password;
-        $data_array = array(
-            'username' => $username,
-            'password' => $password,
+        $rules = array(
+            'username' => 'required',
+            'password' => 'required'
         );
-
-        $user_model = new UsersModel();
-        $user_data = $user_model->aunthenticate($data_array);
-        $is_valid_user = TRUE;
-        if ($user_data != "") {
-            $result['user_id'] = $user_data->_id;
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response($validator->messages(), 400);
         } else {
-            $is_valid_user = FALSE;
-            $result['error']['ERROR_CODE'] = 'USER_NOT_EXIST';
-            $result['error']['ERROR_DESCRIPTION'] = "Incorrect email or password entered";
-            return response(400);
-        }
+            $username = trim($request->username);
+            $password = trim($request->password);
+            $data_array = array(
+                'username' => $username,
+                'password' => $password,
+            );
 
+            $user_model = new UsersModel();
+            $user_data = $user_model->aunthenticate($data_array);
+            $is_valid_user = TRUE;
+            if ($user_data != "") {
+                $result['user_id'] = $user_data->_id;
+            } else {
+                $is_valid_user = FALSE;
+                $result['error'] = array("Incorrect email or password entered");
+                return response(json_encode($result), 400);
+            }
 
-        if ($is_valid_user) {
-            $token_helper = new Token_helper();
-            $token = $token_helper->generate_token();
-            $result['token'] = $token;
+            if ($is_valid_user) {
+                $token_helper = new Token_helper();
+                $token = $token_helper->generate_token();
+                $result['token'] = $token;
 
-            return response()->json($result);
+                return response()->json($result);
+            }
         }
     }
 
@@ -79,7 +86,7 @@ class LoginController extends Controller {
         $token = $request->token;
         // TODO : yet to decide what to do
 
-        return TRUE;
+        return "TRUE";
     }
 
 }
