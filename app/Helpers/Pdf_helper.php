@@ -240,4 +240,102 @@ class Pdf_helper {
         return TRUE;
     }
 
+    static public function generate_book($input_json){
+        // temprorily reading it from file
+        $json_data = file_get_contents(url('book.json'));
+        $book_data_array = json_decode($json_data, true);
+        
+        $fpdf = new tFPDF();
+//        $fpdf->AddFont('msjh', '', 'msjh.ttf', true);
+        $fpdf->AddFont('msjhb', '', 'msjhb.ttf', true);
+        $fpdf->AddFont('msjh', '', 'msjh.ttf', true);
+        $fpdf->SetFont('msjhb', '', 18);
+        
+        $fpdf->AddPage();
+        
+        //setting book title
+        
+        $fpdf->SetXY(5,5);
+        $book_title = $book_data_array['cover']['title'];
+        $fpdf->MultiCell(200, 10,$book_title , 0, 'C');
+        $fpdf->SetXY(5,$fpdf->GetY());
+        $sub_title = $book_data_array['cover']['subtitle'];
+        $fpdf->SetFont('msjh', '', 12);
+        $fpdf->MultiCell(200, 5,$sub_title , 0, 'C');
+        
+        $cover_img_url = $book_data_array['cover']['cover_image'];
+        $fpdf->Image($cover_img_url,5 , $fpdf->GetY(), 200, 270);
+        
+        $school_logo = $book_data_array['cover']['school_logo'];
+        $school_name = $book_data_array['cover']['school_name'];
+        $fpdf->Image($school_logo,25 , 250, 30, 25);
+        $fpdf->SetFont('msjh', '', 15);
+        $fpdf->SetXY(55, 265);
+        $fpdf->MultiCell(140, 5,$school_name , 0, 'L');
+        
+        
+        //Table of contents
+        $toc_array = $book_data_array['toc'];
+        $fpdf->AddPage();
+        $fpdf->SetXY(5, 55);
+        
+        $toc_col1x = 5;
+        $toc_col2x = 50;
+        $toc_col3x = 135;
+        $toc_col4x = 200;
+        
+        $toc_col1_width = 45;
+        $toc_col2_width = 85;
+        $toc_col3_width = 65;
+        $toc_col4_width = 20;
+        
+        $tocy = $fpdf->GetY();
+        $fpdf->SetFont('msjh', '', 12);
+        foreach($toc_array as $toc){
+            $fpdf->SetFillColor(147, 148, 150);
+            
+            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
+            
+            $fpdf->SetXY($toc_col1x, $tocy+10);
+            $fpdf->MultiCell($toc_col1_width, 10,"" ,0, 'L');
+            
+            $fpdf->SetXY($toc_col2x, $tocy+10.2);
+            $fpdf->SetFillColor(234, 238, 239);
+            $fpdf->MultiCell($toc_col2_width, 10,$toc['language_knowledge'] , 0, 'L',true);
+//            
+            $particular_str = "";
+            foreach($toc['particular'] as $particular){
+                $particular_str .= $particular."\n";
+            }
+            $fpdf->SetFont('msjh', '', 8);
+            $fpdf->SetXY($toc_col3x, $tocy+10);
+            $fpdf->MultiCell($toc_col3_width, 4, $particular_str,0, 'L');
+            $fpdf->SetFont('msjh', '', 12);
+            
+            
+            $fpdf->SetXY($toc_col4x, $tocy+10);
+            $fpdf->MultiCell($toc_col4_width, 10,$toc['page_code'] , 0, 'L');
+            
+            
+            
+            $tocy = $fpdf->GetY();
+            
+//            $fpdf->Line(5, $tocy, 200, $tocy);
+            $fpdf->SetXY(5, $tocy);
+//            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
+//            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
+            
+            
+            
+            
+        }
+        
+        
+        
+        
+        
+        $fpdf->Output('sample_book.pdf', 'I');
+        
+        
+    }
 }
