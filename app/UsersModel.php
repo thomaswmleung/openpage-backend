@@ -9,7 +9,7 @@ class UsersModel extends Eloquent {
 
 //    protected $connection = 'mongodb';
     protected $collection = 'users';
-    protected $fillable = array('username', 'first_name', 'last_name', 'password', 'email');
+    protected $fillable = array('username', 'first_name', 'last_name', 'password', 'email','activation_key','is_active');
 
     use SoftDeletes;
 
@@ -28,6 +28,13 @@ class UsersModel extends Eloquent {
             $user_data = UsersModel::all();
         }
         return $user_data;
+    }
+    
+    public function activate_user($user_data) {
+        $user_info = UsersModel::where($user_data)->first();
+        $_id = $user_info->_id;
+        UsersModel::find($_id)->update(['is_active' => true]);
+        return 1;
     }
 
 }
