@@ -41,5 +41,6 @@ Route::get('fpdf', 'PdfController@generate_pdf');
 Route::get('page_group', 'PageGroupController@create_page_group');
 
 Route::get('api_user_info/{id}', 'ApiLoginController@user_information');
+Route::get('book', 'BookController@create_book');
 
 
