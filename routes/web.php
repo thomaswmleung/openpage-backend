@@ -16,10 +16,10 @@
 Route::post('login', 'LoginController@login');
 Route::get('log_out', 'LoginController@log_out');
 
-Route::get('test', 'UserController@test');
 Route::get('user/{uid}', 'UserController@user');
 Route::get('user', 'UserController@user');
 Route::post('register', 'UserController@register');
+Route::get('activate', 'UserController@activate');
 
 Route::group(['middleware' => 'rest_api_auth'], function () {
 
