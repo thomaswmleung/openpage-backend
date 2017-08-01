@@ -32,7 +32,7 @@ class UsersModel extends Eloquent {
     
     public function activate_user($user_data) {
         $user_info = UsersModel::where($user_data)->first();
-        $_id = $user_info->_id;
+        $_id = $user_info['_id'];
         UsersModel::find($_id)->update(['is_active' => true]);
         return 1;
     }
