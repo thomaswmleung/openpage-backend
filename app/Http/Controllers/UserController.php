@@ -22,13 +22,13 @@ class UserController extends Controller {
             $user_details = $userModel->user_details($data_array);
             if ($user_details == NULL) {
                 $error['error'] = array("Invalid user id");
-                return response(json_encode($error), "400");
+                return response(json_encode($error), 400);
             }
         } else {
             $user_details = $userModel->user_details();
         }
 
-        return response(json_encode($user_details), "200");
+        return response(json_encode($user_details), 200);
     }
 
     public function register(Request $request) {
@@ -55,27 +55,33 @@ class UserController extends Controller {
             $data = UsersModel::create($user_data);
             // Send an email
             $activation_url = url('activate') . "?username=" . $user_data['username'] . "&key=" . $user_data['activation_key'];
-            $content = "Please click the link to activate your <a target='new' href='" . $activation_url . "'> account</a> ";
+            $content = "Please click the link to activate your <a target='new' href='" . $activation_url . "'> account</a><br>$activation_url";
             $email_data = array(
                 'to_email' => 'suraj@aalpha.net',
                 'from_email' => 'info@aalpha.net',
                 'username' => $user_data['first_name'] . ' ' . $user_data['last_name'],
                 'content' => $content,
             );
-            EmailController::send_activation_mail($email_data);
+            //Need SMTP credentials to send Email from instance
+//            EmailController::send_activation_mail($email_data);
 
-            return response("User created successfully. Email is sent", 200);
+            return response("User created successfully.", 200);
         }
     }
 
     function activate(Request $request) {
+        $username = trim($request->username);
+        $activation_key = trim($request->key);
+        if($activation_key!=""){
+            $activation_key = (int)$activation_key;
+        }
         $user_data = array(
-            'username' => trim($request->username),
-            'activation_key' => trim($request->key)
+            'username' => $username,
+            'activation_key' => $activation_key
         );
         $rules = array(
             'username' => 'required|exists:users,username',
-            'activation_key' => 'required'
+            'activation_key' => 'required|exists:users,activation_key'
         );
         $validator = Validator::make($user_data, $rules);
         if ($validator->fails()) {

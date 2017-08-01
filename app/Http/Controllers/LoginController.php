@@ -63,7 +63,7 @@ class LoginController extends Controller {
             $user_model = new UsersModel();
             $user_data = $user_model->aunthenticate($data_array);
             $is_valid_user = TRUE;
-            if ($user_data != "") {
+            if (count($user_data) != 0) {
                 $result['user_id'] = $user_data->_id;
             } else {
                 $is_valid_user = FALSE;
@@ -76,7 +76,7 @@ class LoginController extends Controller {
                 $token = $token_helper->generate_token();
                 $result['token'] = $token;
 
-                return response()->json($result);
+                return response()->json($result,200);
             }
         }
     }
