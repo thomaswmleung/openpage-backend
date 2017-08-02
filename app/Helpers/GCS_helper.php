@@ -33,5 +33,21 @@ class GCS_helper {
         return TRUE;
     }
 
-    
+    static public function delete_from_gcs($objectName) {
+
+        $storage = new StorageClient([
+            'keyFilePath' => Config::get('constants.gcs_key'),
+            'projectId' => Config::get('constants.gcs_bucket_name')
+        ]);
+        $bucket = $storage->bucket(Config::get('constants.gcs_bucket_name'));
+        $object = $bucket->object($objectName);
+        try {
+            $object->delete();
+        } catch (Exception $e) {
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
 }
