@@ -28,23 +28,35 @@ class LoginAuth {
      */
     public function handle($request, Closure $next) {
 
-        $data = json_decode($request->data, true);
-        $token_helper = new Token_helper();
 
-        if (isset($data['token']) && $data['token'] != "") {
+        $token_helper = new Token_helper();
+        if (isset($request->header('token'))) {
+            $data['token'] = $request->header('token');
+        } else {
+            $data = json_decode($request->data, true);
+        }
+        //if (isset($data['token']) && $data['token'] != "") {
+        if (isset($request->header('token')) && $request->header('token') != "") {
 
             // Verify if the token is valid
-
-
-
 
             $is_token_valid = $token_helper->verify_token($data['token']);
             if ($is_token_valid) {
                 $token = $token_helper->token_decode($data['token']);
                 $token_object = json_decode($token);
 
-                $timestamp = $token_object->timestamp;
-
+//                $timestamp = $token_object->timestamp;
+//                $uid = $token_object->uid;
+//                dd($uid);
+                
+                /***/
+                $token_user = explode("||", $token_object);
+                 $timestamp = $token_user[0];
+                 $uid = $token_user[1];
+                
+                /***/
+                
+                
                 $time_interval = Config::get('constants.time_interval');
                 $time = new DateTime($timestamp);
                 $time->add(new DateInterval('PT' . $time_interval . 'M'));
@@ -59,7 +71,8 @@ class LoginAuth {
                     return $result;
                 } else {
                     $response = $next($request);
-                    $token = $token_helper->generate_token();
+                    //$token = $token_helper->generate_token();
+                    $token = $token_helper->generate_user_token($uid);
                     $response['token'] = $token;
 
                     return $response;
