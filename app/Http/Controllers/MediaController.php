@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Validator;
 use App\MediaModel;
 use App\Helpers\GCS_helper;
 use Illuminate\Support\Facades\Config;
+use App\Helpers\Token_helper;
 
 class MediaController extends Controller {
 
@@ -35,20 +36,32 @@ class MediaController extends Controller {
     public function create_media(Request $request) {
 //        $media_json = $request->getContent();
 //        $media_array = json_decode($media_json, TRUE);
-
+        
+        $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
+        
+       
+        
+        $media_array = array(
+            'type'=>$request->type,
+            'extension'=>$request->extension,
+            'media_file'=>$request->file('media_file'),
+            'owner'=>$request->owner,
+            'usage'=>$request->usage,
+            'created_by'=>$user_id,
+        );
         $rules = array(
             'type' => 'required',
             'extension' => 'required',
             'media_file' => 'required|mimes:jpeg,png,jpg,mp3,ogg,mp4,pdf,zip',
             'owner' => 'required',
             'usage' => 'required',
-                //'created_by' => 'required|exists:users,_id',
+            'created_by' => 'required|exists:users,_id',
         );
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($media_array, $rules);
         if ($validator->fails()) {
             return response($validator->messages(), 400);
         } else {
-            $media_array = $request->all();
+           
             if ($request->hasFile('media_file')) {
                 $image = $request->file('media_file');
                 $input['media_file'] = time() . uniqid() . '.' . $image->getClientOriginalExtension();
@@ -73,6 +86,7 @@ class MediaController extends Controller {
                 return response(json_encode($error), 400);
             }
             //insert media
+       
             MediaModel::create($media_array);
             return response("Media created successfully", 200);
         }
@@ -83,6 +97,7 @@ class MediaController extends Controller {
 //        $media_array = json_decode($media_json, TRUE);
 //        dd($request->json()->all());
 //
+        $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
         $rules = array(
             '_id' => 'required|exists:media,_id',
                 // 'updated_by' => 'required|exists:users,_id',
@@ -104,10 +119,9 @@ class MediaController extends Controller {
             $media_array['usage'] = $request->usage;
         }
 
-        if (isset($request->updated_by) && $request->updated_by != "") {
-            //$media_array['updated_by'] = $request->updated_by;
-            $media_array['updated_by'] = $request->header('token');
-        }
+        
+            $media_array['updated_by'] = $user_id;
+      
 
         $validator = Validator::make($media_array, $rules);
         if ($validator->fails()) {

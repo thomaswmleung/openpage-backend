@@ -44,7 +44,7 @@ class LoginController extends Controller {
      * )
      */
     public function login(Request $request) {
-
+       
         $rules = array(
             'username' => 'required',
             'password' => 'required'
@@ -59,7 +59,7 @@ class LoginController extends Controller {
                 'username' => $username,
                 'password' => $password,
             );
-
+            
             $user_model = new UsersModel();
             $user_data = $user_model->aunthenticate($data_array);
             $is_valid_user = TRUE;
@@ -73,7 +73,8 @@ class LoginController extends Controller {
 
             if ($is_valid_user) {
                 $token_helper = new Token_helper();
-                $token = $token_helper->generate_token();
+              //  $token = $token_helper->generate_token();
+                $token = $token_helper->generate_user_token($user_data->_id);
                 $result['token'] = $token;
 
                 return response()->json($result,200);
