@@ -19,7 +19,7 @@ use Emarref\Jwt\Verification\Context;
 
 class Token_helper extends Controller {
 
-     function  generate_token() {
+    function generate_token() {
         $token = new Token();
         $token->addClaim(new Claim\IssuedAt());
 
@@ -34,8 +34,25 @@ class Token_helper extends Controller {
         return $serializedToken;
     }
 
-    public function verify_token($token) {
+    /*  */
 
+    function generate_user_token($uid) {
+        $token = new Token();
+        $token->addClaim(new Claim\IssuedAt());
+
+        $current_time = date('Y-m-d H:i');
+//        $token->addClaim(new Claim\PrivateClaim('timestamp', $current_time));
+        $token->addClaim(new Claim\PrivateClaim('data', $current_time . "||" . $uid));
+        $jwt = new Jwt();
+        $secret = Config::get('constants.secret');
+        $algorithm = new Hs256($secret);
+        $encryption = Encryption\Factory::create($algorithm);
+        $serializedToken = $jwt->serialize($token, $encryption);
+        return $serializedToken;
+    }
+
+    public function verify_token($token) {
+        try {
         $jwt = new Jwt();
         $de_token = $jwt->deserialize($token);
 
@@ -44,9 +61,12 @@ class Token_helper extends Controller {
         $encryption = Encryption\Factory::create($algorithm);
 
         $context = new Context($encryption);
-        try {
+        
             $verify_result = $jwt->verify($de_token, $context);
         } catch (VerificationException $e) {
+            $verify_result = FALSE;
+        }
+        catch (\Exception $e){
             $verify_result = FALSE;
         }
         return $verify_result;
@@ -59,6 +79,19 @@ class Token_helper extends Controller {
         $header = $deserializedToken->getHeader()->jsonSerialize();
         $playload = $deserializedToken->getPayload()->jsonSerialize();
         return $playload;
+    }
+
+    static function fetch_user_id_from_token($serializedToken) {
+        $jwt = new Jwt();
+        $deserializedToken = $jwt->deserialize($serializedToken);
+
+        $header = $deserializedToken->getHeader()->jsonSerialize();
+        $playload = $deserializedToken->getPayload()->jsonSerialize();
+
+        $token_string = json_decode($playload);
+        $token_data = explode("||", $token_string->data);        
+        $user_id = $token_data[1];
+        return $user_id;
     }
 
 }
