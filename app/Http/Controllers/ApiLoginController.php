@@ -67,7 +67,8 @@ class ApiLoginController extends Controller {
 
             if ($login_result['count'] == 1) {
                 $token_helper = new Token_helper();
-                $token = $token_helper->generate_token();
+                //$token = $token_helper->generate_token();
+                $token = $token_helper->generate_user_token($login_result['_id']);
                 $login_result['jwt_token'] = $token;
                 $result['user_data'] = $login_result;
             } else {
@@ -86,25 +87,24 @@ class ApiLoginController extends Controller {
     // parms : none
     // returns: a token with current time stamp enrycpted.
 
-
     /**
- * @SWG\Get(
- *   path="/api_user_info/{customerId}",
- *   summary="List customer details",
- *   operationId="user_information",
- *   @SWG\Parameter(
- *     name="customerId",
- *     in="path",
- *     description="Target customer.",
- *     required=true,
- *     type="integer"
- *   ),
- *   @SWG\Response(response=200, description="successful operation"),
- *   @SWG\Response(response=406, description="not acceptable"),
- *   @SWG\Response(response=500, description="internal server error")
- * )
- *
- */
+     * @SWG\Get(
+     *   path="/api_user_info/{customerId}",
+     *   summary="List customer details",
+     *   operationId="user_information",
+     *   @SWG\Parameter(
+     *     name="customerId",
+     *     in="path",
+     *     description="Target customer.",
+     *     required=true,
+     *     type="integer"
+     *   ),
+     *   @SWG\Response(response=200, description="successful operation"),
+     *   @SWG\Response(response=406, description="not acceptable"),
+     *   @SWG\Response(response=500, description="internal server error")
+     * )
+     *
+     */
     public function user_information(Request $request) {
         $customerId = $request->customerId;
         return $customerId;
