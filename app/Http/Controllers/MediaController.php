@@ -87,11 +87,30 @@ class MediaController extends Controller {
             'updated_by' => 'required|exists:users,_id',
         );
         
-        $validator = Validator::make($request->all(), $rules);
+        $media_array = array();
+        
+        $media_array['_id'] = $request->_id;
+        if( isset($request->owner) && $request->owner != ""){
+            $media_array['owner'] = $request->owner;
+        }
+        
+        if( isset($request->right) && $request->right != ""){
+            $media_array['right'] = $request->right;
+        }
+        
+        if( isset($request->usage) && $request->usage != ""){
+            $media_array['usage'] = $request->usage;
+        }
+        
+        if( isset($request->updated_by) && $request->updated_by != ""){
+            $media_array['updated_by'] = $request->updated_by;
+        }
+      
+        $validator = Validator::make($media_array, $rules);
         if ($validator->fails()) {
             return response($validator->messages(), 400);
         } else {
-            $media_array = $request->all();
+            //$media_array = $request->all();
            
             $result = $this->update_media_data($media_array);
             if ($result) {
