@@ -28,31 +28,30 @@ class LoginAuth {
      */
     public function handle($request, Closure $next) {
 
-
-        $token_helper = new Token_helper();
-        if (isset($request->header('token'))) {
-            $data['token'] = $request->header('token');
-        } else {
-            $data = json_decode($request->data, true);
-        }
+        
+     
+//            $data = json_decode($request->data, true);
         //if (isset($data['token']) && $data['token'] != "") {
-        if (isset($request->header('token')) && $request->header('token') != "") {
+        if ($request->header('token') && $request->header('token') != "") {
 
             // Verify if the token is valid
-
-            $is_token_valid = $token_helper->verify_token($data['token']);
+            $token = $request->header('token');
+            $token_helper = new Token_helper;
+            $is_token_valid = $token_helper->verify_token($token);
             if ($is_token_valid) {
-                $token = $token_helper->token_decode($data['token']);
+                $token = $token_helper->token_decode($token);
                 $token_object = json_decode($token);
+                $token_string = $token_object->data;
 
 //                $timestamp = $token_object->timestamp;
 //                $uid = $token_object->uid;
 //                dd($uid);
                 
                 /***/
-                $token_user = explode("||", $token_object);
+                $token_user = explode("||", $token_string);
                  $timestamp = $token_user[0];
                  $uid = $token_user[1];
+                
                 
                 /***/
                 
@@ -72,9 +71,11 @@ class LoginAuth {
                 } else {
                     $response = $next($request);
                     //$token = $token_helper->generate_token();
+                   
                     $token = $token_helper->generate_user_token($uid);
-                    $response['token'] = $token;
-
+                   
+                    $response->token = $token;
+                    
                     return $response;
                 }
             } else {
@@ -87,7 +88,7 @@ class LoginAuth {
             $result = array();
             $result['error']['ERROR_CODE'] = 'INVALID_TOKEN_ERROR';
             $result['error']['ERROR_DESCRIPTION'] = "Token not found";
-            return $result;
+            return response(json_encode($result),400);
         }
     }
 
