@@ -10,7 +10,46 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\EmailController;
 
 class UserController extends Controller {
+    /**
+     * @SWG\Get(path="/user",
+     *   summary="Returns list of users",
+     *   description="Returns users data",
+     *   operationId="user",
+     *   produces={"application/json"},
+     *   parameters={},
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
 
+    /**
+     * @SWG\Get(path="/user/{uid}",
+     *   summary="Returns users data",
+     *   description="Returns users data",
+     *   operationId="user",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="uid",
+     *     in="path",
+     *     description="ID of the user that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid user id",
+     *   )
+     * )
+     */
     public function user(Request $request) {
         $userModel = new UsersModel();
         if (isset($request->uid)) {
@@ -31,6 +70,47 @@ class UserController extends Controller {
         return response(json_encode($user_details), 200);
     }
 
+     /**
+     * @SWG\Post(path="/register",
+     *   summary="User registration into the system",
+     *   description="User registration into the system",
+     *   operationId="register",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="first_name",
+     *     in="query",
+     *     description="First name of user",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="last_name",
+     *     in="query",
+     *     description="Last name of user",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="email",
+     *     in="query",
+     *     description="Email address of user",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="password",
+     *     in="query",
+     *     description="User secured password",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied")
+     * )
+     */
     public function register(Request $request) {
         $user_data = array(
             'first_name' => trim($request->first_name),
@@ -69,11 +149,38 @@ class UserController extends Controller {
         }
     }
 
+     /**
+     * @SWG\Get(path="/activate",
+     *   summary="Activates user into the system",
+     *   description="Activates user into the system",
+     *   operationId="activate",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="username",
+     *     in="query",
+     *     description="User name",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="key",
+     *     in="query",
+     *     description="Activation key",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied")
+     * )
+     */
     function activate(Request $request) {
         $username = trim($request->username);
         $activation_key = trim($request->key);
-        if($activation_key!=""){
-            $activation_key = (int)$activation_key;
+        if ($activation_key != "") {
+            $activation_key = (int) $activation_key;
         }
         $user_data = array(
             'username' => $username,

@@ -9,11 +9,20 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 /**
  * @SWG\Swagger(
- *   basePath="/openpage/public",
+ *   basePath="/openpage-backend/public",
  *   @SWG\Info(
  *     title="Openpage API",
  *     version="1.0.0"
  *   )
+ * )
+ */
+
+/**
+ * @SWG\SecurityScheme(
+ *   securityDefinition="token",
+ *   type="apiKey",
+ *   in="header",
+ *   name="token"
  * )
  */
 class Controller extends BaseController

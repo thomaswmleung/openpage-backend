@@ -4,39 +4,10 @@
         "title": "Openpage API",
         "version": "1.0.0"
     },
-    "basePath": "/openpage/public",
+    "basePath": "/openpage-backend/public",
     "paths": {
-        "/api_user_info/{customerId}": {
-            "get": {
-                "summary": "List customer details",
-                "operationId": "user_information",
-                "parameters": [
-                    {
-                        "name": "customerId",
-                        "in": "path",
-                        "description": "Target customer.",
-                        "required": true,
-                        "type": "integer"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "406": {
-                        "description": "not acceptable"
-                    },
-                    "500": {
-                        "description": "internal server error"
-                    }
-                }
-            }
-        },
         "/login": {
             "post": {
-                "tags": [
-                    "login"
-                ],
                 "summary": "Logs user into the system",
                 "description": "",
                 "operationId": "loginUser",
@@ -45,40 +16,167 @@
                 ],
                 "parameters": [
                     {
-                        "name": "body",
-                        "in": "body",
-                        "description": "Created user object",
+                        "name": "username",
+                        "in": "query",
+                        "description": "The user name for login",
                         "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/User"
-                        }
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "The password for login in clear text",
+                        "required": true,
+                        "type": "string"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "successful operation",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "headers": {
-                            "X-Rate-Limit": {
-                                "description": "calls per hour allowed by the user",
-                                "type": "integer",
-                                "format": "int32"
-                            },
-                            "X-Expires-After": {
-                                "description": "date in UTC when token expires",
-                                "type": "string",
-                                "format": "date-time"
-                            }
-                        }
+                        "description": "successful operation"
                     },
                     "400": {
                         "description": "Invalid username/password supplied"
                     }
                 }
             }
+        },
+        "/user": {
+            "get": {
+                "summary": "Returns list of users",
+                "description": "Returns users data",
+                "operationId": "user",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/user/{uid}": {
+            "get": {
+                "summary": "Returns users data",
+                "description": "Returns users data",
+                "operationId": "user",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "uid",
+                        "in": "path",
+                        "description": "ID of the user that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid user id"
+                    }
+                }
+            }
+        },
+        "/register": {
+            "post": {
+                "summary": "User registration into the system",
+                "description": "User registration into the system",
+                "operationId": "register",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "first_name",
+                        "in": "query",
+                        "description": "First name of user",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "last_name",
+                        "in": "query",
+                        "description": "Last name of user",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "Email address of user",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "User secured password",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                }
+            }
+        },
+        "/activate": {
+            "get": {
+                "summary": "Activates user into the system",
+                "description": "Activates user into the system",
+                "operationId": "activate",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "User name",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "key",
+                        "in": "query",
+                        "description": "Activation key",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                }
+            }
         }
     },
-    "definitions": {}
+    "definitions": {},
+    "securityDefinitions": {
+        "token": {
+            "type": "apiKey",
+            "name": "token",
+            "in": "header"
+        }
+    }
 }

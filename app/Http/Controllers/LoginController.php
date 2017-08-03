@@ -12,33 +12,27 @@ class LoginController extends Controller {
 
     /**
      * @SWG\Post(path="/login",
-     *   tags={"login"},
      *   summary="Logs user into the system",
      *   description="",
      *   operationId="loginUser",
      *   produces={"application/json"},
      *   @SWG\Parameter(
-     *     in="body",
-     *     name="body",
-     *     description="Created user object",
+     *     name="username",
+     *     in="query",
+     *     description="The user name for login",
      *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="password",
+     *     in="query",
+     *     description="The password for login in clear text",
+     *     required=true,
+     *     type="string"
      *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
-     *     @SWG\Schema(type="string"),
-     *     @SWG\Header(
-     *       header="X-Rate-Limit",
-     *       type="integer",
-     *       format="int32",
-     *       description="calls per hour allowed by the user"
-     *     ),
-     *     @SWG\Header(
-     *       header="X-Expires-After",
-     *       type="string",
-     *       format="date-time",
-     *       description="date in UTC when token expires"
-     *     )
      *   ),
      *   @SWG\Response(response=400, description="Invalid username/password supplied")
      * )
@@ -67,7 +61,7 @@ class LoginController extends Controller {
                 $result['user_id'] = $user_data->_id;
             } else {
                 $is_valid_user = FALSE;
-                $result['error'] = array("Incorrect email or password entered");
+                $result['error'] = array("Invalid username/password supplied");
                 return response(json_encode($result), 400);
             }
 
