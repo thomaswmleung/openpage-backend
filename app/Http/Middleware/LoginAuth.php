@@ -67,7 +67,7 @@ class LoginAuth {
                     $result = array();
                     $result['error']['ERROR_CODE'] = 'TOKEN_EXPIRATION_ERROR';
                     $result['error']['ERROR_DESCRIPTION'] = "Token expired";
-                    return $result;
+                    return response(json_encode($result),400);
                 } else {
                     $response = $next($request);
                     //$token = $token_helper->generate_token();
@@ -79,10 +79,11 @@ class LoginAuth {
                     return $response;
                 }
             } else {
+                
                 $result = array();
                 $result['error']['ERROR_CODE'] = 'INVALID_TOKEN_ERROR';
                 $result['error']['ERROR_DESCRIPTION'] = "Token invalid";
-                return $result;
+                return response(json_encode($result),400);
             }
         } else {
             $result = array();
