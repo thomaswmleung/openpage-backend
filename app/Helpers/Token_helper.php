@@ -16,7 +16,7 @@ use Emarref\Jwt\Encryption;
 use Illuminate\Support\Facades\Cookie;
 use Emarref\Jwt\Algorithm\Hs256;
 use Emarref\Jwt\Verification\Context;
-
+use \Exception as Exception;
 class Token_helper extends Controller {
 
     function generate_token() {
@@ -52,32 +52,42 @@ class Token_helper extends Controller {
     }
 
     public function verify_token($token) {
+        $verify_result = FALSE;
         try {
         $jwt = new Jwt();
         $de_token = $jwt->deserialize($token);
-
+        
         $secret = Config::get('constants.secret');
         $algorithm = new Hs256($secret);
         $encryption = Encryption\Factory::create($algorithm);
 
         $context = new Context($encryption);
         
-            $verify_result = $jwt->verify($de_token, $context);
-        } catch (VerificationException $e) {
+         $verify_result = $jwt->verify($de_token, $context);
+         
+        }catch (VerificationException $e) {
+            
             $verify_result = FALSE;
-        }
-        catch (\Exception $e){
+            return $verify_result;
+        }catch (Exception $e){
             $verify_result = FALSE;
+            return $verify_result;
         }
+        
         return $verify_result;
     }
 
     function token_decode($serializedToken) {
+        
+        try{
         $jwt = new Jwt();
         $deserializedToken = $jwt->deserialize($serializedToken);
 
         $header = $deserializedToken->getHeader()->jsonSerialize();
         $playload = $deserializedToken->getPayload()->jsonSerialize();
+        }  catch (Exception $e){
+            return "";
+        }
         return $playload;
     }
 
