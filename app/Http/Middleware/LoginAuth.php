@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Session;
 use App\Helpers\Token_helper;
 use DateTime;
 use DateInterval;
+use Illuminate\Support\Facades\Log;
 
 class LoginAuth {
 
@@ -32,6 +33,8 @@ class LoginAuth {
      
 //            $data = json_decode($request->data, true);
         //if (isset($data['token']) && $data['token'] != "") {
+        
+//        Log::error($request->header());
         if ($request->header('token') && $request->header('token') != "") {
 
             // Verify if the token is valid

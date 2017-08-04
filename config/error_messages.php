@@ -17,4 +17,5 @@ return [
     config('error_constants.login_password_required') => "Password is mandatory.",
     config('error_constants.login_invalid') => "Invalid Username/Password",
     config('error_constants.invalid_user_id') => "Invalid user id",
+    config('error_constants.invalid_media_id') => "Invalid Media id",
 ];

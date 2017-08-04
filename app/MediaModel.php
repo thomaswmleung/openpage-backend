@@ -22,5 +22,8 @@ class MediaModel extends Eloquent {
         return $result;
     }
    
+    public function get_random_media(){
+        return MediaModel::all()->first();
+    }
 
 }

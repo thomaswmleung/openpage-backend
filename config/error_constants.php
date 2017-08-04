@@ -16,7 +16,9 @@ return [
     'login_user_name_required' => 'E107',
     'login_password_required' => 'E108',
     'login_invalid' => 'E109',
-    'invalid_user_id' => 'E110'
+    'invalid_user_id' => 'E110',
+    'invalid_media_id' => 'E201',
+    
     
     
 ];
