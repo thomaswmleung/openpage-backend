@@ -8,7 +8,7 @@ use App\MediaModel;
 use App\Helpers\GCS_helper;
 use Illuminate\Support\Facades\Config;
 use App\Helpers\Token_helper;
-
+use Illuminate\Support\Facades\Log;
 class MediaController extends Controller {
     /**
      * @SWG\Get(path="/media",
@@ -68,13 +68,19 @@ class MediaController extends Controller {
             $media_details = $mediaModel->media_details($data_array);
             if ($media_details == NULL) {
                 $error['error'] = array("Invalid media id");
-                return response(json_encode($error), 400);
+                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
+                                        "ERR_MSG"=> config('error_messages'.".".
+                                                            config('error_constants.invalid_media_id')))) ; 
+                
+                $response_array = array("success"=>FALSE,"errors"=>$error_messages);
+                return response(json_encode($response_array), 400);
             }
         } else {
             $media_details = $mediaModel->media_details();
         }
-
-        return response(json_encode($media_details), 200);
+        
+        $response_array = array("success" => TRUE,"data"=>$media_details,"errors"=>array());
+        return response(json_encode($response_array), 200);
     }
 
     /**
@@ -136,7 +142,7 @@ class MediaController extends Controller {
     public function create_media(Request $request) {
 //        $media_json = $request->getContent();
 //        $media_array = json_decode($media_json, TRUE);
-
+        Log::error("Create media called");
         $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
 
 
@@ -158,9 +164,11 @@ class MediaController extends Controller {
         );
         $validator = Validator::make($media_array, $rules);
         if ($validator->fails()) {
+            
             return response($validator->messages(), 400);
         } else {
 
+            Log::error("Validation success");
             if ($request->hasFile('media_file')) {
                 $image = $request->file('media_file');
                 $input['media_file'] = time() . uniqid() . '.' . $image->getClientOriginalExtension();
@@ -170,16 +178,18 @@ class MediaController extends Controller {
 
                 //upload to GCS
 
-                $gcs_result = GCS_helper::upload_to_gcs('images/' . $media_name);
-                if (!$gcs_result) {
-                    $error['error'] = array("Error in upload of GCS");
-                    return response(json_encode($error), 400);
-                }
-                // delete your local pdf file here
-                unlink($destinationPath . "/" . $media_name);
-
-                $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
-                $media_array['url'] = $media_url;
+//                $gcs_result = GCS_helper::upload_to_gcs('images/' . $media_name);
+//                if (!$gcs_result) {
+//                    $error['error'] = array("Error in upload of GCS");
+//                    return response(json_encode($error), 400);
+//                }
+//                // delete your local pdf file here
+//                unlink($destinationPath . "/" . $media_name);
+//
+//                $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
+//                $media_array['url'] = $media_url;
+                
+                $media_array['url'] = "http://custom_url";
             } else {
                 $error['error'] = array("Something went wrong");
                 return response(json_encode($error), 400);
@@ -187,7 +197,9 @@ class MediaController extends Controller {
             //insert media
 
             MediaModel::create($media_array);
-            return response("Media created successfully", 200);
+            $response_array = array("success" => TRUE,"errors"=>array());
+            Log::error(json_encode($response_array));
+            return response(json_encode($response_array), 200);
         }
     }
 
@@ -223,6 +235,7 @@ class MediaController extends Controller {
      * )
      */
     public function update_media(Request $request) {
+        
 //        $media_json = $request->getContent();
 //        $media_array = json_decode($media_json, TRUE);
 //        dd($request->json()->all());

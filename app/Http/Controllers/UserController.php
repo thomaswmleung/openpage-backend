@@ -8,7 +8,8 @@ use App\Helpers\Token_helper;
 use App\UsersModel;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\EmailController;
-
+use App\Helpers\ErrorMessageHelper;
+use Illuminate\Support\Facades\Log;
 class UserController extends Controller {
     /**
      * @SWG\Get(path="/user",
@@ -56,8 +57,11 @@ class UserController extends Controller {
      * )
      */
     public function user(Request $request) {
+        
         $userModel = new UsersModel();
         if (isset($request->uid)) {
+            
+           
             $user_id = $request->uid;
             // get user details
             $data_array = array(
@@ -66,16 +70,25 @@ class UserController extends Controller {
             $user_details = $userModel->user_details($data_array);
             if ($user_details == NULL) {
                 $error['error'] = array("Invalid user id");
-                return response(json_encode($error), 400);
+                
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_user_id'),
+                                        "ERR_MSG"=> config('error_messages'.".".
+                                                            config('error_constants.invalid_user_id')))) ; 
+                
+                $response_array = array("success"=>FALSE,"errors"=>$error_messages);
+                return response(json_encode($response_array), 400);
             }
         } else {
+            
+            
             $user_details = $userModel->user_details();
         }
-
-        return response(json_encode($user_details), 200);
+        
+        $response_array = array("success" => TRUE,"data"=>$user_details,"errors"=>array());
+        return response(json_encode($response_array), 200);
     }
 
-     /**
+    /**
      * @SWG\Post(path="/register",
       * tags={"User"},
      *   summary="User registration into the system",
@@ -128,11 +141,27 @@ class UserController extends Controller {
             'first_name' => 'required',
             'last_name' => 'required',
             'password' => 'required',
-            'email' => 'required|email|unique:users,email'
+            'email' => 'min:3|required|email|unique:users,email'
         );
-        $validator = Validator::make($user_data, $rules);
+        
+        $messages = [
+            'first_name.required' => config('error_constants.first_name_required'),
+            'last_name.required' => config('error_constants.last_name_required'),
+            'email.email' => config('error_constants.email_vaild'),
+            'email.required' => config('error_constants.email_required'),
+            'email.unique' => config('error_constants.email_already_taken'),
+            'password.required' => config('error_constants.password_required')
+        ];
+        
+        
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+
+        $validator = Validator::make($user_data, $rules,$formulated_messages);
+        
         if ($validator->fails()) {
-            return response($validator->messages(), 400);
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400);
         } else {
 
             $user_data['username'] = strtolower(trim($request->email));
@@ -150,12 +179,19 @@ class UserController extends Controller {
             );
             //Need SMTP credentials to send Email from instance
 //            EmailController::send_activation_mail($email_data);
-
-            return response("User created successfully.", 200);
+            $responseArray = array("success" => TRUE, "message" => "User created successfully.");
+            return response(json_encode($responseArray), 200);
         }
     }
 
-     /**
+    public function messages() {
+        return [
+            'title.required' => 'A title is required',
+            'body.required' => 'A message is required',
+        ];
+    }
+
+    /**
      * @SWG\Get(path="/activate",
       * tags={"User"},
      *   summary="Activates user into the system",
