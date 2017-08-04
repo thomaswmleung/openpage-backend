@@ -10,7 +10,51 @@ use Illuminate\Support\Facades\Config;
 use App\Helpers\Token_helper;
 
 class MediaController extends Controller {
+    /**
+     * @SWG\Get(path="/media",
+     *   tags={"Media"},
+     *   summary="Returns list of media",
+     *   description="Returns media data",
+     *   operationId="media",
+     *   produces={"application/json"},
+     *   parameters={},
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
 
+    /**
+     * @SWG\Get(path="/media/{mid}",
+     *   tags={"Media"},
+     *   summary="Returns media data",
+     *   description="Returns media data",
+     *   operationId="media",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="mid",
+     *     in="path",
+     *     description="ID of the media that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid media id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function media(Request $request) {
         // die(var_dump($request->header('token')));
         $mediaModel = new MediaModel();
@@ -33,21 +77,76 @@ class MediaController extends Controller {
         return response(json_encode($media_details), 200);
     }
 
+    /**
+     * @SWG\Post(path="/media",
+     *   tags={"Media"},
+     *   consumes={"multipart/form-data"},
+     *   summary="Creating/Storing new media file",
+     *   description="Stores media file in the system",
+     *   operationId="create_media",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="type",
+     *     in="query",
+     *     description="Type of media file to be uploaded",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="extension",
+     *     in="query",
+     *     description="Extension of media file",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *     @SWG\Parameter(
+     *         description="file to upload",
+     *         in="formData",
+     *         name="media_file",
+     *         required=true,
+     *         type="file"
+     *     ),
+     *   @SWG\Parameter(
+     *     name="owner",
+     *     in="query",
+     *     description="user_id or organization_id",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="usage[]",
+     *     in="formData",
+     *     description="The page ids array field.",
+     *     required=true,
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         )
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function create_media(Request $request) {
 //        $media_json = $request->getContent();
 //        $media_array = json_decode($media_json, TRUE);
-        
+
         $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
-        
-       
-        
+
+
         $media_array = array(
-            'type'=>$request->type,
-            'extension'=>$request->extension,
-            'media_file'=>$request->file('media_file'),
-            'owner'=>$request->owner,
-            'usage'=>$request->usage,
-            'created_by'=>$user_id,
+            'type' => $request->type,
+            'extension' => $request->extension,
+            'media_file' => $request->file('media_file'),
+            'owner' => $request->owner,
+            'usage' => $request->usage,
+            'created_by' => $user_id,
         );
         $rules = array(
             'type' => 'required',
@@ -61,7 +160,7 @@ class MediaController extends Controller {
         if ($validator->fails()) {
             return response($validator->messages(), 400);
         } else {
-           
+
             if ($request->hasFile('media_file')) {
                 $image = $request->file('media_file');
                 $input['media_file'] = time() . uniqid() . '.' . $image->getClientOriginalExtension();
@@ -86,43 +185,71 @@ class MediaController extends Controller {
                 return response(json_encode($error), 400);
             }
             //insert media
-       
+
             MediaModel::create($media_array);
             return response("Media created successfully", 200);
         }
     }
 
+    /**
+     * @SWG\Put(path="/media",
+     *   tags={"Media"},
+     *   summary="Update media file data",
+     *   description="Update media file in the system",
+     *   operationId="update_media",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="mid",
+     *     in="query",
+     *     description="ID of the media that needs to be updated",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="owner",
+     *     in="query",
+     *     description="user_id or organization_id",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function update_media(Request $request) {
 //        $media_json = $request->getContent();
 //        $media_array = json_decode($media_json, TRUE);
 //        dd($request->json()->all());
 //
         $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
+        
         $rules = array(
             '_id' => 'required|exists:media,_id',
                 // 'updated_by' => 'required|exists:users,_id',
         );
 
-
+        
         $media_array = array();
 
-        $media_array['_id'] = $request->_id;
+        $media_array['_id'] = $request->mid;
         if (isset($request->owner) && $request->owner != "") {
             $media_array['owner'] = $request->owner;
         }
-
-        if (isset($request->right) && $request->right != "") {
-            $media_array['right'] = $request->right;
-        }
-
+        \Illuminate\Support\Facades\Log::error(json_encode($request->mid));
         if (isset($request->usage) && $request->usage != "") {
             $media_array['usage'] = $request->usage;
         }
 
-        
-            $media_array['updated_by'] = $user_id;
-      
 
+        $media_array['updated_by'] = $user_id;
+
+   
         $validator = Validator::make($media_array, $rules);
         if ($validator->fails()) {
             return response($validator->messages(), 400);
@@ -144,11 +271,40 @@ class MediaController extends Controller {
         return $mediaModel->update_media($data);
     }
 
+    /**
+     * @SWG\Delete(path="/media",
+     *   tags={"Media"},
+     *   summary="delete media file data",
+     *   description="Delete media file in the system",
+     *   operationId="delete_media",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="mid",
+     *     in="query",
+     *     description="ID of the media that needs to be deleted",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function delete_media(Request $request) {
 
         $media_id = trim($request->mid);
+
         $mediaModel = new MediaModel();
         $media_data = $mediaModel->media_details(array('_id' => $media_id));
+        if ($media_data == null) {
+            $error['error'] = array("media not found");
+            return response(json_encode($error), 400);
+        }
         $data = explode("/", $media_data['url']); // fetching file name from URL
         $objectName = end($data);
         $gcs_result = GCS_helper::delete_from_gcs($objectName);

@@ -3,23 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Redirect;
-use App\Helpers\Curl_helper;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Input;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Session;
-use Codedge\Fpdf\Fpdf\Fpdf;
-use App\Helpers\tFPDF;
 use App\QuestionsModel;
 use App\SectionModel;
 use App\MainModel;
-use App\OverlayModel;
-use App\BackgroundModel;
 use App\PageModel;
 use App\PageGroupModel;
 use App\Helpers\Pdf_helper;
@@ -33,6 +21,51 @@ use App\Helpers\Pdf_helper;
 
 class PageGroupController extends Controller {
 
+        /**
+     * @SWG\Get(path="/page_group",
+     *   tags={"Page Group"},
+     *   summary="Returns list of page group",
+     *   description="Returns page group data",
+     *   operationId="page_group",
+     *   produces={"application/json"},
+     *   parameters={},
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    
+        /**
+     * @SWG\Get(path="/page_group/{pid}",
+     *   tags={"Page Group"},
+     *   summary="Returns page group data",
+     *   description="Returns page group data",
+     *   operationId="page_group",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="pid",
+     *     in="path",
+     *     description="ID of the page group that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid page group id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function create_page_group() {
 
         /* Temporarily reading Data from Local file */
@@ -52,7 +85,7 @@ class PageGroupController extends Controller {
 
 
         $req_json = json_encode($page_data_array);
-        
+
         $pdf_helper = new Pdf_helper();
 
         $response_array = array();
@@ -166,10 +199,9 @@ class PageGroupController extends Controller {
 //                    }
                     if (isset($page['page_id']) && $page['page_id'] != "") {
                         // get page_id from main collection
-                        $page_id=$page['page_id'];
+                        $page_id = $page['page_id'];
                         $pageModel = new PageModel();
                         $main_id = $pageModel->fetch_main_id($page_id);
-                        
                     }
 
                     $main_id = $this->create_main($insert_main_data, $main_id);

@@ -8,6 +8,9 @@
     "paths": {
         "/login": {
             "post": {
+                "tags": [
+                    "Login"
+                ],
                 "summary": "Logs user into the system",
                 "description": "",
                 "operationId": "loginUser",
@@ -40,8 +43,234 @@
                 }
             }
         },
+        "/media": {
+            "get": {
+                "tags": [
+                    "Media"
+                ],
+                "summary": "Returns list of media",
+                "description": "Returns media data",
+                "operationId": "media",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Media"
+                ],
+                "summary": "Update media file data",
+                "description": "Update media file in the system",
+                "operationId": "update_media",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "mid",
+                        "in": "query",
+                        "description": "ID of the media that needs to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "owner",
+                        "in": "query",
+                        "description": "user_id or organization_id",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Media"
+                ],
+                "summary": "Creating/Storing new media file",
+                "description": "Stores media file in the system",
+                "operationId": "create_media",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of media file to be uploaded",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "extension",
+                        "in": "query",
+                        "description": "Extension of media file",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "media_file",
+                        "in": "formData",
+                        "description": "file to upload",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "owner",
+                        "in": "query",
+                        "description": "user_id or organization_id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "usage[]",
+                        "in": "formData",
+                        "description": "The page ids array field.",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Media"
+                ],
+                "summary": "delete media file data",
+                "description": "Delete media file in the system",
+                "operationId": "delete_media",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "mid",
+                        "in": "query",
+                        "description": "ID of the media that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/media/{mid}": {
+            "get": {
+                "tags": [
+                    "Media"
+                ],
+                "summary": "Returns media data",
+                "description": "Returns media data",
+                "operationId": "media",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "mid",
+                        "in": "path",
+                        "description": "ID of the media that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid media id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/page_group": {
+            "get": {
+                "tags": [
+                    "Page Group"
+                ],
+                "summary": "Returns list of page group",
+                "description": "Returns page group data",
+                "operationId": "page_group",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
         "/user": {
             "get": {
+                "tags": [
+                    "User"
+                ],
                 "summary": "Returns list of users",
                 "description": "Returns users data",
                 "operationId": "user",
@@ -63,6 +292,9 @@
         },
         "/user/{uid}": {
             "get": {
+                "tags": [
+                    "User"
+                ],
                 "summary": "Returns users data",
                 "description": "Returns users data",
                 "operationId": "user",
@@ -85,11 +317,19 @@
                     "400": {
                         "description": "Invalid user id"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
             }
         },
         "/register": {
             "post": {
+                "tags": [
+                    "User"
+                ],
                 "summary": "User registration into the system",
                 "description": "User registration into the system",
                 "operationId": "register",
@@ -138,6 +378,9 @@
         },
         "/activate": {
             "get": {
+                "tags": [
+                    "User"
+                ],
                 "summary": "Activates user into the system",
                 "description": "Activates user into the system",
                 "operationId": "activate",
@@ -178,5 +421,23 @@
             "name": "token",
             "in": "header"
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Login",
+            "description": "Login related API's"
+        },
+        {
+            "name": "User",
+            "description": "User related API's"
+        },
+        {
+            "name": "Media",
+            "description": "Media realated API's"
+        },
+        {
+            "name": "Page Group",
+            "description": "Page Group realated API's"
+        }
+    ]
 }

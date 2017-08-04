@@ -25,6 +25,26 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   name="token"
  * )
  */
+
+/**
+ * @SWG\Tag(
+ *   name="Login",
+ *   description="Login related API's"
+ * )
+ * @SWG\Tag(
+ *   name="User",
+ *   description="User related API's"
+ * )
+ * * @SWG\Tag(
+ *   name="Media",
+ *   description="Media realated API's"
+ * )
+ * * @SWG\Tag(
+ *   name="Page Group",
+ *   description="Page Group realated API's"
+ * )
+ * 
+ */
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
