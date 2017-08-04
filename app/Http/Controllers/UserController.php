@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 class UserController extends Controller {
     /**
      * @SWG\Get(path="/user",
+     * tags={"User"},
      *   summary="Returns list of users",
      *   description="Returns users data",
      *   operationId="user",
@@ -30,6 +31,7 @@ class UserController extends Controller {
 
     /**
      * @SWG\Get(path="/user/{uid}",
+     * tags={"User"},
      *   summary="Returns users data",
      *   description="Returns users data",
      *   operationId="user",
@@ -48,7 +50,10 @@ class UserController extends Controller {
      *  @SWG\Response(
      *     response=400,
      *     description="Invalid user id",
-     *   )
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
      * )
      */
     public function user(Request $request) {
@@ -85,6 +90,7 @@ class UserController extends Controller {
 
     /**
      * @SWG\Post(path="/register",
+      * tags={"User"},
      *   summary="User registration into the system",
      *   description="User registration into the system",
      *   operationId="register",
@@ -187,6 +193,7 @@ class UserController extends Controller {
 
     /**
      * @SWG\Get(path="/activate",
+      * tags={"User"},
      *   summary="Activates user into the system",
      *   description="Activates user into the system",
      *   operationId="activate",

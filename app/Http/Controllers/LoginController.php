@@ -12,6 +12,7 @@ class LoginController extends Controller {
 
     /**
      * @SWG\Post(path="/login",
+     *  tags={"Login"},
      *   summary="Logs user into the system",
      *   description="",
      *   operationId="loginUser",

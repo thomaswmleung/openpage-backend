@@ -14,38 +14,29 @@
 Route::post('login', 'LoginController@login');
 Route::get('log_out', 'LoginController@log_out');
 
-Route::get('user/{uid}', 'UserController@user');
-Route::get('user', 'UserController@user');
-    Route::post('register', 'UserController@register');
+Route::post('register', 'UserController@register');
 Route::get('activate', 'UserController@activate');
 
-
 Route::group(['middleware' => ['login_auth']], function () {
+    
+    Route::get('user', 'UserController@user');
+    Route::get('user/{uid}', 'UserController@user');
+    
+    
     Route::get('media', 'MediaController@media');
     Route::get('media/{mid}', 'MediaController@media');
     Route::post('media', 'MediaController@create_media');
     Route::put('media', 'MediaController@update_media');
     Route::delete('media', 'MediaController@delete_media');
+    
+    
+    Route::get('page_group', 'PageGroupController@page_group');
 });
 
-// This Middleware will be used to check the token if it was generated within given time ago
-//Route::group(['middleware' => 'login_auth'], function () {
-//    // Route::post('api_user_info', 'ApiLoginController@user_information');
-//});
 
-
-// This Middleware will be used for the pages where login of user is not mandatory
-Route::group(['middleware' => 'non_login_auth'], function () {
-    //
-    Route::post('api_check_user_login', 'ApiLoginController@user_authentication');
-});
+//Route::get('page_group', 'PageGroupController@create_page_group');
 
 Route::get('fpdf', 'PdfController@generate_pdf');
-
-
-Route::get('page_group', 'PageGroupController@create_page_group');
-
-Route::get('api_user_info/{id}', 'ApiLoginController@user_information');
 Route::get('book', 'BookController@create_book');
 
 
