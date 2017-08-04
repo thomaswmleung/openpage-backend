@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Helpers\Token_helper;
 use App\UsersModel;
 use Illuminate\Support\Facades\Validator;
-
+use App\Helpers\ErrorMessageHelper;
 class LoginController extends Controller {
 
     /**
@@ -43,9 +43,20 @@ class LoginController extends Controller {
             'username' => 'required',
             'password' => 'required'
         );
+        
+        $messages=[
+            'username.required' => config('error_constants.login_user_name_required'),
+            'username.required' => config('error_constants.login_password_required')
+            
+        ];
+        
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+        
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
-            return response($validator->messages(), 400);
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400);
         } else {
             $username = trim($request->username);
             $password = trim($request->password);
@@ -61,8 +72,15 @@ class LoginController extends Controller {
                 $result['user_id'] = $user_data->_id;
             } else {
                 $is_valid_user = FALSE;
-                $result['error'] = array("Invalid username/password supplied");
-                return response(json_encode($result), 400);
+                $error_messages = array(array("ERR_CODE" => config('error_constants.login_invalid'),
+                                        "ERR_MSG"=> config('error_messages'.".".
+                                                            config('error_constants.login_invalid')))) ;       
+                
+                
+                $responseArray = array("success" => FALSE, "errors" => $error_messages);
+                
+                
+                return response(json_encode($responseArray), 400);
             }
 
             if ($is_valid_user) {
@@ -70,8 +88,8 @@ class LoginController extends Controller {
               //  $token = $token_helper->generate_token();
                 $token = $token_helper->generate_user_token($user_data->_id);
                 $result['token'] = $token;
-
-                return response()->json($result,200);
+                $responseArray = array("success" => TRUE, "token" => $token);
+                return response(json_encode($responseArray),200);
             }
         }
     }

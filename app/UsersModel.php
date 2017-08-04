@@ -36,5 +36,10 @@ class UsersModel extends Eloquent {
         UsersModel::find($_id)->update(['is_active' => true]);
         return 1;
     }
-
+    
+    
+    public function get_random_user(){
+       $user_data = UsersModel::all()->first();
+       return $user_data;
+    }
 }
