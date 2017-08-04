@@ -178,18 +178,17 @@ class MediaController extends Controller {
 
                 //upload to GCS
 
-//                $gcs_result = GCS_helper::upload_to_gcs('images/' . $media_name);
-//                if (!$gcs_result) {
-//                    $error['error'] = array("Error in upload of GCS");
-//                    return response(json_encode($error), 400);
-//                }
-//                // delete your local pdf file here
-//                unlink($destinationPath . "/" . $media_name);
-//
-//                $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
-//                $media_array['url'] = $media_url;
+                $gcs_result = GCS_helper::upload_to_gcs('images/' . $media_name);
+                if (!$gcs_result) {
+                    $error['error'] = array("Error in upload of GCS");
+                    return response(json_encode($error), 400);
+                }
+                // delete your local pdf file here
+                unlink($destinationPath . "/" . $media_name);
+
+                $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
+                $media_array['url'] = $media_url;
                 
-                $media_array['url'] = "http://custom_url";
             } else {
                 $error['error'] = array("Something went wrong");
                 return response(json_encode($error), 400);
