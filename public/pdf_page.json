@@ -7,7 +7,7 @@
                 "overlay": [
                     {
                         "type": "image",
-                        "url": "http://localhost/openpage/public/images/op.png",
+                        "url": "http://localhost/openpage-backend/public/images/op.png",
                         "x": "10",
                         "y": "25",
                         "w": "50",
@@ -49,7 +49,7 @@
                                             "question_type": "mc_with_image",
                                             "answer_cols": 2,
                                             "question_text": "this is first question",
-                                            "image": "http://localhost/openpage/public/images/question_image.png",
+                                            "image": "http://localhost/openpage-backend/public/images/question_image.png",
                                             "answer": [
                                                 {
                                                     "text": "answer1",
@@ -76,7 +76,7 @@
                                             "question_type": "mc_without_image",
                                             "answer_cols": 1,
                                             "question_text": "This is second question",
-                                            "image": "http://localhost/openpage/public/images/question_image.png",
+                                            "image": "http://localhost/openpage-backend/public/images/question_image.png",
                                             "answer": [
                                                 {
                                                     "text": "answer1",
@@ -103,7 +103,7 @@
                 "background": [
                     {
                         "type": "image",
-                        "url": "http://localhost/openpage/public/images/bg.png",
+                        "url": "http://localhost/openpage-backend/public/images/bg.png",
                         "x": "5",
                         "y": "5",
                         "w": "200",
@@ -172,7 +172,7 @@
                 "overlay": [
                     {
                         "type": "image",
-                        "url": "http://localhost/openpage/public/images/op.png",
+                        "url": "http://localhost/openpage-backend/public/images/op.png",
                         "x": "10",
                         "y": "25",
                         "w": "50",
@@ -211,7 +211,7 @@
                                     "question_type": "mc_without_image",
                                     "answer_cols": 1,
                                     "question_text": "Second page question 1",
-                                    "image": "http://localhost/openpage/public/images/question_image.png",
+                                    "image": "http://localhost/openpage-backend/public/images/question_image.png",
                                     "answer": [
                                         {
                                             "text": "answer1",
@@ -237,7 +237,7 @@
                                     "question_type": "mc_without_image",
                                     "answer_cols": 1,
                                     "question_text": "Second Page Sample question 2",
-                                    "image": "http://localhost/openpage/public/images/question_image.png",
+                                    "image": "http://localhost/openpage-backend/public/images/question_image.png",
                                     "answer": [
                                         {
                                             "text": "answer1",
@@ -264,7 +264,7 @@
                 "background": [
                     {
                         "type": "image",
-                        "url": "http://localhost/openpage/public/images/bg.png",
+                        "url": "http://localhost/openpage-backend/public/images/bg.png",
                         "x": "5",
                         "y": "5",
                         "w": "200",

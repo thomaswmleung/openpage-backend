@@ -39,10 +39,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   name="Media",
  *   description="Media realated API's"
  * )
- * * @SWG\Tag(
- *   name="Page Group",
- *   description="Page Group realated API's"
- * )
  * 
  */
 class Controller extends BaseController

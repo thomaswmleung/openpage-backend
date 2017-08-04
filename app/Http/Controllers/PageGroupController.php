@@ -21,55 +21,17 @@ use App\Helpers\Pdf_helper;
 
 class PageGroupController extends Controller {
 
-        /**
-     * @SWG\Get(path="/page_group",
-     *   tags={"Page Group"},
-     *   summary="Returns list of page group",
-     *   description="Returns page group data",
-     *   operationId="page_group",
-     *   produces={"application/json"},
-     *   parameters={},
-     *   @SWG\Response(
-     *     response=200,
-     *     description="successful operation",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
-     * )
-     */
-    
-        /**
-     * @SWG\Get(path="/page_group/{pid}",
-     *   tags={"Page Group"},
-     *   summary="Returns page group data",
-     *   description="Returns page group data",
-     *   operationId="page_group",
-     *   produces={"application/json"},
-     *   @SWG\Parameter(
-     *     name="pid",
-     *     in="path",
-     *     description="ID of the page group that needs to be displayed",
-     *     required=true,
-     *     type="string"
-     *   ),
-     *   @SWG\Response(
-     *     response=200,
-     *     description="successful operation",
-     *   ),
-     *  @SWG\Response(
-     *     response=400,
-     *     description="Invalid page group id",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
-     * )
-     */
-    public function create_page_group() {
+    public function create_page_group(Request $request) {
 
         /* Temporarily reading Data from Local file */
-        $json_data = file_get_contents(url('pdf_page.json'));
+//        $json_data = file_get_contents(url('pdf_page.json'));
+        \Illuminate\Support\Facades\Log::error("Sdf");
+        \Illuminate\Support\Facades\Log::error($request->data);
+        if (isset($request->data) && $request->data != "") {
+            $json_data = $request->data;
+        }else{
+            dd("ERROR");
+        }
         $page_data_array = json_decode($json_data, true);
 
         //dd($page_data_array);
@@ -243,7 +205,8 @@ class PageGroupController extends Controller {
             }
 
             $response_array['preview_url'] = $page_data_array['preview_url'];
-            return json_encode($response_array);
+            return response(json_encode($response_array), 200);
+//            return json_encode($response_array);
         }
     }
 

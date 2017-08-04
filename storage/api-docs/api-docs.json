@@ -243,20 +243,33 @@
             }
         },
         "/page_group": {
-            "get": {
+            "post": {
                 "tags": [
                     "Page Group"
                 ],
-                "summary": "Returns list of page group",
-                "description": "Returns page group data",
-                "operationId": "page_group",
+                "summary": "Creation of page group",
+                "description": "Stores page group in the system",
+                "operationId": "create_page_group",
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
                     }
                 },
                 "security": [
