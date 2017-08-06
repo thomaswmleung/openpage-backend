@@ -1,11 +1,5 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 namespace Tests\Unit;
 
 use Tests\TestCase;
@@ -18,60 +12,210 @@ use App\MediaModel;
 class MediaTest extends TestCase {
 
     public function testMediaCreationSuccess() {
-//        $cFile = curl_file_create(url("/public/test_images/"."test.png"));
+        $image_path = public_path("test_images/" . "test.png");
+        $cFile = curl_file_create($image_path, 'image/png', 'test.png');
         $media_data = array('type' => 'IMAGE',
             'extension' => "png",
             'owner' => "test_owner",
             'usage' => "251",
-//            'media_file' => $cFile
+            'media_file' => $cFile
         );
-        $fields_string = "";
-//        foreach($media_data as $key=>$value){ 
-//            $fields_string .= $key.'='.$value.'&'; 
-//            
-//        }
-//rtrim($fields_string, '&');
+
         $token = $this->getValidToken();
 
         $url = $this->getApiUrl("/public/media");
         $curl = curl_init();
-        $header = array("token :" . $token);
-
-//        curl_setopt($curl, CURLOPT_POST, 1);
-//        curl_setopt($curl, CURLOPT_POSTFIELDS, $media_data);
-//        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-////        curl_setopt($curl, CURLOPT_HTTPGET, 1);
-////        curl_setopt($curl, CURLOPT_HTTPGET, 1);
-//        curl_setopt($curl, CURLOPT_URL, $url);
-//        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-//        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-//        curl_setopt($curl, CURLOPT_URL, $url);
-//        
-////        curl_setopt($curl, CURLOPT_POST, 1);
-//        curl_setopt($curl, CURLOPT_POSTFIELDS, $media_data);
-//        
-//        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-
-         $header = array(
-            'Accept: application/json',
-            'Content-Type: application/form-data',
+        $header = array(
+            'enctype: multipart/form-data',
             'token: ' . $token
         );
+
+        $curl = curl_init();
         curl_setopt($curl, CURLOPT_POSTFIELDS, $media_data);
         curl_setopt($curl, CURLOPT_URL, $url);
-
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-//        curl_setopt($curl, CURLOPT_HTTPGET, 1);
-
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-//        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-//        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
         $media_response_json = curl_exec($curl);
+        $media_response_array = json_decode($media_response_json, true);
+        $is_success = FALSE;
+        if (isset($media_response_array['success']) AND $media_response_array['success'] == TRUE) {
+            $is_success = TRUE;
+        }
+        $this->assertTrue($is_success);
+    }
 
-        Log::error("create media");
-        Log::error($media_response_json);
+    public function testMediaCreationWithBlankType() {
+        $image_path = public_path("test_images/" . "test.png");
+        $cFile = curl_file_create($image_path, 'image/png', 'test.png');
+        $media_data = array('type' => '',
+            'extension' => "png",
+            'owner' => "test_owner",
+            'usage' => "251",
+            'media_file' => $cFile
+        );
 
-        $this->assertTrue(true);
+        $token = $this->getValidToken();
+
+        $url = $this->getApiUrl("/public/media");
+        $curl = curl_init();
+        $header = array(
+            'enctype: multipart/form-data',
+            'token: ' . $token
+        );
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $media_data);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
+
+        $media_response_json = curl_exec($curl);
+        $media_response_array = json_decode($media_response_json, true);
+        $is_success = FALSE;
+        if (isset($media_response_array['errors'])
+                AND sizeof($media_response_array['errors']) > 0) {
+
+            foreach ($media_response_array['errors'] as $errors) {
+                if ($errors['ERR_CODE'] == config('error_constants.media_type_required')) {
+                    $is_success = TRUE;
+                    break;
+                }
+            }
+        }
+        $this->assertTrue($is_success);
+    }
+
+    public function testMediaCreationWithBlankExtension() {
+        $image_path = public_path("test_images/" . "test.png");
+        $cFile = curl_file_create($image_path, 'image/png', 'test.png');
+        $media_data = array('type' => 'IMAGE',
+            'extension' => "",
+            'owner' => "test_owner",
+            'usage' => "251",
+            'media_file' => $cFile
+        );
+
+        $token = $this->getValidToken();
+
+        $url = $this->getApiUrl("/public/media");
+        $curl = curl_init();
+        $header = array(
+            'enctype: multipart/form-data',
+            'token: ' . $token
+        );
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $media_data);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
+
+        $media_response_json = curl_exec($curl);
+        $media_response_array = json_decode($media_response_json, true);
+        $is_success = FALSE;
+        if (isset($media_response_array['errors'])
+                AND sizeof($media_response_array['errors']) > 0) {
+
+            foreach ($media_response_array['errors'] as $errors) {
+                if ($errors['ERR_CODE'] == config('error_constants.media_extension_required')) {
+                    $is_success = TRUE;
+                    break;
+                }
+            }
+        }
+        $this->assertTrue($is_success);
+    }
+
+    public function testMediaCreationWithBlankUsage() {
+        $image_path = public_path("test_images/" . "test.png");
+        $cFile = curl_file_create($image_path, 'image/png', 'test.png');
+        $media_data = array('type' => 'IMAGE',
+            'extension' => "",
+            'owner' => "test_owner",
+            'usage' => "",
+            'media_file' => $cFile
+        );
+
+        $token = $this->getValidToken();
+
+        $url = $this->getApiUrl("/public/media");
+        $curl = curl_init();
+        $header = array(
+            'enctype: multipart/form-data',
+            'token: ' . $token
+        );
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $media_data);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
+
+        $media_response_json = curl_exec($curl);
+        $media_response_array = json_decode($media_response_json, true);
+        $is_success = FALSE;
+        if (isset($media_response_array['errors'])
+                AND sizeof($media_response_array['errors']) > 0) {
+
+            foreach ($media_response_array['errors'] as $errors) {
+                if ($errors['ERR_CODE'] == config('error_constants.media_usage_required')) {
+                    $is_success = TRUE;
+                    break;
+                }
+            }
+        }
+        $this->assertTrue($is_success);
+    }
+
+    public function testMediaCreationWithInvalidMIME() {
+        $image_path = public_path("test_images/" . "test.pem");
+        $cFile = curl_file_create($image_path, 'pem', 'test.pem');
+        $media_data = array('type' => 'IMAGE',
+            'extension' => "",
+            'owner' => "test_owner",
+            'usage' => "251",
+            'media_file' => $cFile
+        );
+
+        $token = $this->getValidToken();
+
+        $url = $this->getApiUrl("/public/media");
+        $curl = curl_init();
+        $header = array(
+            'enctype: multipart/form-data',
+            'token: ' . $token
+        );
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $media_data);
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+
+
+        $media_response_json = curl_exec($curl);
+        $media_response_array = json_decode($media_response_json, true);
+        $is_success = FALSE;
+        if (isset($media_response_array['errors'])
+                AND sizeof($media_response_array['errors']) > 0) {
+
+            foreach ($media_response_array['errors'] as $errors) {
+                if ($errors['ERR_CODE'] == config('error_constants.invalid_media_file_mime')) {
+                    $is_success = TRUE;
+                    break;
+                }
+            }
+        }
+        $this->assertTrue($is_success);
     }
 
     public function testMediaList() {
@@ -87,16 +231,10 @@ class MediaTest extends TestCase {
         );
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-//        curl_setopt($curl, CURLOPT_HTTPGET, 1);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_HTTPGET, 1);
         $media_response_json = curl_exec($curl);
         curl_close($curl);
-
-//        $media_response_json = curl_exec($curl);
-//        
-        Log::error("suraj");
-        Log::error($media_response_json);
         $media_response_array = json_decode($media_response_json, true);
         $is_success = FALSE;
         if (isset($media_response_array['success']) AND $media_response_array['success'] == TRUE
@@ -158,9 +296,7 @@ class MediaTest extends TestCase {
 
         $media_response_json = curl_exec($curl);
         curl_close($curl);
-
-        Log::error("fetch details");
-        Log::error($media_response_json);
+;
         $media_response_array = json_decode($media_response_json, true);
 
         $is_success = FALSE;

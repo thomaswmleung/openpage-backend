@@ -17,7 +17,15 @@ return [
     'login_password_required' => 'E108',
     'login_invalid' => 'E109',
     'invalid_user_id' => 'E110',
-    'invalid_media_id' => 'E201',
+    'media_type_required' => 'E301',
+    'media_extension_required' => 'E302',
+    'media_file_required' => 'E303',
+    'invalid_media_file_mime' => 'E304',
+    'media_owner_required' => 'E305',
+    'media_usage_required' => 'E306',
+    'media_created_by_required' => 'E307',
+    'invalid_media_created_by' => 'E308',
+    'invalid_media_id' => 'E309',
     
     
     
