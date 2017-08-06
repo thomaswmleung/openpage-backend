@@ -121,13 +121,14 @@ class MediaController extends Controller {
      *   ),
      *   @SWG\Parameter(
      *     name="usage[]",
-     *     in="formData",
+     *     in="query",
      *     description="The page ids array field.",
      *     required=true,
      *     type="array",
      *      @SWG\Items(
      *             type="string"
-     *         )
+     *         ),
+     *      collectionFormat="multi",
      *   ),
      *   @SWG\Response(
      *     response=200,
@@ -222,6 +223,17 @@ class MediaController extends Controller {
      *     description="user_id or organization_id",
      *     required=true,
      *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="usage[]",
+     *     in="query",
+     *     description="The page ids array field.",
+     *     required=true,
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
      *   ),
      *   @SWG\Response(
      *     response=200,

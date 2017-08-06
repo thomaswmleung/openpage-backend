@@ -21,17 +21,36 @@ use App\Helpers\Pdf_helper;
 
 class PageGroupController extends Controller {
 
+/**
+     * @SWG\Post(path="/page_group",
+     *   tags={"page_group"},
+     *   summary="Create a page group",
+     *   description="",
+     *   operationId="create_page_group",
+     *   consumes={"application/json"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="page group json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function create_page_group(Request $request) {
-
-        /* Temporarily reading Data from Local file */
-//        $json_data = file_get_contents(url('pdf_page.json'));
-        \Illuminate\Support\Facades\Log::error("Sdf");
-        \Illuminate\Support\Facades\Log::error($request->data);
-        if (isset($request->data) && $request->data != "") {
-            $json_data = $request->data;
-        }else{
-            dd("ERROR");
-        }
+       
+       $json_data = $request->getContent();
+       
+      
         $page_data_array = json_decode($json_data, true);
 
         //dd($page_data_array);
