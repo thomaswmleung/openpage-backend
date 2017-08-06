@@ -40,8 +40,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   description="Media realated API's"
  * )
  * * @SWG\Tag(
- *   name="Page Group",
- *   description="Page Group realated API's"
+ *   name="page_group",
+ *   description="Page group realated API's"
  * )
  * 
  */
