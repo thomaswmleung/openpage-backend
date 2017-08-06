@@ -11,6 +11,7 @@ use App\MainModel;
 use App\PageModel;
 use App\PageGroupModel;
 use App\Helpers\Pdf_helper;
+use Illuminate\Support\Facades\Log;
 
 /*
  *  Class Name : PageGroupController
@@ -50,16 +51,18 @@ class PageGroupController extends Controller {
        
        $json_data = $request->getContent();
        
-      
+       
+//       return response(json_encode($json_data), 200);
         $page_data_array = json_decode($json_data, true);
-
-        //dd($page_data_array);
-
+        
+        if($page_data_array == null){
+            return response(json_encode(array("error"=>"Invalid Json")));
+        }
+        
         $page_group_id = $page_data_array['_id'];
         $page_group_model = new PageGroupModel();
 
         if (isset($page_data_array['_id']) && $page_data_array['_id'] == "") {
-
             $page_group_id = $page_group_model->create_page_group();
             $page_data_array['_id'] = $page_group_id;
         }
@@ -224,6 +227,8 @@ class PageGroupController extends Controller {
             }
 
             $response_array['preview_url'] = $page_data_array['preview_url'];
+            
+            $response_array['success'] = TRUE;
             return response(json_encode($response_array), 200);
 //            return json_encode($response_array);
         }

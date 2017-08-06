@@ -22,6 +22,10 @@ class PageGroupModel extends Eloquent {
     public function update_page_group($update_data,$page_group_id){
         $result = PageGroupModel::find($page_group_id)->update($update_data);
     }
+    
+    public function getRandomDocument() {
+        return PageGroupModel::all()->first();
+    }
 
     
 

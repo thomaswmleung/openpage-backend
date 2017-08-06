@@ -186,26 +186,25 @@ class MediaController extends Controller {
         } else {
 
             if ($request->hasFile('media_file')) {
-//                $image = $request->file('media_file');
-//                $input['media_file'] = time() . uniqid() . '.' . $image->getClientOriginalExtension();
-//                $destinationPath = public_path('images');
-//                $media_name = $input['media_file'];
-//                $image->move($destinationPath, $media_name);
-//
-//                //upload to GCS
-//
-//                $gcs_result = GCS_helper::upload_to_gcs('images/' . $media_name);
-//                if (!$gcs_result) {
-//                    $error['error'] = array("Error in upload of GCS");
-//                    return response(json_encode($error), 400);
-//                }
-//                // delete your local pdf file here
-//                unlink($destinationPath . "/" . $media_name);
-//
-//                $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
-//                $media_array['url'] = $media_url;
-//                $media_array['url'] = $media_url;
-                $media_array['url'] = "https://custom_url.com";
+                $image = $request->file('media_file');
+                $input['media_file'] = time() . uniqid() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('images');
+                $media_name = $input['media_file'];
+                $image->move($destinationPath, $media_name);
+
+                //upload to GCS
+
+                $gcs_result = GCS_helper::upload_to_gcs('images/' . $media_name);
+                if (!$gcs_result) {
+                    $error['error'] = array("Error in upload of GCS");
+                    return response(json_encode($error), 400);
+                }
+                // delete your local pdf file here
+                unlink($destinationPath . "/" . $media_name);
+
+                $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
+                $media_array['url'] = $media_url;
+                $media_array['url'] = $media_url;
                 
             } else {
                 $error['error'] = array("Something went wrong");
