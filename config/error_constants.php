@@ -26,6 +26,7 @@ return [
     'media_created_by_required' => 'E307',
     'invalid_media_created_by' => 'E308',
     'invalid_media_id' => 'E309',
+    'invalid_page_group_id' => 'E401',
     
     
     

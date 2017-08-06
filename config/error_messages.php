@@ -26,4 +26,5 @@ return [
     config('error_constants.media_created_by_required') => "Created by is required",
     config('error_constants.invalid_media_created_by') => "Created by has invalid id",
     config('error_constants.invalid_media_id') => "Invalid Media id",
+    config('error_constants.invalid_page_group_id') => "Invalid Page Group id",
 ];

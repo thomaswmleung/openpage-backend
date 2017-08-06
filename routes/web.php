@@ -31,8 +31,10 @@ Route::group(['middleware' => ['login_auth']], function () {
     
     
     Route::get('page_group', 'PageGroupController@get_page_group');
+    Route::get('page_group/{pid}', 'PageGroupController@get_page_group');
     Route::post('page_group', 'PageGroupController@create_page_group');
     Route::put('page_group', 'PageGroupController@create_page_group');
+    Route::delete('page_group', 'PageGroupController@delete_page_group');
     
 });
 

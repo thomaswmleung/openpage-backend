@@ -58,9 +58,7 @@ class MediaController extends Controller {
      *   }}
      * )
      */
-    public function media(Request $request) {
-        // die(var_dump($request->header('token')));
-       
+    public function media(Request $request) {       
         $mediaModel = new MediaModel();
         if (isset($request->mid) && $request->mid != "") {
             $media_id = $request->mid;
