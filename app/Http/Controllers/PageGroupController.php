@@ -21,7 +21,34 @@ use App\Helpers\Pdf_helper;
 
 class PageGroupController extends Controller {
 
-/**
+    public function get_page_group(Request $request) {
+        $pageGroupModel = new PageGroupModel();
+        if (isset($request->pid) && $request->pid != "") {
+            $page_group_id = $request->pid;
+
+            // get media details
+            $data_array = array(
+                '_id' => $page_group_id
+            );
+            $page_group_details = $pageGroupModel->page_group_details($data_array);
+            if ($page_group_details == NULL) {
+                $error['error'] = array("Invalid id");
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
+                        "ERR_MSG" => config('error_messages' . "." .
+                                config('error_constants.invalid_media_id'))));
+
+                $response_array = array("success" => FALSE, "errors" => $error_messages);
+                return response(json_encode($response_array), 400);
+            }
+        } else {
+            $page_group_details = $pageGroupModel->page_group_details();
+        }
+
+        $response_array = array("success" => TRUE, "data" => $page_group_details, "errors" => array());
+        return response(json_encode($response_array), 200);
+    }
+
+    /**
      * @SWG\Post(path="/page_group",
      *   tags={"page_group"},
      *   summary="Create a page group",
@@ -46,20 +73,41 @@ class PageGroupController extends Controller {
      *   }}
      * )
      */
-    public function create_page_group(Request $request) {
-       
-       $json_data = $request->getContent();
-       
-      
-        $page_data_array = json_decode($json_data, true);
 
-        //dd($page_data_array);
+    /**
+     * @SWG\Put(path="/page_group",
+     *   tags={"page_group"},
+     *   summary="Create a page group",
+     *   description="",
+     *   operationId="create_page_group",
+     *   consumes={"application/x-www-form-urlencoded"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="page group json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function create_page_group(Request $request) {
+
+        $json_data = $request->getContent();
+        $page_data_array = json_decode($json_data, true);
 
         $page_group_id = $page_data_array['_id'];
         $page_group_model = new PageGroupModel();
 
         if (isset($page_data_array['_id']) && $page_data_array['_id'] == "") {
-
             $page_group_id = $page_group_model->create_page_group();
             $page_data_array['_id'] = $page_group_id;
         }

@@ -30,7 +30,10 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::delete('media', 'MediaController@delete_media');
     
     
+    Route::get('page_group', 'PageGroupController@get_page_group');
     Route::post('page_group', 'PageGroupController@create_page_group');
+    Route::put('page_group', 'PageGroupController@create_page_group');
+    
 });
 
 
