@@ -22,16 +22,11 @@ class PageGroupModel extends Eloquent {
     public function update_page_group($update_data,$page_group_id){
         $result = PageGroupModel::find($page_group_id)->update($update_data);
     }
-
- 
-     public function page_group_details($page_group_array = NULL) {
-        if ($page_group_array != NULL) {
-            $page_group_data = PageGroupModel::where($page_group_array)->first();
-        } else {
-            $page_group_data = PageGroupModel::all();
-        }
-        return $page_group_data;
+    
+    public function getRandomDocument() {
+        return PageGroupModel::all()->first();
     }
+
     
 
 }

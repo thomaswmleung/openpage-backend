@@ -17,5 +17,13 @@ return [
     config('error_constants.login_password_required') => "Password is mandatory.",
     config('error_constants.login_invalid') => "Invalid Username/Password",
     config('error_constants.invalid_user_id') => "Invalid user id",
+    config('error_constants.media_type_required') => "Media type is missing",
+    config('error_constants.media_extension_required') => "Media extension is required",
+    config('error_constants.media_file_required') => "Media file is required",
+    config('error_constants.invalid_media_file_mime') => "Invalid MIME type",
+    config('error_constants.media_owner_required') => "Owner is required",
+    config('error_constants.media_usage_required') => "Usage is required",
+    config('error_constants.media_created_by_required') => "Created by is required",
+    config('error_constants.invalid_media_created_by') => "Created by has invalid id",
     config('error_constants.invalid_media_id') => "Invalid Media id",
 ];

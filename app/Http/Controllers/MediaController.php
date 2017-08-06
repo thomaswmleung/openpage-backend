@@ -9,6 +9,9 @@ use App\Helpers\GCS_helper;
 use Illuminate\Support\Facades\Config;
 use App\Helpers\Token_helper;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\ErrorMessageHelper;
+
+
 class MediaController extends Controller {
     /**
      * @SWG\Get(path="/media",
@@ -56,6 +59,8 @@ class MediaController extends Controller {
      * )
      */
     public function media(Request $request) {
+        // die(var_dump($request->header('token')));
+       
         $mediaModel = new MediaModel();
         if (isset($request->mid) && $request->mid != "") {
             $media_id = $request->mid;
@@ -74,7 +79,7 @@ class MediaController extends Controller {
                 $response_array = array("success"=>FALSE,"errors"=>$error_messages);
                 return response(json_encode($response_array), 400);
             }
-        } else {
+        }else {
             $media_details = $mediaModel->media_details();
         }
         
@@ -140,12 +145,7 @@ class MediaController extends Controller {
      * )
      */
     public function create_media(Request $request) {
-//        $media_json = $request->getContent();
-//        $media_array = json_decode($media_json, TRUE);
-        Log::error("Create media called");
         $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
-
-
         $media_array = array(
             'type' => $request->type,
             'extension' => $request->extension,
@@ -162,13 +162,29 @@ class MediaController extends Controller {
             'usage' => 'required',
             'created_by' => 'required|exists:users,_id',
         );
-        $validator = Validator::make($media_array, $rules);
+        
+        $messages = [
+            'type.required' => config('error_constants.media_type_required'),
+            'extension.required' => config('error_constants.media_extension_required'),
+            'media_file.required' => config('error_constants.media_file_required'),
+            'media_file.mimes' => config('error_constants.invalid_media_file_mime'),
+            'owner.required' => config('error_constants.media_owner_required'),
+            'usage.required' => config('error_constants.media_usage_required'),
+            'created_by.required' => config('error_constants.media_created_by_required'),
+            'created_by.exists' => config('error_constants.invalid_media_created_by')
+        ];
+        
+         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+         
+        $validator = Validator::make($media_array, $rules,$formulated_messages);
         if ($validator->fails()) {
-            
-            return response($validator->messages(), 400);
+//            Log::error("errors in create media");
+//            Log::error(json_encode($validator->messages()));
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400);
         } else {
 
-            Log::error("Validation success");
             if ($request->hasFile('media_file')) {
                 $image = $request->file('media_file');
                 $input['media_file'] = time() . uniqid() . '.' . $image->getClientOriginalExtension();
@@ -188,6 +204,7 @@ class MediaController extends Controller {
 
                 $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
                 $media_array['url'] = $media_url;
+                $media_array['url'] = $media_url;
                 
             } else {
                 $error['error'] = array("Something went wrong");
@@ -197,7 +214,7 @@ class MediaController extends Controller {
 
             MediaModel::create($media_array);
             $response_array = array("success" => TRUE,"errors"=>array());
-            Log::error(json_encode($response_array));
+//            Log::error(json_encode($response_array));
             return response(json_encode($response_array), 200);
         }
     }

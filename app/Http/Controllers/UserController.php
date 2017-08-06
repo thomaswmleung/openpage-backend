@@ -179,7 +179,7 @@ class UserController extends Controller {
             );
             //Need SMTP credentials to send Email from instance
 //            EmailController::send_activation_mail($email_data);
-            $responseArray = array("success" => TRUE, "message" => "User created successfully.");
+            $responseArray = array("success" => TRUE,"data"=> array("_id"=>$data->_id), "message" => "User created successfully.");
             return response(json_encode($responseArray), 200);
         }
     }

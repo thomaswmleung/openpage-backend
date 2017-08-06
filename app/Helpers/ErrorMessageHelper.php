@@ -21,7 +21,6 @@ class ErrorMessageHelper{
     }
     public static function getResponseErrorMessages($errors){
             $errors_array = $errors->messages();
-            
             $response_error_array = array();
             $error_index = 0;
             
