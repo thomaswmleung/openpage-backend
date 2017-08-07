@@ -44,4 +44,4 @@ Route::group(['middleware' => ['login_auth']], function () {
 Route::get('fpdf', 'PdfController@generate_pdf');
 Route::get('book', 'BookController@create_book');
 
-
+Route::get('page', 'PageController@page_list');
