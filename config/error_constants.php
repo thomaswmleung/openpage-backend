@@ -28,6 +28,8 @@ return [
     'invalid_media_id' => 'E309',
     'invalid_page_group_id' => 'E401',
     'invalid_page_id' => 'E501',
+    'invalid_section_id' => 'E601',
+    'invalid_question_id' => 'E701',
     
     
     
