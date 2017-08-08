@@ -192,7 +192,8 @@ class Pdf_helper {
             return $responseArray;
         }
 
-        $pdf_name = uniqid() . ".pdf";
+//        $pdf_name = uniqid() . ".pdf";
+        $pdf_name = "test".".pdf";
         if (!file_exists(public_path('pdfs'))) {
             mkdir(public_path('pdfs'), 0777, true);
         }
@@ -200,16 +201,17 @@ class Pdf_helper {
         $fpdf->Output($pdf_path, 'F');
 
         // upload to GCS
-        $gcs_result = GCS_helper::upload_to_gcs('pdfs/' . $pdf_name);
-        if (!$gcs_result) {
-            $responseArray['error'] = "Error in upload of GCS";
-            return $responseArray;
-        }
-        // delete your local pdf file here
-        unlink($pdf_path);
-        
-        $pdf_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $pdf_name;
-        $responseArray['preview_url'] = $pdf_url;
+//        $gcs_result = GCS_helper::upload_to_gcs('pdfs/' . $pdf_name);
+//        if (!$gcs_result) {
+//            $responseArray['error'] = "Error in upload of GCS";
+//            return $responseArray;
+//        }
+//        // delete your local pdf file here
+//        unlink($pdf_path);
+//        
+//        $pdf_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $pdf_name;
+//        $responseArray['preview_url'] = $pdf_url;
+        $responseArray['preview_url'] = "custom_url";
       
         return json_encode($responseArray);
     }
