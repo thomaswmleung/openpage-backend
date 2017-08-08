@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
+use App\Helpers\GCS_helper;
 use App\QuestionsModel;
 use App\SectionModel;
 use App\MainModel;
@@ -21,6 +22,77 @@ use Illuminate\Support\Facades\Log;
  */
 
 class PageGroupController extends Controller {
+ /**
+     * @SWG\Get(path="/page_group",
+     *   tags={"page_group"},
+     *   summary="Returns list of page group",
+     *   description="Returns page group data",
+     *   operationId="get_page_group",
+     *   produces={"application/json"},
+     *   parameters={},
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+    /**
+     * @SWG\Get(path="/page_group/{pid}",
+     *   tags={"page_group"},
+     *   summary="Returns page group data",
+     *   description="Returns page group data",
+     *   operationId="get_page_group",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="pid",
+     *     in="path",
+     *     description="ID of the page group that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid media id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function get_page_group(Request $request) {
+        $pageGroupModel = new PageGroupModel();
+        if (isset($request->pid) && $request->pid != "") {
+            $page_group_id = $request->pid;
+
+            // get media details
+            $data_array = array(
+                '_id' => $page_group_id
+            );
+            $page_group_details = $pageGroupModel->page_group_details($data_array);
+            if ($page_group_details == NULL) {
+                $error['error'] = array("Invalid id");
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_group_id'),
+                        "ERR_MSG" => config('error_messages' . "." .
+                                config('error_constants.invalid_page_group_id'))));
+
+                $response_array = array("success" => FALSE, "errors" => $error_messages);
+                return response(json_encode($response_array), 400);
+            }
+        } else {
+            $page_group_details = $pageGroupModel->page_group_details();
+        }
+
+        $response_array = array("success" => TRUE, "data" => $page_group_details, "errors" => array());
+        return response(json_encode($response_array), 200);
+    }
 
 /**
      * @SWG\Post(path="/page_group",
@@ -29,6 +101,32 @@ class PageGroupController extends Controller {
      *   description="",
      *   operationId="create_page_group",
      *   consumes={"application/json"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="page group json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+    /**
+     * @SWG\Put(path="/page_group",
+     *   tags={"page_group"},
+     *   summary="Create a page group",
+     *   description="",
+     *   operationId="create_page_group",
+     *   consumes={"application/x-www-form-urlencoded"},
      *   produces={"application/json"},
      *   @SWG\Parameter(
      *     in="body",
@@ -218,7 +316,8 @@ class PageGroupController extends Controller {
                 }
 
                 $page_group_insert_data = array(
-                    'page' => $page_ids
+                    'page' => $page_ids,
+                    'preview_url'=>$page_data_array['preview_url']
                 );
 
                 $pageGroup_result = $page_group_model->update_page_group($page_group_insert_data, $page_group_id);
@@ -257,19 +356,51 @@ class PageGroupController extends Controller {
         $page_result = $pageModel->add_page($insert_page_data, $page_id_);
         return $page_result->_id;
     }
-
-    /*
-
-      function create_overlay($insert_data) {
-      $overlayModel = new OverlayModel();
-      $overlay_result = $overlayModel->add_overlay(array('overlay' => $insert_data));
-      return $overlay_result->_id;
-      }
-
-      function create_background($insert_data) {
-      $backgroundModel = new BackgroundModel();
-      $back_ground_result = $backgroundModel->add_back_ground(array('background' => $insert_data));
-      return $back_ground_result->_id;
-      }
+    
+    /**
+     * @SWG\Delete(path="/page_group",
+     *   tags={"page_group"},
+     *   summary="delete page group data",
+     *   description="Delete page group from system",
+     *   operationId="delete_page_group",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="pid",
+     *     in="query",
+     *     description="ID of the page group that needs to be deleted",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
      */
+    function delete_page_group(Request $request) {
+        $page_group_id = trim($request->pid);
+
+        $pageGroupModel = new PageGroupModel();
+        $page_group_data = $pageGroupModel->page_group_details(array('_id' => $page_group_id));
+        if ($page_group_data == null) {
+            $error['error'] = array("page group not found");
+            return response(json_encode($error), 400);
+        }
+        $data = explode("/", $page_group_data['preview_url']); // fetching file name from URL
+        $objectName = end($data);
+        $gcs_result = GCS_helper::delete_from_gcs($objectName);
+        if ($gcs_result) {
+            PageGroupModel::destroy($page_group_id);
+            return response("Page group deleted successfully", 200);
+        } else {
+            $error['error'] = array("Something went wrong");
+            return response(json_encode($error), 400);
+        }
+    }
+
+
 }

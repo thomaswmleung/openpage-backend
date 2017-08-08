@@ -18,5 +18,15 @@ class PageModel extends Eloquent {
         $result = PageModel::find($page_id)->first();
         return $result->main_id;
     }
+    
+    public function get_page($page_id_array) {
+        $page_data = PageModel::where($page_id_array)->first();
+        return $page_data;
+    }
+    
+    public function page_list($search_key=NULL,$skip=NULL,$limit=NULL) {
+        $page_data = PageModel::where($search_key)->skip($skip)->take($limit)->get();
+        return $page_data;
+    }
 
 }

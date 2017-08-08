@@ -30,7 +30,12 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::delete('media', 'MediaController@delete_media');
     
     
+    Route::get('page_group', 'PageGroupController@get_page_group');
+    Route::get('page_group/{pid}', 'PageGroupController@get_page_group');
     Route::post('page_group', 'PageGroupController@create_page_group');
+    Route::put('page_group', 'PageGroupController@create_page_group');
+    Route::delete('page_group', 'PageGroupController@delete_page_group');
+    
 });
 
 
@@ -39,4 +44,4 @@ Route::group(['middleware' => ['login_auth']], function () {
 Route::get('fpdf', 'PdfController@generate_pdf');
 Route::get('book', 'BookController@create_book');
 
-
+Route::get('page', 'PageController@page_list');
