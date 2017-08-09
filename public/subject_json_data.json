@@ -1,0 +1,51 @@
+{
+    "_id": "",
+    "code": "subject_code",
+    "title": "subject_title",
+    "domain": [
+        {
+            "_id": "",
+            "code": "domain_code",
+            "title": "domain_title",
+            "domain_predecessor": [
+                "domain_id_0",
+                "domain_id_1"
+            ],
+            "subdomain": [
+                {
+                    "_id": "",
+                    "code": "subdomain_code",
+                    "title": "subdomain_title",
+                    "domain_predecessor": [
+                        "domain_id",
+                        "domain_id"
+                    ],
+                    "subdomain_predecessor": [
+                        "subdomain_id",
+                        "subdomain_id"
+                    ],
+                    "knowledge_unit": [
+                        {
+                            "_id": "",
+                            "code": "knowledge_unit_code",
+                            "title": "knowledge_unit_title",
+                            "subdomain_predecessor": [
+                                "subdomain_id"
+                            ],
+                            "ku_predecessor": [
+                                "knowledge_unit_id"
+                            ],
+                            "particular": [
+                                {
+                                    "_id": "",
+                                    "detail": "particular_detail",
+                                    "title": "particular_titleß"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
