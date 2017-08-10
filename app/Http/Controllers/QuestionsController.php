@@ -38,7 +38,7 @@ class QuestionsController extends Controller {
             }
         } else {
             
-            $questions_details = $questionsModel->fetch_all_questions();
+            $questions_details = $questionsModel->question_list(NULL,NULL,NULL,NULL);
         }
         $response_array = array("success" => TRUE, "data" => $questions_details, "errors" => array());
         return response(json_encode($response_array), 200);

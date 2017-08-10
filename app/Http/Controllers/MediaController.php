@@ -20,7 +20,12 @@ class MediaController extends Controller {
      *   description="Returns media data",
      *   operationId="media",
      *   produces={"application/json"},
-     *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search",
+     *     in="query",
+     *     description="Search based on remark and tags",
+     *     type="string"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -78,7 +83,8 @@ class MediaController extends Controller {
                 return response(json_encode($response_array), 400);
             }
         }else {
-            $media_details = $mediaModel->media_details();
+            $search_key = $request->search;
+            $media_details = $mediaModel->media_details(NULL,$search_key);
         }
         
         $response_array = array("success" => TRUE,"data"=>$media_details,"errors"=>array());
@@ -132,6 +138,22 @@ class MediaController extends Controller {
      *         ),
      *      collectionFormat="multi",
      *   ),
+     *   @SWG\Parameter(
+     *     name="remark",
+     *     in="query",
+     *     description="Remark of the media",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="tag[]",
+     *     in="query",
+     *     description="tags for the media.",
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -150,6 +172,8 @@ class MediaController extends Controller {
             'media_file' => $request->file('media_file'),
             'owner' => $request->owner,
             'usage' => $request->usage,
+            'remark' => $request->remark,
+            'tag' => $request->tag,
             'created_by' => $user_id,
         );
         $rules = array(
@@ -249,6 +273,22 @@ class MediaController extends Controller {
      *         ),
      *      collectionFormat="multi",
      *   ),
+     *   @SWG\Parameter(
+     *     name="remark",
+     *     in="query",
+     *     description="Remark of the media",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="tag[]",
+     *     in="query",
+     *     description="tags for the media.",
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -279,11 +319,17 @@ class MediaController extends Controller {
         if (isset($request->owner) && $request->owner != "") {
             $media_array['owner'] = $request->owner;
         }
-        \Illuminate\Support\Facades\Log::error(json_encode($request->mid));
+        
         if (isset($request->usage) && $request->usage != "") {
             $media_array['usage'] = $request->usage;
         }
-
+        if (isset($request->remark) && $request->remark != "") {
+            $media_array['remark'] = $request->remark;
+        }
+        if (isset($request->tag) && $request->tag != "") {
+            $media_array['tag'] = $request->tag;
+        }
+        
 
         $media_array['updated_by'] = $user_id;
 
