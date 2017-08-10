@@ -3,7 +3,7 @@
 namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
-
+use App\SectionModel;
 class MainModel extends Eloquent {
 
     protected $collection = 'main';
@@ -18,7 +18,19 @@ class MainModel extends Eloquent {
                  );
         return $result;
     }
-
+    
+    public static function get_main_details($main_id){
+        $main_details = MainModel::find($main_id);
+        
+        $sectionArray = $main_details->section;
+        $section_details = array();
+        foreach($sectionArray as $section_id){
+            $details = SectionModel::get_section_details($section_id);
+            array_push($section_details, $details);
+        }
+        $main_details->section = $section_details;
+        return $main_details;
+    }
 
     
 

@@ -10,7 +10,7 @@ use App\SubDomainModel;
 use App\KnowledgeUnitModel;
 use App\Helpers\ErrorMessageHelper;
 use Illuminate\Support\Facades\Validator;
-
+use App\Helpers\Pdf_helper;
 class BookController extends Controller {
 
     public function create_book(Request $request) {
@@ -198,6 +198,11 @@ class BookController extends Controller {
                 echo "Something went Wrong";
             }
         }
+    }
+    
+    public function print_book(Request $request) {
+        $temp_array = array();
+       Pdf_helper::generate_book(json_encode($temp_array));
     }
 
 }
