@@ -1,0 +1,177 @@
+{
+  "_id": "",
+  "page": [
+    {
+      "type": "exercise/test",
+      "_id": "5975af3132081dec1900002e",
+      "unit": "页面单元",
+      "topic": "页面主题",
+      "page_code":"1A",
+      "page_title":"Page title",
+      "royalty":"Royalty string",
+      "author": [
+        "author info line1",
+        "author info line2",
+        "author info line3"
+      ],
+      "page_number": "1"
+    },
+    {
+      "type": "exercise/test",
+      "_id": "5975af3132081dec19000033",
+      "unit": "页面单元",
+      "topic": "页面主题",
+      "page_code":"2A",
+      "page_title":"Page title",
+      "royalty":"Royalty string",
+      "author": [
+        "author info line1",
+        "author info line2",
+        "author info line3"
+      ],
+      "page_number": "2"
+    }
+    
+  ],
+  "toc": [
+    {
+      "type": "unit",
+      "reference_text": "string for reference text",
+      "language_knowledge": "string for knowledge of language",
+      "icon": [
+        "tsa",
+        "star",
+        "ta"
+      ],
+      "particular": [
+        "line1 string",
+        "line2 string"
+      ],
+      "page_code": "2"
+    },
+    {
+      "type": "inline",
+      "reference_text": "string for reference text",
+      "language_knowledge": "string for knowledge of language",
+      "icon": [
+        "tsa",
+        "star",
+        "ta"
+      ],
+      "particular": [
+        "line1 string",
+        "line2 string"
+      ],
+      "page_code": "2"
+    },
+    {
+      "type": "inline",
+      "reference_text": "string for reference text",
+      "language_knowledge": "string for knowledge of language",
+      "icon": [
+        "tsa",
+        "star",
+        "ta"
+      ],
+      "particular": [
+        "line1 string",
+        "line2 string"
+      ],
+      "page_code": "2"
+    },
+    {
+      "type": "unit",
+      "reference_text": "string for reference text",
+      "language_knowledge": "string for knowledge of language",
+      "icon": [
+        "tsa",
+        "star",
+        "ta"
+      ],
+      "particular": [
+        "line1 string",
+        "line2 string"
+      ],
+      "page_code": "2"
+    },
+    {
+      "type": "inline",
+      "reference_text": "string for reference text",
+      "language_knowledge": "string for knowledge of language",
+      "icon": [
+        "tsa",
+        "star",
+        "ta"
+      ],
+      "particular": [
+        "line1 string",
+        "line2 string"
+      ],
+      "page_code": "2"
+    }
+  ],
+  "cover": {
+    "layout": "learnfree",
+    "title": "string",
+    "subtitle": "string",
+    "school_logo": "http://localhost/openpage-backend/public/images/pdf_images/sample_school_logo.png",
+    "school_name": "string",
+    "cover_image": "http://localhost/openpage-backend/public/images/pdf_images/coverpage.png",
+    "level": "p1",
+    "color": "lightgreen/red/blue/yellow/purple",
+    "version": "string",
+    "toc_text": [
+      {
+        "string": "string in first page",
+        "font_size": "20px"
+      },
+      {
+        "string": "string in second page",
+        "font_size": "14px"
+      }
+    ],
+    "icon_text": [
+      {
+        "code": "tsa",
+        "image_url": "tsa icon image url",
+        "label": "label text of tsa"
+      }
+    ],
+    "toc_footer_text": "string for toc footer",
+    "royalty_text": "string for royalty"
+  },
+  "syllabus": {
+    "subject": "CHINESE/ENGLISH/MATH/GROW for searching purpose",
+    "domain": [
+      {
+        "_id": "domain_id",
+        "code": "domain_code",
+        "title": "domain_title"
+      }
+    ],
+    "subdomain": [
+      {
+        "_id": "subdomain_id",
+        "code": "subdomain_code",
+        "title": "subdomain_title"
+      }
+    ],
+    "knowledge_unit": [
+      {
+        "_id": "knowledge_unit_id",
+        "code": "knowledge_unit_code",
+        "title": "knowledge_unit_title"
+      }
+    ]
+  },
+  "keyword": [
+    "string",
+    "string",
+    "string"
+  ],
+  "organisation": "organisation_id",
+  "created_by": "user_id",
+  "created_at": "timestamp",
+  "updated_by": "user_id",
+  "updated_at": "timestamp"
+}
