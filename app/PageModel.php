@@ -3,7 +3,7 @@
 namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
-
+use App\MainModel;
 class PageModel extends Eloquent {
 
     protected $collection = 'page';
@@ -28,5 +28,24 @@ class PageModel extends Eloquent {
         $page_data = PageModel::where($search_key)->skip($skip)->take($limit)->get();
         return $page_data;
     }
-
+    
+    public static function get_page_details($page_id){
+        $page_details = array();
+        $page_model_data = PageModel::find($page_id);
+        
+        if($page_model_data != NULL){
+        $page_details['overlay'] = $page_model_data->overlay;
+        $page_details['background'] = $page_model_data['background'];
+        
+        $main_id = $page_model_data->main_id;
+        $main_details = MainModel::get_main_details($main_id);
+        $page_model_data->main_details = $main_details;
+        return $page_model_data;
+        }else{
+            return FALSE;
+        }
+//        $main_details = MainModel::get
+        
+        
+    }
 }

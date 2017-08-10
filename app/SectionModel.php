@@ -3,7 +3,7 @@
 namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
-
+use App\QuestionsModel;
 class SectionModel extends Eloquent {
 
     protected $collection = 'section';
@@ -19,7 +19,18 @@ class SectionModel extends Eloquent {
         return $result;
     }
 
-
+    public static function get_section_details($section_id) {
+        $section_details = SectionModel::find($section_id);
+        
+        $question_id_array = $section_details->question;
+        $question_details_array = array();
+        foreach($question_id_array as $question_id){
+            $q_details = QuestionsModel::get_question_details($question_id);
+            array_push($question_details_array, $q_details);
+        }
+        $section_details->question = $question_details_array;
+        return $section_details;
+    }
     
 
 }

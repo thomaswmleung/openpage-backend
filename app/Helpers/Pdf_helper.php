@@ -5,6 +5,7 @@ namespace App\Helpers;
 use App\Helpers\tFPDF;
 use App\Helpers\GCS_helper;
 use Illuminate\Support\Facades\Config;
+use App\PageModel;
 
 class Pdf_helper {
 
@@ -99,7 +100,7 @@ class Pdf_helper {
 
                         $fpdf->MultiCell(200, 5, $question_text, 0, 'L');
                         $currentY = $fpdf->GetY() + 5;
-
+                        
                         $imgAttrArray = getimagesize($question_image_url);
 
                         $imgRatio = $imgAttrArray[0] / $imgAttrArray[1];
@@ -219,57 +220,69 @@ class Pdf_helper {
         return json_encode($responseArray);
     }
 
-    static public function create_page($fpdf, $page_data) {
+    static public function create_page($fpdf, $page) {
 
         // create new blank page
-        $fpdf->AddPage();
+//        $fpdf->AddPage();
 
         // displaying background image
-        $background_data = $page['background'];
-        $background_image_path = $background_data[0]['url'];
+        $background_data_array = $page->background;
 
-        // display image only if image exist.
-        if (isset($background_image_path) && $background_image_path != "" && $background_image_path != NULL) {
-            $bg_image_x = $background_data[0]['x'];
-            $bg_image_y = $background_data[0]['y'];
-            $bg_image_w = $background_data[0]['w'];
-            $bg_image_h = $background_data[0]['h'];
 
-            $fpdf->Image($background_image_path, $bg_image_x, $bg_image_y, $bg_image_w, $bg_image_h);
+        foreach ($background_data_array as $background_data) {
+
+
+
+            if ($background_data['type'] == 'image') {
+                $background_image_path = $background_data['url'];
+                // display image only if image exist.
+                if (isset($background_image_path) && $background_image_path != "" && $background_image_path != NULL) {
+                    $bg_image_x = $background_data['x'];
+                    $bg_image_y = $background_data['y'];
+                    $bg_image_w = $background_data['w'];
+                    $bg_image_h = $background_data['h'];
+
+                    if (file_exists($background_image_path)) {
+                        $fpdf->Image($background_image_path, $bg_image_x, $bg_image_y, $bg_image_w, $bg_image_h);
+                    }
+                }
+            }
+            if ($background_data['type'] == 'text') {
+
+                // display text only if text exist.
+                $background_text = $background_data['string'];
+                $text_x = $background_data['x'];
+                $text_y = $background_data['y'];
+                $text_w = $background_data['w'];
+                $text_h = $background_data['h'];
+                //TODO Set font size based on w and h 
+                
+                $fpdf->SetXY($text_x,$text_y);
+                $fpdf->MultiCell($text_w, $text_h, $background_text, 0, 'C');
+            }
         }
 
-        // display text only if text exist.
-        if (isset($background_data[0]['string']) && $background_data[0]['string'] != "" && $background_data[0]['string'] != NULL) {
-            $background_text = $background_data[0]['string'];
-            $text_x = $background_data[0]['x'];
-            $text_y = $background_data[0]['y'];
-            $text_w = $background_data[0]['w'];
-            $text_h = $background_data[0]['h'];
-            // Set font size based on w and h 
-            $fpdf->MultiCell($text_x, $text_y, $background_text, 0, 'C');
-        }
+        $main_model = $page->main_details;
 
-
-
-        $main_data_array = $page['main'];
-        $page_header_text = $page['main']['header_text'];
+        $page_header_text = $main_model->header_text;
         // define pdf header here
         $fpdf->MultiCell(200, 10, $page_header_text, 0, 'C');
 
-        $page_footer_text = $page['main']['footer_text'];
+        $page_footer_text = $main_model->footer_text;
         // define pdf footer here
 
-        $page_section_array = $page['main']['section'];
+        $page_section_array = $main_model->section;
+
         $sectionCount = 0;
 
 
         foreach ($page_section_array as $section) {
 
-            $section_instruction_text = $section['instruction_text'];
+            $section_instruction_text = $section->instruction_text;
             // display section instruction
             $fpdf->SetXY(10, $fpdf->GetY() + 5);
             $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
-            $section_question_array = $section['question'];
+            $section_question_array = $section->question;
 
 //                    if (sizeof($section_question_array) == 0) {
 //                        $isValidJson = FALSE;
@@ -284,20 +297,21 @@ class Pdf_helper {
                 $fpdf->SetXY(10, $currentY);
                 $question['x'] = 10;
                 $question['y'] = $currentY;
-                $question_number = $question['question_no'];
-                $question_text = $question['question_text'];
+                $question_number = $question->question_no;
+                $question_text = $question->question_text;
 //                        $question_type = $questions['question_type'];
-                $question_image_url = $question['image'];
+                $question_image_url = $question->image;
 
                 $fpdf->MultiCell(200, 5, $question_text, 0, 'L');
                 $currentY = $fpdf->GetY() + 5;
+                if (file_exists($question_image_url)) {
+                    $imgAttrArray = getimagesize($question_image_url);
 
-                $imgAttrArray = getimagesize($question_image_url);
-
-                $imgRatio = $imgAttrArray[0] / $imgAttrArray[1];
-
-
-                if (isset($question_image_url) AND $question_image_url != "" AND $question_image_url != NULL) {
+                    $imgRatio = $imgAttrArray[0] / $imgAttrArray[1];
+                }
+                
+                if (isset($question_image_url) AND $question_image_url != "" AND $question_image_url != NULL
+                        AND file_exists($question_image_url)) {
                     $fpdf->Image($question_image_url, 10, $currentY, 100, 20);
                 }
                 $currentY += 20;
@@ -305,7 +319,7 @@ class Pdf_helper {
                 $fpdf->MultiCell(200, 5, "Answers: ", 0, 'L');
                 $currentY = $fpdf->GetY() + 3;
 
-                $answer_array = $question['answer'];
+                $answer_array = $question->answer;
 //                        if (sizeof($answer_array) == 0) {
 //                            $isValidJson = FALSE;
 //                        }
@@ -330,13 +344,14 @@ class Pdf_helper {
 
                 $questionsRespoonseArray[] = $question;
             }
-            $responseArray['page_group']['page'][$pageCOunt]['main']['section'][$sectionCount]['question'] = $questionsRespoonseArray;
+
             $sectionCount++;
         }
 
         //Overlay Data
 
-        $overlay_data = $page['overlay'];
+        $overlay_data = $page->overlay;
+      
         // fectching only image part of overlay array
 
         foreach ($overlay_data as $overlay) {
@@ -349,7 +364,9 @@ class Pdf_helper {
                 $image_h = $overlay['h'];
 
                 // display of overlay image
+                if(file_exists($image_path)){
                 $fpdf->Image($image_path, $image_x, $image_y, $image_w, $image_h);
+                }
             }
             if ($overlay_type == "text") {
                 $overlay_text = $overlay['string'];
@@ -375,7 +392,7 @@ class Pdf_helper {
         if (isset($overlay_data[0]['string']) && $overlay_data[0]['string'] != "" && $overlay_data[0]['string'] != NULL) {
             
         }
-        $pageCOunt++;
+        
 
         return $fpdf;
     }
@@ -505,6 +522,16 @@ class Pdf_helper {
 
 
             $fpdf->SetFont('msjh', '', 12);
+
+            // page details
+
+            $page_data = PageModel::get_page_details($page_details['_id']);
+
+            $page_data_array = json_decode(json_encode($page_data));
+//            var_dump($page_data);
+//            exit();
+            $fpdf->SetXY(20, 20);
+            $fpdf = Pdf_helper::create_page($fpdf, $page_data);
         }
 
 
