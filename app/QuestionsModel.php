@@ -33,4 +33,9 @@ class QuestionsModel extends Eloquent {
         return $question_data;
     }
 
+    public static function get_question_details($question_id) {
+        $question_details = QuestionsModel::find($question_id);
+        return $question_details;
+    }
+
 }
