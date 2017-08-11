@@ -30,4 +30,8 @@ return [
     config('error_constants.invalid_page_id') => "Invalid Page id",
     config('error_constants.invalid_section_id') => "Invalid Section id",
     config('error_constants.invalid_question_id') => "Invalid Question id",
+    config('error_constants.question_type_required') => "Question type is required",
+    config('error_constants.block_required') => "Block is required",
+    config('error_constants.question_type_id_required') => "Question type id is required",
+    config('error_constants.invalid_question_type_id') => "Invalid Question type id",
 ];

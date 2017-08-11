@@ -39,9 +39,13 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   name="Media",
  *   description="Media realated API's"
  * )
- * * @SWG\Tag(
+ * @SWG\Tag(
  *   name="page_group",
  *   description="Page group realated API's"
+ * )
+ * @SWG\Tag(
+ *   name="Question Type",
+ *   description="Question Type realated API's"
  * )
  * 
  */

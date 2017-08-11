@@ -30,6 +30,10 @@ return [
     'invalid_page_id' => 'E501',
     'invalid_section_id' => 'E601',
     'invalid_question_id' => 'E701',
+    'question_type_required' => 'E801',
+    'block_required' => 'E802',
+    'question_type_id_required' => 'E803',
+    'invalid_question_type_id' => 'E804',
     
     
     

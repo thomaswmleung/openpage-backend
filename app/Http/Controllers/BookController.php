@@ -11,6 +11,7 @@ use App\KnowledgeUnitModel;
 use App\Helpers\ErrorMessageHelper;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\Pdf_helper;
+
 class BookController extends Controller {
 
     public function create_book(Request $request) {
@@ -36,7 +37,6 @@ class BookController extends Controller {
         );
 
         $rules = array(
-           
             'page' => 'required',
             'toc' => 'required',
             'cover' => 'required',
@@ -44,13 +44,13 @@ class BookController extends Controller {
             'keyword' => 'required',
             'organisation' => 'required'
         );
-        
-         if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-            
-                $rules['_id'] = 'required';
+
+        if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+
+            $rules['_id'] = 'required|exists:book,_id';
         }
-        
-        
+
+
 
         $messages = [
             '_id.required' => config('error_constants.book_id_required'),
@@ -178,31 +178,24 @@ class BookController extends Controller {
                 'updated_by' => $user_id
             );
 
-            // echo "<pre>";        print_r($data_array);exit;
 
             $book_id = $book_data_array['_id'];
             $bookModel = new BookModel();
             $result = $bookModel->create_book($data_array, $book_id);
 
-            // echo $result;
-
-            if ($result != "") {
-                if ($result == $book_id) {
-                    $success_msg = 'Book Updated Successfully';
-                } else {
-                    $success_msg = 'Book Created Successfully';
-                }
-                $response_array = array("success" => TRUE, "data" => $success_msg, "errors" => array());
-                return response(json_encode($response_array), 200);
+            if($book_id != "") {
+                $success_msg = 'Book Updated Successfully';
             } else {
-                echo "Something went Wrong";
+                $success_msg = 'Book Created Successfully';
             }
+            $response_array = array("success" => TRUE, "data" => $success_msg, "errors" => array());
+            return response(json_encode($response_array), 200);
         }
     }
-    
+
     public function print_book(Request $request) {
         $temp_array = array();
-       Pdf_helper::generate_book(json_encode($temp_array));
+        Pdf_helper::generate_book(json_encode($temp_array));
     }
 
 }

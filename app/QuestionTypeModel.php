@@ -5,10 +5,10 @@ namespace App;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\DB;
 
-class MediaModel extends Eloquent {
+class QuestionTypeModel extends Eloquent {
 
-    protected $collection = 'media';
-    protected $fillable = array('type', 'extension', 'url', 'owner', 'right', 'usage', 'remark', 'tag', 'created_by', 'updated_by');
+    protected $collection = 'question_type';
+    protected $fillable = array('type', 'block');
 
     public function media_details($media_array = NULL, $search_key = NULL) {
         $media_query = DB::collection('media');
@@ -23,7 +23,7 @@ class MediaModel extends Eloquent {
         return $media_query->get();
     }
 
-    public function update_media($data) {
+    public function update_question_type($data) {
         $result = MediaModel::find($data['_id'])->update($data);
         return $result;
     }
