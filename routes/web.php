@@ -35,6 +35,13 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('page_group', 'PageGroupController@create_page_group');
     Route::put('page_group', 'PageGroupController@create_page_group');
     Route::delete('page_group', 'PageGroupController@delete_page_group');
+
+
+    Route::get('question_type', 'QuestionTypeController@question_type');
+    Route::get('question_type/{_id}', 'QuestionTypeController@question_type');
+    Route::post('question_type', 'QuestionTypeController@create_question_type');
+    Route::put('question_type', 'QuestionTypeController@update_question_type');
+    Route::delete('question_type', 'QuestionTypeController@delete_question_type');
 });
 
 //Route::get('page_group', 'PageGroupController@create_page_group');
@@ -52,8 +59,7 @@ Route::get('question/{question_id}', 'QuestionsController@question_list');
 Route::post('subject', 'SubjectController@create_subject');
 Route::put('subject', 'SubjectController@create_subject');
 
-Route::post('question_type', 'QuestionTypeController@create_question_type');
-Route::put('question_type/{_id}', 'QuestionTypeController@update_question_type');
+
 
 
 
