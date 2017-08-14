@@ -269,11 +269,9 @@ class QuestionTypeController extends Controller {
             '_id.required' => config('error_constants.question_type_id_required'),
             'exists.required' => config('error_constants.invalid_question_type_id'),
         ];
-        \Illuminate\Support\Facades\Log::error(json_encode($messages));
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
         $validator = Validator::make($question_type_array, $rules, $formulated_messages);
         if ($validator->fails()) {
-            \Illuminate\Support\Facades\Log::error(json_encode($validator->messages()));
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400);

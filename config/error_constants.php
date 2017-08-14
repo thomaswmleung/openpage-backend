@@ -34,6 +34,16 @@ return [
     'block_required' => 'E802',
     'question_type_id_required' => 'E803',
     'invalid_question_type_id' => 'E804',
+    'organization_name_required' => 'E901',
+    'organization_email_required' => 'E902',
+    'organization_contact_person_required' => 'E903',
+    'organization_type_required' => 'E904',
+    'organization_remark_required' => 'E905',
+    'organization_consultant_required' => 'E906',
+    'organization_role_required' => 'E907',
+    'invalid_organization_id' => 'E908',
+    'organization_id_required' => 'E909',
+    'organization_doesnot_exist' => 'E910',
     
     
     
