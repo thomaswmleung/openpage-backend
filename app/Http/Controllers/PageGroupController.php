@@ -317,7 +317,8 @@ class PageGroupController extends Controller {
 
                 $page_group_insert_data = array(
                     'page' => $page_ids,
-                    'preview_url'=>$page_data_array['preview_url']
+                    'preview_url'=>$page_data_array['preview_url'],
+                    'preview_image_array'=>$page_data_array['preview_image_array'],
                 );
 
                 $pageGroup_result = $page_group_model->update_page_group($page_group_insert_data, $page_group_id);
@@ -326,6 +327,7 @@ class PageGroupController extends Controller {
             }
 
             $response_array['preview_url'] = $page_data_array['preview_url'];
+            $response_array['preview_image_array'] = $page_data_array['preview_image_array'];
             
             $response_array['success'] = TRUE;
             return response(json_encode($response_array), 200);

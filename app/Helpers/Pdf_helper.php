@@ -6,6 +6,7 @@ use App\Helpers\tFPDF;
 use App\Helpers\GCS_helper;
 use Illuminate\Support\Facades\Config;
 use App\PageModel;
+use Imagick;
 
 class Pdf_helper {
 
@@ -100,7 +101,7 @@ class Pdf_helper {
 
                         $fpdf->MultiCell(200, 5, $question_text, 0, 'L');
                         $currentY = $fpdf->GetY() + 5;
-                        
+
                         $imgAttrArray = getimagesize($question_image_url);
 
                         $imgRatio = $imgAttrArray[0] / $imgAttrArray[1];
@@ -196,8 +197,8 @@ class Pdf_helper {
             return $responseArray;
         }
 
-//        $pdf_name = uniqid() . ".pdf";
-        $pdf_name = "test" . ".pdf";
+        $pdf_name = uniqid() . ".pdf";
+//        $pdf_name = "test" . ".pdf";
         if (!file_exists(public_path('pdfs'))) {
             mkdir(public_path('pdfs'), 0777, true);
         }
@@ -205,17 +206,45 @@ class Pdf_helper {
         $fpdf->Output($pdf_path, 'F');
 
         // upload to GCS
-//        $gcs_result = GCS_helper::upload_to_gcs('pdfs/' . $pdf_name);
-//        if (!$gcs_result) {
-//            $responseArray['error'] = "Error in upload of GCS";
-//            return $responseArray;
-//        }
-//        // delete your local pdf file here
-//        unlink($pdf_path);
-//        
-//        $pdf_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $pdf_name;
-//        $responseArray['preview_url'] = $pdf_url;
-        $responseArray['preview_url'] = "custom_url";
+        $gcs_result = GCS_helper::upload_to_gcs('pdfs/' . $pdf_name);
+        if (!$gcs_result) {
+            $responseArray['error'] = "Error in upload of GCS";
+            return $responseArray;
+        }
+
+        // generate images
+        if (!file_exists(public_path('pdf_images'))) {
+            mkdir(public_path('pdf_images'), 0777, true);
+        }
+        $im = new Imagick($pdf_path);
+        $page_count = $im->getNumberImages();
+        $im->destroy();
+        $preview_image_array = array();
+        for ($pageIndex = 0; $pageIndex < $page_count; $pageIndex++) {
+            $pdf_img = new Imagick($pdf_path . "[" . $pageIndex . "]");
+            $pdf_img->setImageFormat('jpg');
+            $image_name = $pdf_name."pdf_image_" . $pageIndex . ".jpg";
+            $gcs_path = "pdf_images".DIRECTORY_SEPARATOR.$image_name;
+            $image_path = public_path($gcs_path);
+            $pdf_img->writeImage($image_path);
+            $gcs_result = GCS_helper::upload_to_gcs($gcs_path);
+            
+            //upload image to GCS
+            if (!$gcs_result) {
+                $responseArray['error'] = "Error in upload of GCS";
+                return $responseArray;
+            }
+            unlink($image_path);
+            $preview_image_array[]="https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') ."/". $image_name;
+            $pdf_img->destroy();
+        }
+        // delete your local pdf file here
+        unlink($pdf_path);
+
+        $pdf_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $pdf_name;
+        $responseArray['preview_url'] = $pdf_url;
+        $responseArray['preview_image_array'] = $preview_image_array;
+//        $responseArray['preview_url'] = "custom_url";
 
         return json_encode($responseArray);
     }
@@ -224,7 +253,6 @@ class Pdf_helper {
 
         // create new blank page
 //        $fpdf->AddPage();
-
         // displaying background image
         $background_data_array = $page->background;
 
@@ -256,8 +284,8 @@ class Pdf_helper {
                 $text_w = $background_data['w'];
                 $text_h = $background_data['h'];
                 //TODO Set font size based on w and h 
-                
-                $fpdf->SetXY($text_x,$text_y);
+
+                $fpdf->SetXY($text_x, $text_y);
                 $fpdf->MultiCell($text_w, $text_h, $background_text, 0, 'C');
             }
         }
@@ -309,7 +337,7 @@ class Pdf_helper {
 
                     $imgRatio = $imgAttrArray[0] / $imgAttrArray[1];
                 }
-                
+
                 if (isset($question_image_url) AND $question_image_url != "" AND $question_image_url != NULL
                         AND file_exists($question_image_url)) {
                     $fpdf->Image($question_image_url, 10, $currentY, 100, 20);
@@ -351,7 +379,7 @@ class Pdf_helper {
         //Overlay Data
 
         $overlay_data = $page->overlay;
-      
+
         // fectching only image part of overlay array
 
         foreach ($overlay_data as $overlay) {
@@ -364,8 +392,8 @@ class Pdf_helper {
                 $image_h = $overlay['h'];
 
                 // display of overlay image
-                if(file_exists($image_path)){
-                $fpdf->Image($image_path, $image_x, $image_y, $image_w, $image_h);
+                if (file_exists($image_path)) {
+                    $fpdf->Image($image_path, $image_x, $image_y, $image_w, $image_h);
                 }
             }
             if ($overlay_type == "text") {
@@ -392,7 +420,7 @@ class Pdf_helper {
         if (isset($overlay_data[0]['string']) && $overlay_data[0]['string'] != "" && $overlay_data[0]['string'] != NULL) {
             
         }
-        
+
 
         return $fpdf;
     }
