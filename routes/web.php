@@ -42,7 +42,7 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('question_type', 'QuestionTypeController@create_question_type');
     Route::put('question_type', 'QuestionTypeController@update_question_type');
     Route::delete('question_type', 'QuestionTypeController@delete_question_type');
-    
+
     Route::get('organization', 'OrganizationController@organization');
     Route::get('organization/{_id}', 'OrganizationController@organization');
     Route::post('organization', 'OrganizationController@create_organization');
@@ -57,13 +57,25 @@ Route::post('book', 'BookController@create_book');
 Route::put('book', 'BookController@create_book');
 
 Route::get('page', 'PageController@page_list');
+Route::get('page/{page_id}', 'PageController@page_list');
+Route::post('page', 'PageController@add_or_update_page');
+Route::put('page', 'PageController@add_or_update_page');
+Route::delete('page', 'PageController@delete_page');
+
 Route::get('section', 'SectionController@section_list');
+Route::get('section{_id}', 'SectionController@section_list');
+Route::post('section', 'SectionController@add_or_update_section');
+Route::put('section', 'SectionController@add_or_update_section');
+Route::delete('section', 'SectionController@delete_section');
+
 Route::get('question', 'QuestionsController@question_list');
 Route::get('question/{question_id}', 'QuestionsController@question_list');
+Route::post('question', 'QuestionsController@add_or_update_question');
+Route::put('question', 'QuestionsController@add_or_update_question');
+Route::delete('question', 'QuestionsController@delete_question');
 
 Route::post('subject', 'SubjectController@create_subject');
 Route::put('subject', 'SubjectController@create_subject');
-
 
 
 

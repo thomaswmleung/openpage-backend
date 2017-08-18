@@ -13,6 +13,7 @@ use App\Helpers\ErrorMessageHelper;
 
 
 class MediaController extends Controller {
+    
     /**
      * @SWG\Get(path="/media",
      *   tags={"Media"},
@@ -63,7 +64,11 @@ class MediaController extends Controller {
      *   }}
      * )
      */
-    public function media(Request $request) {       
+    public function media(Request $request) {    
+        
+        
+        
+        GCS_helper::download_object('59721aa20a12f.pdf',  public_path('59721aa20a12f.pdf'));
         $mediaModel = new MediaModel();
         if (isset($request->mid) && $request->mid != "") {
             $media_id = $request->mid;
