@@ -37,19 +37,35 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  * )
  * * @SWG\Tag(
  *   name="Media",
- *   description="Media realated API's"
+ *   description="Media related API's"
  * )
  * @SWG\Tag(
  *   name="page_group",
- *   description="Page group realated API's"
+ *   description="Page group related API's"
  * )
  * @SWG\Tag(
  *   name="Question Type",
- *   description="Question Type realated API's"
+ *   description="Question Type related API's"
  * )
  * @SWG\Tag(
  *   name="organization",
- *   description="Organization realated API's"
+ *   description="Organization related API's"
+ * )
+ * @SWG\Tag(
+ *   name="Subject",
+ *   description="Subject related API's"
+ * )
+ * @SWG\Tag(
+ *   name="Book",
+ *   description="Book related API's"
+ * )
+ * @SWG\Tag(
+ *   name="Section",
+ *   description="Section related API's"
+ * )
+ * @SWG\Tag(
+ *   name="Question",
+ *   description="Question related API's"
  * )
  * 
  */

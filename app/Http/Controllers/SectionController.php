@@ -7,28 +7,61 @@ use App\SectionModel;
 use App\QuestionsModel;
 
 class SectionController extends Controller {
+    /**
+     * @SWG\Get(path="/section",
+     *   tags={"Section"},
+     *   summary="Returns list of section",
+     *   description="Returns section data",
+     *   operationId="section_list",
+     *   produces={"application/json"},
+     *   parameters={},
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
 
+    /**
+     * @SWG\Get(path="/section/{_id}",
+     *   tags={"Section"},
+     *   summary="Returns section data",
+     *   description="Returns section data",
+     *   operationId="section_list",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="path",
+     *     description="ID of the section that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid section id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function section_list(Request $request) {
-        $search_key = NULL;
-        if (isset($request->search_key) && $request->search_key != "") {
-            $search_key = $request->search_key;
-        }
-        $skip = NULL;
-        if (isset($request->skip) && $request->skip != "") {
-            $skip = $request->skip;
-        }
-        $limit = NULL;
-        if (isset($request->limit) && $request->limit != "") {
-            $limit = $request->limit;
-        }
+
         $sectionModel = new SectionModel();
-        if (isset($request->section_id) && $request->section_id != "") {
-            $section_id = $request->section_id;
+        if (isset($request->_id) && $request->_id != "") {
+            $section_id = $request->_id;
 
             $data_array = array(
                 '_id' => $section_id
             );
-            $section_details = $sectionModel->section_list($data_array, $search_key, $skip, $limit);
+            $section_details = $sectionModel->section_list($data_array);
             if (!count($section_details)) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_section_id'),
                         "ERR_MSG" => config('error_messages' . "." .
@@ -38,12 +71,63 @@ class SectionController extends Controller {
                 return response(json_encode($response_array), 400);
             }
         } else {
-            $section_details = $sectionModel->fetch_all_sections();
+            $section_details = $sectionModel->section_list();
         }
         $response_array = array("success" => TRUE, "data" => $section_details, "errors" => array());
         return response(json_encode($response_array), 200);
     }
 
+    /**
+     * @SWG\Post(path="/section",
+     *   tags={"Section"},
+     *   summary="Create a Subject",
+     *   description="",
+     *   operationId="add_or_update_section",
+     *   consumes={"application/json"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="section json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+    /**
+     * @SWG\Put(path="/section",
+     *   tags={"Section"},
+     *   summary="Update section details",
+     *   description="",
+     *   operationId="add_or_update_section",
+     *   consumes={"application/x-www-form-urlencoded"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="Section json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function add_or_update_section(Request $request) {
         $json_data = $request->getContent();
         $section = json_decode($json_data, true);
@@ -135,25 +219,40 @@ class SectionController extends Controller {
         return $sectionDetails->_id;
     }
 
+    /**
+     * @SWG\Delete(path="/section",
+     *   tags={"Section"},
+     *   summary="delete section data",
+     *   description="Delete section from system",
+     *   operationId="delete_section",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="query",
+     *     description="ID of the section that needs to be deleted",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     function delete_section(Request $request) {
         $section_id = trim($request->_id);
-
         $sectionModel = new SectionModel();
         $section_data = $sectionModel->get_section_details($section_id);
         if ($section_data == null) {
             $error['error'] = array("section not found");
             return response(json_encode($error), 400);
         }
-//        $data = explode("/", $page_group_data['preview_url']); // fetching file name from URL
-//        $objectName = end($data);
-//        $gcs_result = GCS_helper::delete_from_gcs($objectName);
-//        if ($gcs_result) {
         SectionModel::destroy($section_id);
         return response("Section deleted successfully", 200);
-//        } else {
-//            $error['error'] = array("Something went wrong");
-//            return response(json_encode($error), 400);
-//        }
     }
 
 }

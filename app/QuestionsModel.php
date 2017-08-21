@@ -37,5 +37,14 @@ class QuestionsModel extends Eloquent {
         $question_details = QuestionsModel::find($question_id);
         return $question_details;
     }
+    
+     public function question_details($question_array = NULL) {
+        if ($question_array != NULL) {
+            $question_data = QuestionsModel::where($question_array)->first();
+        } else {
+            $question_data = QuestionsModel::all();
+        }
+        return $question_data;
+    }
 
 }

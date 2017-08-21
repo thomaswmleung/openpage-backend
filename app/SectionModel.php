@@ -32,5 +32,12 @@ class SectionModel extends Eloquent {
         return $section_details;
     }
     
-
+   public function section_list($section_array = NULL) {
+        if ($section_array != NULL) {
+            $section_data = SectionModel::where($section_array)->first();
+        } else {
+            $section_data = SectionModel::all();
+        }
+        return $section_data;
+    }
 }

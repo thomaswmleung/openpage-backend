@@ -14,28 +14,137 @@ use App\SubDomainModel;
 use App\DomainModel;
 use App\Helpers\ErrorMessageHelper;
 
-
-/*
- *  Class Name : PageGroupController
- *  Description : This controller handles parsing of JSON DATA and save to DB
- * 
- * 
- */
-
 class SubjectController extends Controller {
+    /**
+     * @SWG\Get(path="/subject",
+     *   tags={"Subject"},
+     *   summary="Returns list of subjects",
+     *   description="Returns subject data",
+     *   operationId="subject_list",
+     *   produces={"application/json"},
+     *   parameters={},
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
 
+    /**
+     * @SWG\Get(path="/subject/{_id}",
+     *   tags={"Subject"},
+     *   summary="Returns subject data",
+     *   description="Returns subject data",
+     *   operationId="subject_list",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="path",
+     *     description="ID of the subject that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid subject id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function subject_list(Request $request) {
+        $subjectModel = new SubjectModel();
+        if (isset($request->_id) && $request->_id != "") {
+            $subject_id = $request->_id;
+
+            // get media details
+            $data_array = array(
+                '_id' => $subject_id
+            );
+            $subject_details = $subjectModel->subject_details($data_array);
+            if ($subject_details == NULL) {
+
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_subject_id'),
+                        "ERR_MSG" => config('error_messages' . "." .
+                                config('error_constants.invalid_subject_id'))));
+
+                $response_array = array("success" => FALSE, "errors" => $error_messages);
+                return response(json_encode($response_array), 400);
+            }
+        } else {
+            $subject_details = $subjectModel->subject_details();
+        }
+
+        $response_array = array("success" => TRUE, "data" => $subject_details, "errors" => array());
+        return response(json_encode($response_array), 200);
+    }
+
+    /**
+     * @SWG\Post(path="/subject",
+     *   tags={"Subject"},
+     *   summary="Create a Subject",
+     *   description="",
+     *   operationId="create_subject",
+     *   consumes={"application/json"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="subject json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+    /**
+     * @SWG\Put(path="/subject",
+     *   tags={"Subject"},
+     *   summary="Update Subject details",
+     *   description="",
+     *   operationId="create_subject",
+     *   consumes={"application/x-www-form-urlencoded"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="Subject json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function create_subject(Request $request) {
 
-        // dd('v');
         $json_data = $request->getContent();
-        
-       // $subject_raw_json_data = file_get_contents(url('subject_json_data.json'));
+
+        // $subject_raw_json_data = file_get_contents(url('subject_json_data.json'));
 
         $subject_data_array = json_decode($json_data, true);
-        // $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
-        // echo "<pre>"; print_r($subject_data_array);exit;
-        
-
 
         if ($subject_data_array == null) {
             return response(json_encode(array("error" => "Invalid Json")));
@@ -48,14 +157,14 @@ class SubjectController extends Controller {
             'domain' => $subject_data_array['domain']
         );
         $rules = array(
-           'code' => 'required',
+            'code' => 'required',
             'title' => 'required',
             'domain' => 'required'
         );
-        
-         if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-            
-                $rules['_id'] = 'required';
+
+        if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
+
+            $rules['_id'] = 'required';
         }
 
         $messages = [
@@ -63,7 +172,6 @@ class SubjectController extends Controller {
             'code.required' => config('error_constants.subject_code_required'),
             'title.required' => config('error_constants.subject_title_required'),
             'domain.required' => config('error_constants.subject_domain_required')
-            
         ];
 
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
@@ -238,6 +346,42 @@ class SubjectController extends Controller {
                 return response('Subject ' . ($subject_id == "" ? " Created " : " Updated ") . ' Successfully', 200);
             }
         }
+    }
+
+    /**
+     * @SWG\Delete(path="/subject",
+     *   tags={"Subject"},
+     *   summary="delete subject data",
+     *   description="Delete subject from system",
+     *   operationId="delete_subject",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="query",
+     *     description="ID of the subject that needs to be deleted",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    function delete_subject(Request $request) {
+        $subject_id = trim($request->_id);
+        $subjectModel = new SubjectModel();
+        $subject_data = $subjectModel->subject_details(array('_id' => $subject_id));
+        if ($subject_data == null) {
+            $error['error'] = array("subject not found");
+            return response(json_encode($error), 400);
+        }
+        SubjectModel::destroy($subject_id);
+        return response("Subject deleted successfully", 200);
     }
 
 }

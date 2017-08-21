@@ -13,7 +13,129 @@ use Illuminate\Support\Facades\Validator;
 use App\Helpers\Pdf_helper;
 
 class BookController extends Controller {
+    
+        /**
+     * @SWG\Get(path="/book",
+     *   tags={"Book"},
+     *   summary="Returns list of books",
+     *   description="Returns book data",
+     *   operationId="book_list",
+     *   produces={"application/json"},
+     *   parameters={},
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
 
+    /**
+     * @SWG\Get(path="/book/{_id}",
+     *   tags={"Book"},
+     *   summary="Returns book data",
+     *   description="Returns book data",
+     *   operationId="book_list",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="path",
+     *     description="ID of the book that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid book id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function book_list(Request $request) {
+        $bookModel = new BookModel();
+        if (isset($request->_id) && $request->_id != "") {
+            $book_id = $request->_id;
+
+            // get media details
+            $data_array = array(
+                '_id' => $book_id
+            );
+            $book_details = $bookModel->book_details($data_array);
+            if ($book_details == NULL) {
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_book_id'),
+                        "ERR_MSG" => config('error_messages' . "." .
+                                config('error_constants.invalid_book_id'))));
+
+                $response_array = array("success" => FALSE, "errors" => $error_messages);
+                return response(json_encode($response_array), 400);
+            }
+        } else {
+            $book_details = $bookModel->book_details();
+        }
+
+        $response_array = array("success" => TRUE, "data" => $book_details, "errors" => array());
+        return response(json_encode($response_array), 200);
+    }
+    
+    /**
+     * @SWG\Post(path="/book",
+     *   tags={"Book"},
+     *   summary="Creates a book",
+     *   description="",
+     *   operationId="create_book",
+     *   consumes={"application/json"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="book json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+    /**
+     * @SWG\Put(path="/book",
+     *   tags={"Book"},
+     *   summary="Update book details",
+     *   description="",
+     *   operationId="create_book",
+     *   consumes={"application/x-www-form-urlencoded"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="book json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function create_book(Request $request) {
 
         $json_data = $request->getContent();
@@ -183,7 +305,7 @@ class BookController extends Controller {
             $bookModel = new BookModel();
             $result = $bookModel->create_book($data_array, $book_id);
 
-            if($book_id != "") {
+            if ($book_id != "") {
                 $success_msg = 'Book Updated Successfully';
             } else {
                 $success_msg = 'Book Created Successfully';
@@ -191,6 +313,43 @@ class BookController extends Controller {
             $response_array = array("success" => TRUE, "data" => $success_msg, "errors" => array());
             return response(json_encode($response_array), 200);
         }
+    }
+    
+    
+    /**
+     * @SWG\Delete(path="/book",
+     *   tags={"Book"},
+     *   summary="delete book data",
+     *   description="Delete book from system",
+     *   operationId="delete_book",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="query",
+     *     description="ID of the book that needs to be deleted",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    function delete_book(Request $request) {
+        $book_id = trim($request->_id);
+        $bookModel = new BookModel();
+        $book_data = $bookModel->book_details(array('_id' => $book_id));
+        if ($book_data == null) {
+            $error['error'] = array("book data not found");
+            return response(json_encode($error), 400);
+        }
+        BookModel::destroy($book_id);
+        return response("Book deleted successfully", 200);
     }
 
     public function print_book(Request $request) {

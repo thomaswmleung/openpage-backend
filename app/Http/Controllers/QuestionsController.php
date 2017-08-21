@@ -6,7 +6,51 @@ use Illuminate\Http\Request;
 use App\QuestionsModel;
 
 class QuestionsController extends Controller {
+    /**
+     * @SWG\Get(path="/question",
+     *   tags={"Question"},
+     *   summary="Returns list of question",
+     *   description="Returns question data",
+     *   operationId="question_list",
+     *   produces={"application/json"},
+     *   parameters={},
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
 
+    /**
+     * @SWG\Get(path="/question/{_id}",
+     *   tags={"Question"},
+     *   summary="Returns question data",
+     *   description="Returns question data",
+     *   operationId="question_list",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="path",
+     *     description="ID of the question that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid question id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function question_list(Request $request) {
         $search_key = NULL;
         if (isset($request->search_key) && $request->search_key != "") {
@@ -21,13 +65,13 @@ class QuestionsController extends Controller {
             $limit = $request->limit;
         }
         $questionsModel = new QuestionsModel();
-        if (isset($request->question_id) && $request->question_id != "") {
-            $question_id = $request->question_id;
+        if (isset($request->_id) && $request->_id != "") {
+            $question_id = $request->_id;
 
             $data_array = array(
                 '_id' => $question_id
             );
-            $questions_details = $questionsModel->question_list($data_array, $search_key, $skip, $limit);
+            $questions_details = $questionsModel->question_details($data_array);
             if (!count($questions_details)) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_id'),
                         "ERR_MSG" => config('error_messages' . "." .
@@ -38,12 +82,63 @@ class QuestionsController extends Controller {
             }
         } else {
 
-            $questions_details = $questionsModel->question_list(NULL, NULL, NULL, NULL);
+            $questions_details = $questionsModel->question_details();
         }
         $response_array = array("success" => TRUE, "data" => $questions_details, "errors" => array());
         return response(json_encode($response_array), 200);
     }
 
+    /**
+     * @SWG\Post(path="/question",
+     *   tags={"Question"},
+     *   summary="Create a question",
+     *   description="",
+     *   operationId="add_or_update_question",
+     *   consumes={"application/json"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="question json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+    /**
+     * @SWG\Put(path="/question",
+     *   tags={"Question"},
+     *   summary="Update question details",
+     *   description="",
+     *   operationId="add_or_update_question",
+     *   consumes={"application/x-www-form-urlencoded"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="question json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function add_or_update_question(Request $request) {
         $json_data = $request->getContent();
         $question = json_decode($json_data, true);
@@ -92,6 +187,30 @@ class QuestionsController extends Controller {
         return $questionDetails->_id;
     }
 
+    /**
+     * @SWG\Delete(path="/question",
+     *   tags={"Question"},
+     *   summary="delete question data",
+     *   description="Delete question from system",
+     *   operationId="delete_question",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="query",
+     *     description="ID of the question that needs to be deleted",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     function delete_question(Request $request) {
         $question_id = trim($request->_id);
 

@@ -18,5 +18,14 @@ class BookModel extends Eloquent {
                  );
         return $result->_id;
     }
+    
+    public function book_details($book_array = NULL) {
+        if ($book_array != NULL) {
+            $book_data = BookModel::where($book_array)->first();
+        } else {
+            $book_data = BookModel::all();
+        }
+        return $book_data;
+    }
 
 }

@@ -44,4 +44,6 @@ return [
     config('error_constants.organization_id_required') => "Organization id is required",
     config('error_constants.invalid_organization_id') => "Invalid organization id",
     config('error_constants.organization_doesnot_exist') => "organization doesnt exists",
+    config('error_constants.invalid_subject_id') => "Invalid subject id",
+    config('error_constants.invalid_book_id') => "Invalid book id",
 ];
