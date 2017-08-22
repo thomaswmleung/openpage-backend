@@ -202,7 +202,7 @@ class PageController extends Controller {
 
     function create_or_update_page($insert_page_data, $page_id) {
         $pageModel = new PageModel();
-        $page_result = $pageModel->add_page($insert_page_data, $page_id);
+        $page_result = $pageModel->add_or_update_page($insert_page_data, $page_id);
         return $page_result->_id;
     }
     
