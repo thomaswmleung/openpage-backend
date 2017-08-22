@@ -80,7 +80,7 @@ class SectionController extends Controller {
     /**
      * @SWG\Post(path="/section",
      *   tags={"Section"},
-     *   summary="Create a Subject",
+     *   summary="Create a Section",
      *   description="",
      *   operationId="add_or_update_section",
      *   consumes={"application/json"},
