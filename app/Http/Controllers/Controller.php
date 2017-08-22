@@ -60,6 +60,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   description="Book related API's"
  * )
  * @SWG\Tag(
+ *   name="Page",
+ *   description="Page related API's"
+ * )
+ * @SWG\Tag(
  *   name="Section",
  *   description="Section related API's"
  * )

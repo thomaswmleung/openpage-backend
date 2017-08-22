@@ -25,9 +25,14 @@ class PageModel extends Eloquent {
         return $page_data;
     }
 
-    public function page_list($search_key = NULL, $skip = NULL, $limit = NULL) {
-        $page_data = PageModel::where($search_key)->skip($skip)->take($limit)->get();
-        return $page_data;
+    public function page_list($data_array = NULL) {
+        if (isset($data_array['_id']) && $data_array['_id'] != NULL) {
+            $page_id = $data_array['_id'];
+            return PageModel::find($page_id)->first();
+        } else {
+            return PageModel::all();
+             
+        }
     }
 
     public static function get_page_details($page_id) {
@@ -45,7 +50,16 @@ class PageModel extends Eloquent {
         } else {
             return FALSE;
         }
-//        $main_details = MainModel::get
+    }
+
+    public function page_search($page_data) {
+        $search_key = $page_data['search_key'];
+        $skip = $page_data['skip'];
+        $limit = $page_data['limit'];
+        $page_query = PageModel::where('remark', 'like', '%' . $search_key . '%');
+        $page_query->skip($skip);
+        $page_query->take($limit);
+        return $page_query->get();
     }
 
 }

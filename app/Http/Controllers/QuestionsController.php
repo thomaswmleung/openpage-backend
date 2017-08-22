@@ -89,6 +89,58 @@ class QuestionsController extends Controller {
     }
 
     /**
+     * @SWG\Get(path="/question_search",
+     *   tags={"Question"},
+     *   summary="Returns question data based on search keyword",
+     *   description="Returns question data",
+     *   operationId="question_search",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search keyword that needs to be searched in question",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid data",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function question_search(Request $request) {
+        $search_key = $request->search_key;
+//      $skip = NULL;
+        $skip = 0;
+        if (isset($request->skip) && $request->skip != "") {
+            $skip = $request->skip;
+        }
+//      $limit = NULL;
+        $limit = 100;
+        if (isset($request->limit) && $request->limit != "") {
+            $limit = $request->limit;
+        }
+        $data_array = array(
+            'search_key' => $search_key,
+            'skip' => $skip,
+            'limit' => $limit
+        );
+        $questionsModel = new QuestionsModel();
+        $question_details = $questionsModel->question_search($data_array);
+        
+        $response_array = array("success" => TRUE, "data" => $question_details, "errors" => array());
+        return response(json_encode($response_array), 200);
+     
+    }
+    
+    /**
      * @SWG\Post(path="/question",
      *   tags={"Question"},
      *   summary="Create a question",

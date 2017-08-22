@@ -217,15 +217,10 @@ class OrganizationController extends Controller {
 
         $validator = Validator::make($organization_array, $rules, $formulated_messages);
         if ($validator->fails()) {
-//            Log::error("errors in create media");
-//            Log::error(json_encode($validator->messages()));
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400);
         } else {
-
-
-
             OrganizationModel::create($organization_array);
             $response_array = array("success" => TRUE, "errors" => array());
             return response(json_encode($response_array), 200);

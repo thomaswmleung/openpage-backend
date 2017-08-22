@@ -37,14 +37,24 @@ class QuestionsModel extends Eloquent {
         $question_details = QuestionsModel::find($question_id);
         return $question_details;
     }
-    
-     public function question_details($question_array = NULL) {
+
+    public function question_details($question_array = NULL) {
         if ($question_array != NULL) {
             $question_data = QuestionsModel::where($question_array)->first();
         } else {
             $question_data = QuestionsModel::all();
         }
         return $question_data;
+    }
+
+    public function question_search($page_data) {
+        $search_key = $page_data['search_key'];
+        $skip = $page_data['skip'];
+        $limit = $page_data['limit'];
+        $question_query = QuestionsModel::where('question_text', 'like', '%' . $search_key . '%');
+        $question_query->skip($skip);
+        $question_query->take($limit);
+        return $question_query->get();
     }
 
 }

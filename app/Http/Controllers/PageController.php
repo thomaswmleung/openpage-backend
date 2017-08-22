@@ -7,45 +7,190 @@ use App\PageModel;
 use App\MainModel;
 use App\SectionModel;
 use App\QuestionsModel;
-
 class PageController extends Controller {
+    /**
+     * @SWG\Get(path="/page",
+     *   tags={"Page"},
+     *   summary="Returns list of page",
+     *   description="Returns page data",
+     *   operationId="page_list",
+     *   produces={"application/json"},
+     *   parameters={},
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
 
+    /**
+     * @SWG\Get(path="/page/{page_id}",
+     *   tags={"Page"},
+     *   summary="Returns page data",
+     *   description="Returns page data",
+     *   operationId="section_list",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="page_id",
+     *     in="path",
+     *     description="ID of the page that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid page id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function page_list(Request $request) {
-        $search_key = NULL;
-        if (isset($request->search_key) && $request->search_key != "") {
-            $search_key = $request->search_key;
+        $page_id = NULL;
+        if (isset($request->page_id) && $request->page_id != "") {
+            $page_id = $request->page_id;
+            $pageModel = new PageModel();
+            $exists = $pageModel->get_page_details($page_id);
+            if (!$exists) {
+                $response_array = array("success" => FALSE, "errors" => "Invalid page id");
+                return response(json_encode($response_array), 400);
+            }
         }
-        $skip = NULL;
+
+//        $skip = NULL;
+        $skip = 0;
         if (isset($request->skip) && $request->skip != "") {
             $skip = $request->skip;
         }
-        $limit = NULL;
+//        $limit = NULL;
+        $limit = 100;
         if (isset($request->limit) && $request->limit != "") {
             $limit = $request->limit;
         }
+
+        $data_array = array(
+            '_id' => $page_id,
+            'skip' => $skip,
+            'limit' => $limit
+        );
+
         $pageModel = new PageModel();
-        if (isset($request->page_id) && $request->page_id != "") {
-            $page_id = $request->page_id;
+        $page_details = $pageModel->page_list($data_array);
 
-            $data_array = array(
-                '_id' => $page_id
-            );
-            $page_details = $pageModel->page_list($data_array, $search_key, $skip, $limit);
-            if ($page_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_page_id'))));
-
-                $response_array = array("success" => FALSE, "errors" => $error_messages);
-                return response(json_encode($response_array), 400);
-            }
-        } else {
-            $page_details = $pageModel->page_list();
+        $response_array = array("success" => TRUE, "data" => $page_details, "errors" => array());
+        return response(json_encode($response_array), 200);
+    }
+    
+    /**
+     * @SWG\Get(path="/page_search",
+     *   tags={"Page"},
+     *   summary="Returns page data based on search keyword",
+     *   description="Returns page data",
+     *   operationId="page_search",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search keyword that needs to searched in pages",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid page id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function page_search(Request $request) {
+        $search_key = $request->search_key;
+//      $skip = NULL;
+        $skip = 0;
+        if (isset($request->skip) && $request->skip != "") {
+            $skip = $request->skip;
         }
+//      $limit = NULL;
+        $limit = 100;
+        if (isset($request->limit) && $request->limit != "") {
+            $limit = $request->limit;
+        }
+        $data_array = array(
+            'search_key' => $search_key,
+            'skip' => $skip,
+            'limit' => $limit
+        );
+        $pageModel = new PageModel();
+        $page_details = $pageModel->page_search($data_array);
+        
         $response_array = array("success" => TRUE, "data" => $page_details, "errors" => array());
         return response(json_encode($response_array), 200);
     }
 
+    /**
+     * @SWG\Post(path="/page",
+     *   tags={"Page"},
+     *   summary="Create a page",
+     *   description="",
+     *   operationId="add_or_update_page",
+     *   consumes={"application/json"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="page json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+    /**
+     * @SWG\Put(path="/page",
+     *   tags={"Page"},
+     *   summary="Update section details",
+     *   description="",
+     *   operationId="add_or_update_page",
+     *   consumes={"application/x-www-form-urlencoded"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="page json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     public function add_or_update_page(Request $request) {
         $json_data = $request->getContent();
         $page = json_decode($json_data, true);
@@ -206,25 +351,40 @@ class PageController extends Controller {
         return $page_result->_id;
     }
     
+    /**
+     * @SWG\Delete(path="/page",
+     *   tags={"Page"},
+     *   summary="delete page data",
+     *   description="Delete page from system",
+     *   operationId="delete_page",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="pid",
+     *     in="query",
+     *     description="ID of the page that needs to be deleted",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
     function delete_page(Request $request) {
         $page_id = trim($request->pid);
-
         $pageModel = new PageModel();
         $page_data = $pageModel->get_page(array('_id' => $page_id));
         if ($page_data == null) {
             $error['error'] = array("page not found");
             return response(json_encode($error), 400);
         }
-//        $data = explode("/", $page_group_data['preview_url']); // fetching file name from URL
-//        $objectName = end($data);
-//        $gcs_result = GCS_helper::delete_from_gcs($objectName);
-//        if ($gcs_result) {
-            PageModel::destroy($page_id);
-            return response("Page deleted successfully", 200);
-//        } else {
-//            $error['error'] = array("Something went wrong");
-//            return response(json_encode($error), 400);
-//        }
+        PageModel::destroy($page_id);
+        return response("Page deleted successfully", 200);
     }
 
 }

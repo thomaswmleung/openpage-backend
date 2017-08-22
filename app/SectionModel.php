@@ -40,4 +40,15 @@ class SectionModel extends Eloquent {
         }
         return $section_data;
     }
+    
+    public function section_search($page_data) {
+        $search_key = $page_data['search_key'];
+        $skip = $page_data['skip'];
+        $limit = $page_data['limit'];
+        $section_query = SectionModel::where('instruction_text', 'like', '%' . $search_key . '%');
+        $section_query->orwhere('section_type', 'like', '%' . $search_key . '%');
+        $section_query->skip($skip);
+        $section_query->take($limit);
+        return $section_query->get();
+    }
 }
