@@ -184,7 +184,8 @@ class PageGroupController extends Controller {
 
                 foreach ($page_array as $page) {
 
-
+                    $main_id = "";
+                    if (isset($page['main'])) {
                     $main = $page['main'];
                     $section_ids = array();
                     $page_section_array = $main['section'];
@@ -288,7 +289,7 @@ class PageGroupController extends Controller {
 
                     $main_id = $this->create_main($insert_main_data, $main_id);
 
-
+                    }
                     $ovelay_data = $page['overlay'];
                     /*  $page_ovelay_id = $this->create_overlay($ovelay_data); */
 
@@ -355,7 +356,7 @@ class PageGroupController extends Controller {
 
     function create_page($insert_page_data, $page_id_) {
         $pageModel = new PageModel();
-        $page_result = $pageModel->add_page($insert_page_data, $page_id_);
+        $page_result = $pageModel->add_or_update_page($insert_page_data, $page_id_);
         return $page_result->_id;
     }
     

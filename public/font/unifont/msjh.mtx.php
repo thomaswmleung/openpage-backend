@@ -13,7 +13,7 @@ $desc=array (
 );
 $up=-87;
 $ut=58;
-$ttffile='D:\xamp\htdocs\blog\public\font\unifont\msjh.ttf';
+$ttffile='E:\xampp\htdocs\openpage-backend\public\font\unifont\msjh.ttf';
 $originalsize=21663376;
 $fontkey='msjh';
 ?>

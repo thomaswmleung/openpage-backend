@@ -10,11 +10,22 @@ class PageModel extends Eloquent {
     protected $collection = 'page';
     protected $fillable = array('overlay', 'main_id', 'background', 'remark');
 
-    public function add_page($insert_data) {
-        $result = PageModel::create($insert_data);
+     public function add_or_update_page($insert_data, $page_id = "") {
+        if (!isset($insert_data['is_imported'])
+                OR $insert_data['is_imported'] != TRUE) {
+            $insert_data['is_imported'] = FALSE;
+        }
+        if ($page_id != null && $page_id != "") {
+            PageModel::find($page_id)->update($insert_data);
+            $result = PageModel::find($page_id);
+        } else {
+            $result = PageModel::create($insert_data);
+        }
+
+
+        
         return $result;
     }
-
     public function fetch_main_id($page_id) {
         $result = PageModel::find($page_id)->first();
         return $result->main_id;

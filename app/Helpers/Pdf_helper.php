@@ -21,12 +21,87 @@ class Pdf_helper {
         $responseArray = $page_data_array;
 
         if (isset($page_data_array['page_group']['page'])) {
+
+            $pageCOunt = 0;
+
+            if (isset($responseArray['page_group']['import_url']) && $responseArray['page_group']['import_url'] != null) {
+
+                $filename = basename($responseArray['page_group']['import_url']);
+//                var_dump($filename);
+
+                $uniqueId = uniqid();
+
+                $pdf_path = public_path("tmp" . DIRECTORY_SEPARATOR . $uniqueId . $filename);
+                GCS_helper::download_object($filename, $pdf_path);
+
+                $im = new \Imagick($pdf_path);
+
+                $count = $im->getNumberImages();
+
+                for ($page_index = 0; $page_index < $count; $page_index++) {
+
+                    $pdf_img = new Imagick($pdf_path . "[" . $page_index . "]");
+                    $pdf_img->setImageFormat('jpg');
+
+                    $image_name_from_file = substr($filename, 0, strpos($filename, "."));
+                    $image_name = $uniqueId . $image_name_from_file . $page_index . ".jpg";
+                    $image_path = "tmp" . DIRECTORY_SEPARATOR . $image_name;
+                    $image_absolute_path = public_path($image_path);
+
+
+                    $pdf_img->setResolution(2100, 2970);
+                    $pdf_img->setImageCompression(Imagick::COMPRESSION_JPEG);
+                    $pdf_img->setImageCompressionQuality(100);
+                    $pdf_img->writeImage($image_absolute_path);
+
+//                    var_dump($image_absolute_path);
+//                    exit();
+//                    
+
+                    $gcs_result = GCS_helper::upload_to_gcs($image_path);
+
+                    //upload image to GCS
+                    if (!$gcs_result) {
+                        $responseArray['error'] = "Error in upload of GCS";
+                        return $responseArray;
+                    }
+                    unlink($image_path);
+                    $pdf_img->destroy();
+                    $gcs_path = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $image_name;
+                    $background_data = array();
+                    $background_data[0] = array(
+                        'type' => "image",
+                        'url' => $gcs_path,
+                        'x' => 0,
+                        'y' => 0,
+                        'w' => 210,
+                        'h' => 297);
+                    $page_data = array(
+                        'overlay' => array(),
+                        'main_id' => "",
+                        'background' => $background_data,
+                        'remark' => "",
+                        'is_imported' => TRUE
+                    );
+
+                    $page_model = new PageModel();
+                    $page_model = $page_model->add_or_update_page($page_data);
+                    $page_data['page_id'] = $page_model->_id;
+                    array_push($page_data_array['page_group']['page'], $page_data);
+                }
+//                file_put_contents (public_path("tmp/test_1.jpg"), $im);
+//                $im = new \Imagick(public_path("tmp".DIRECTORY_SEPARATOR.$filename));
+//                var_dump(public_path("tmp".DIRECTORY_SEPARATOR."test_1.jpg"));
+
+
+                unlink($pdf_path);
+//                var_dump(sizeof($page_data_array['page_group']['page']));
+//                exit();
+            }
+
             $responseArray['page_group']['page'] = array();
             $page_array = $page_data_array['page_group']['page'];
             $responseArray['page_group']['page'] = $page_array;
-            $pageCOunt = 0;
-
-
 
             foreach ($page_array as $page) {
 
@@ -60,90 +135,92 @@ class Pdf_helper {
                 }
 
 
+                if (isset($page['main'])) {
+                    $main_data_array = $page['main'];
+                    $page_header_text = $page['main']['header_text'];
+                    // define pdf header here
+                    $fpdf->MultiCell(200, 10, $page_header_text, 0, 'C');
 
-                $main_data_array = $page['main'];
-                $page_header_text = $page['main']['header_text'];
-                // define pdf header here
-                $fpdf->MultiCell(200, 10, $page_header_text, 0, 'C');
+                    $page_footer_text = $page['main']['footer_text'];
+                    // define pdf footer here
 
-                $page_footer_text = $page['main']['footer_text'];
-                // define pdf footer here
-
-                $page_section_array = $page['main']['section'];
-                $sectionCount = 0;
+                    $page_section_array = $page['main']['section'];
+                    $sectionCount = 0;
 
 
-                foreach ($page_section_array as $section) {
+                    foreach ($page_section_array as $section) {
 
-                    $section_instruction_text = $section['instruction_text'];
-                    // display section instruction
-                    $fpdf->SetXY(10, $fpdf->GetY() + 5);
-                    $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
-                    $section_question_array = $section['question'];
+                        $section_instruction_text = $section['instruction_text'];
+                        // display section instruction
+                        $fpdf->SetXY(10, $fpdf->GetY() + 5);
+                        $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
+                        $section_question_array = $section['question'];
 
 //                    if (sizeof($section_question_array) == 0) {
 //                        $isValidJson = FALSE;
 //                    }
 
-                    $currentY = $fpdf->GetY() + 5;
-
-                    $questionsRespoonseArray = array();
-
-                    foreach ($section_question_array as $question) {
-
-                        $fpdf->SetXY(10, $currentY);
-                        $question['x'] = 10;
-                        $question['y'] = $currentY;
-                        $question_number = $question['question_no'];
-                        $question_text = $question['question_text'];
-//                        $question_type = $questions['question_type'];
-                        $question_image_url = $question['image'];
-
-                        $fpdf->MultiCell(200, 5, $question_text, 0, 'L');
                         $currentY = $fpdf->GetY() + 5;
 
-                        $imgAttrArray = getimagesize($question_image_url);
+                        $questionsRespoonseArray = array();
 
-                        $imgRatio = $imgAttrArray[0] / $imgAttrArray[1];
+                        foreach ($section_question_array as $question) {
+
+                            $fpdf->SetXY(10, $currentY);
+                            $question['x'] = 10;
+                            $question['y'] = $currentY;
+                            $question_number = $question['question_no'];
+                            $question_text = $question['question_text'];
+//                        $question_type = $questions['question_type'];
+                            $question_image_url = $question['image'];
+
+                            $fpdf->MultiCell(200, 5, $question_text, 0, 'L');
+                            $currentY = $fpdf->GetY() + 5;
+
+                            $imgAttrArray = getimagesize($question_image_url);
+
+                            $imgRatio = $imgAttrArray[0] / $imgAttrArray[1];
 
 
-                        if (isset($question_image_url) AND $question_image_url != "" AND $question_image_url != NULL) {
-                            $fpdf->Image($question_image_url, 10, $currentY, 100, 20);
-                        }
-                        $currentY += 20;
-                        $fpdf->SetXY(10, $currentY);
-                        $fpdf->MultiCell(200, 5, "Answers: ", 0, 'L');
-                        $currentY = $fpdf->GetY() + 3;
+                            if (isset($question_image_url)
+                                    AND $question_image_url != ""
+                                    AND $question_image_url != NULL) {
+                                $fpdf->Image($question_image_url, 10, $currentY, 100, 20);
+                            }
+                            $currentY += 20;
+                            $fpdf->SetXY(10, $currentY);
+                            $fpdf->MultiCell(200, 5, "Answers: ", 0, 'L');
+                            $currentY = $fpdf->GetY() + 3;
 
-                        $answer_array = $question['answer'];
+                            $answer_array = $question['answer'];
 //                        if (sizeof($answer_array) == 0) {
 //                            $isValidJson = FALSE;
 //                        }
 
-                        $responseAnswersArray = array();
-                        foreach ($answer_array as $answer) {
-                            $fpdf->SetXY(10, $currentY);
-                            $answer['x'] = 10;
-                            $answer['y'] = $currentY;
-                            $responseAnswersArray[] = $answer;
-                            $answer_text = $answer['text'];
+                            $responseAnswersArray = array();
+                            foreach ($answer_array as $answer) {
+                                $fpdf->SetXY(10, $currentY);
+                                $answer['x'] = 10;
+                                $answer['y'] = $currentY;
+                                $responseAnswersArray[] = $answer;
+                                $answer_text = $answer['text'];
 //                            $imge_url = $answer['url'];
 //                            $is_correct_answer = $answer['answer'];
 
-                            $fpdf->MultiCell(200, 5, $answer_text, 0, 'L');
-                            $currentY = $fpdf->GetY();
-                            $fpdf->SetXY(10, $currentY);
+                                $fpdf->MultiCell(200, 5, $answer_text, 0, 'L');
+                                $currentY = $fpdf->GetY();
+                                $fpdf->SetXY(10, $currentY);
+                            }
+                            $question['answer'] = $responseAnswersArray;
+                            $currentY = $fpdf->GetY() + 5;
+
+
+                            $questionsRespoonseArray[] = $question;
                         }
-                        $question['answer'] = $responseAnswersArray;
-                        $currentY = $fpdf->GetY() + 5;
-
-
-                        $questionsRespoonseArray[] = $question;
+                        $responseArray['page_group']['page'][$pageCOunt]['main']['section'][$sectionCount]['question'] = $questionsRespoonseArray;
+                        $sectionCount++;
                     }
-                    $responseArray['page_group']['page'][$pageCOunt]['main']['section'][$sectionCount]['question'] = $questionsRespoonseArray;
-                    $sectionCount++;
                 }
-
                 //Overlay Data
 
                 $overlay_data = $page['overlay'];
@@ -157,9 +234,12 @@ class Pdf_helper {
                         $image_y = $overlay['y'];
                         $image_w = $overlay['w'];
                         $image_h = $overlay['h'];
+//                        var_dump($overlay['url']);
 
-                        // display of overlay image
-                        $fpdf->Image($image_path, $image_x, $image_y, $image_w, $image_h);
+                        if (isset($overlay['url']) && $overlay['url'] != "") {
+                            // display of overlay image
+                            $fpdf->Image($image_path, $image_x, $image_y, $image_w, $image_h);
+                        }
                     }
                     if ($overlay_type == "text") {
                         $overlay_text = $overlay['string'];
@@ -169,7 +249,9 @@ class Pdf_helper {
                         $text_h = $overlay['h'];
 
                         // Set font size based on w and h 
+                        if($text_w != "" && $text_h != "" ){
                         $fpdf->MultiCell($text_w, $text_h, $overlay_text, 0, 'C');
+                        }
                     }
 
                     // TODO : for overlay type shape.
@@ -223,19 +305,19 @@ class Pdf_helper {
         for ($pageIndex = 0; $pageIndex < $page_count; $pageIndex++) {
             $pdf_img = new Imagick($pdf_path . "[" . $pageIndex . "]");
             $pdf_img->setImageFormat('jpg');
-            $image_name = $pdf_name."pdf_image_" . $pageIndex . ".jpg";
-            $gcs_path = "pdf_images".DIRECTORY_SEPARATOR.$image_name;
+            $image_name = $pdf_name . "pdf_image_" . $pageIndex . ".jpg";
+            $gcs_path = "pdf_images" . DIRECTORY_SEPARATOR . $image_name;
             $image_path = public_path($gcs_path);
             $pdf_img->writeImage($image_path);
             $gcs_result = GCS_helper::upload_to_gcs($gcs_path);
-            
+
             //upload image to GCS
             if (!$gcs_result) {
                 $responseArray['error'] = "Error in upload of GCS";
                 return $responseArray;
             }
             unlink($image_path);
-            $preview_image_array[]="https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') ."/". $image_name;
+            $preview_image_array[] = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $image_name;
             $pdf_img->destroy();
         }
         // delete your local pdf file here

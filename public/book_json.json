@@ -233,21 +233,21 @@
     "subject": "CHINESE/ENGLISH/MATH/GROW for searching purpose",
     "domain": [
       {
-        "_id": "domain_id",
+        "_id": "",
         "code": "domain_code",
         "title": "domain_title"
       }
     ],
     "subdomain": [
       {
-        "_id": "subdomain_id",
+        "_id": "",
         "code": "subdomain_code",
         "title": "subdomain_title"
       }
     ],
     "knowledge_unit": [
       {
-        "_id": "knowledge_unit_id",
+        "_id": "",
         "code": "knowledge_unit_code",
         "title": "knowledge_unit_title"
       }

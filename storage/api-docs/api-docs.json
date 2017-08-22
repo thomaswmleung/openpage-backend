@@ -6,6 +6,170 @@
     },
     "basePath": "/openpage-backend/public",
     "paths": {
+        "/book": {
+            "get": {
+                "tags": [
+                    "Book"
+                ],
+                "summary": "Returns list of books",
+                "description": "Returns book data",
+                "operationId": "book_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Book"
+                ],
+                "summary": "Update book details",
+                "description": "",
+                "operationId": "create_book",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "book json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Book"
+                ],
+                "summary": "Creates a book",
+                "description": "",
+                "operationId": "create_book",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "book json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Book"
+                ],
+                "summary": "delete book data",
+                "description": "Delete book from system",
+                "operationId": "delete_book",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the book that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/book/{_id}": {
+            "get": {
+                "tags": [
+                    "Book"
+                ],
+                "summary": "Returns book data",
+                "description": "Returns book data",
+                "operationId": "book_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the book that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid book id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
         "/login": {
             "post": {
                 "tags": [
@@ -54,7 +218,14 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search based on remark and tags",
+                        "type": "string"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -90,6 +261,33 @@
                         "description": "user_id or organization_id",
                         "required": true,
                         "type": "string"
+                    },
+                    {
+                        "name": "usage[]",
+                        "in": "query",
+                        "description": "The page ids array field.",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "remark",
+                        "in": "query",
+                        "description": "Remark of the media",
+                        "type": "string"
+                    },
+                    {
+                        "name": "tag[]",
+                        "in": "query",
+                        "description": "tags for the media.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
                     }
                 ],
                 "responses": {
@@ -150,13 +348,30 @@
                     },
                     {
                         "name": "usage[]",
-                        "in": "formData",
+                        "in": "query",
                         "description": "The page ids array field.",
                         "required": true,
                         "type": "array",
                         "items": {
                             "type": "string"
-                        }
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "remark",
+                        "in": "query",
+                        "description": "Remark of the media",
+                        "type": "string"
+                    },
+                    {
+                        "name": "tag[]",
+                        "in": "query",
+                        "description": "tags for the media.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
                     }
                 ],
                 "responses": {
@@ -242,26 +457,118 @@
                 ]
             }
         },
-        "/page_group": {
+        "/organization": {
+            "get": {
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Returns list of organizations",
+                "description": "Returns organization  data",
+                "operationId": "organization",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
-                    "Page Group"
+                    "organization"
                 ],
-                "summary": "Creation of page group",
-                "description": "Stores page group in the system",
-                "operationId": "create_page_group",
+                "summary": "Creating/Storing new organization",
+                "description": "Creation of organization",
+                "operationId": "create_organization",
                 "produces": [
                     "application/json"
                 ],
                 "parameters": [
                     {
-                        "name": "data",
-                        "in": "body",
-                        "description": "",
+                        "name": "name",
+                        "in": "query",
+                        "description": "name of the question",
                         "required": true,
-                        "schema": {
+                        "type": "string"
+                    },
+                    {
+                        "name": "address",
+                        "in": "query",
+                        "description": "address of the organization",
+                        "type": "string"
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "email of the organization",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "contact_person",
+                        "in": "query",
+                        "description": "contact person of the organization",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of the organization",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id[]",
+                        "in": "query",
+                        "description": "The user ids of organization",
+                        "required": true,
+                        "type": "array",
+                        "items": {
                             "type": "string"
-                        }
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "logo",
+                        "in": "query",
+                        "description": "logo of the organization",
+                        "type": "string"
+                    },
+                    {
+                        "name": "remark",
+                        "in": "query",
+                        "description": "remark of the organization",
+                        "type": "string"
+                    },
+                    {
+                        "name": "consultant[]",
+                        "in": "query",
+                        "description": "The consultants of organization",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "role[]",
+                        "in": "query",
+                        "description": "The roles of organization",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
                     }
                 ],
                 "responses": {
@@ -270,6 +577,1184 @@
                     },
                     "400": {
                         "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "organization"
+                ],
+                "summary": "delete organization data",
+                "description": "Delete organization in the system",
+                "operationId": "delete_organization",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the organization that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/organization/{_id}": {
+            "get": {
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Returns organization data",
+                "description": "Returns organization data",
+                "operationId": "organization",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the organization that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid question type id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/page": {
+            "get": {
+                "tags": [
+                    "Page"
+                ],
+                "summary": "Returns list of page",
+                "description": "Returns page data",
+                "operationId": "page_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Page"
+                ],
+                "summary": "Update section details",
+                "description": "",
+                "operationId": "add_or_update_page",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "page json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Page"
+                ],
+                "summary": "Create a page",
+                "description": "",
+                "operationId": "add_or_update_page",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "page json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Page"
+                ],
+                "summary": "delete page data",
+                "description": "Delete page from system",
+                "operationId": "delete_page",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "pid",
+                        "in": "query",
+                        "description": "ID of the page that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/page/{page_id}": {
+            "get": {
+                "tags": [
+                    "Page"
+                ],
+                "summary": "Returns page data",
+                "description": "Returns page data",
+                "operationId": "section_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "page_id",
+                        "in": "path",
+                        "description": "ID of the page that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid page id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/page_search": {
+            "get": {
+                "tags": [
+                    "Page"
+                ],
+                "summary": "Returns page data based on search keyword",
+                "description": "Returns page data",
+                "operationId": "page_search",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search keyword that needs to searched in pages",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid page id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/page_group": {
+            "get": {
+                "tags": [
+                    "page_group"
+                ],
+                "summary": "Returns list of page group",
+                "description": "Returns page group data",
+                "operationId": "get_page_group",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "page_group"
+                ],
+                "summary": "Create a page group",
+                "description": "",
+                "operationId": "create_page_group",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "page group json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "page_group"
+                ],
+                "summary": "Create a page group",
+                "description": "",
+                "operationId": "create_page_group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "page group json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "page_group"
+                ],
+                "summary": "delete page group data",
+                "description": "Delete page group from system",
+                "operationId": "delete_page_group",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "pid",
+                        "in": "query",
+                        "description": "ID of the page group that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/page_group/{pid}": {
+            "get": {
+                "tags": [
+                    "page_group"
+                ],
+                "summary": "Returns page group data",
+                "description": "Returns page group data",
+                "operationId": "get_page_group",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "pid",
+                        "in": "path",
+                        "description": "ID of the page group that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid media id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/question_type": {
+            "get": {
+                "tags": [
+                    "Question Type"
+                ],
+                "summary": "Returns list of question types",
+                "description": "Returns question types data",
+                "operationId": "question_type",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Question Type"
+                ],
+                "summary": "Updating question types",
+                "description": "Updating of question types",
+                "operationId": "update_question_type",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "Id of the question type",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of question",
+                        "type": "string"
+                    },
+                    {
+                        "name": "block[]",
+                        "in": "query",
+                        "description": "The question types",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Question Type"
+                ],
+                "summary": "Creating/Storing new question types",
+                "description": "Creation of question types",
+                "operationId": "create_question_type",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of the question",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "block[]",
+                        "in": "query",
+                        "description": "The question types",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Question Type"
+                ],
+                "summary": "delete Question Type data",
+                "description": "Delete Question Type in the system",
+                "operationId": "delete_question_type",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the question type that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/question_type/{_id}": {
+            "get": {
+                "tags": [
+                    "Question Type"
+                ],
+                "summary": "Returns question type data",
+                "description": "Returns question types data",
+                "operationId": "question_type",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the question type that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid question type id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/question": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Returns list of question",
+                "description": "Returns question data",
+                "operationId": "question_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Update question details",
+                "description": "",
+                "operationId": "add_or_update_question",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "question json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Create a question",
+                "description": "",
+                "operationId": "add_or_update_question",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "question json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "delete question data",
+                "description": "Delete question from system",
+                "operationId": "delete_question",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the question that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/question/{_id}": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Returns question data",
+                "description": "Returns question data",
+                "operationId": "question_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the question that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid question id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/question_search": {
+            "get": {
+                "tags": [
+                    "Question"
+                ],
+                "summary": "Returns question data based on search keyword",
+                "description": "Returns question data",
+                "operationId": "question_search",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search keyword that needs to be searched in question",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/section": {
+            "get": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Returns list of section",
+                "description": "Returns section data",
+                "operationId": "section_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Update section details",
+                "description": "",
+                "operationId": "add_or_update_section",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Section json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Create a Section",
+                "description": "",
+                "operationId": "add_or_update_section",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "section json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "delete section data",
+                "description": "Delete section from system",
+                "operationId": "delete_section",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the section that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/section/{_id}": {
+            "get": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Returns section data",
+                "description": "Returns section data",
+                "operationId": "section_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the section that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid section id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/section_search": {
+            "get": {
+                "tags": [
+                    "Section"
+                ],
+                "summary": "Returns section data based on search keyword",
+                "description": "Returns section data",
+                "operationId": "section_search",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search keyword that needs to searched in sections",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/subject": {
+            "get": {
+                "tags": [
+                    "Subject"
+                ],
+                "summary": "Returns list of subjects",
+                "description": "Returns subject data",
+                "operationId": "subject_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Subject"
+                ],
+                "summary": "Update Subject details",
+                "description": "",
+                "operationId": "create_subject",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Subject json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Subject"
+                ],
+                "summary": "Create a Subject",
+                "description": "",
+                "operationId": "create_subject",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "subject json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Subject"
+                ],
+                "summary": "delete subject data",
+                "description": "Delete subject from system",
+                "operationId": "delete_subject",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the subject that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/subject/{_id}": {
+            "get": {
+                "tags": [
+                    "Subject"
+                ],
+                "summary": "Returns subject data",
+                "description": "Returns subject data",
+                "operationId": "subject_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the subject that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid subject id"
                     }
                 },
                 "security": [
@@ -446,11 +1931,39 @@
         },
         {
             "name": "Media",
-            "description": "Media realated API's"
+            "description": "Media related API's"
         },
         {
-            "name": "Page Group",
-            "description": "Page Group realated API's"
+            "name": "page_group",
+            "description": "Page group related API's"
+        },
+        {
+            "name": "Question Type",
+            "description": "Question Type related API's"
+        },
+        {
+            "name": "organization",
+            "description": "Organization related API's"
+        },
+        {
+            "name": "Subject",
+            "description": "Subject related API's"
+        },
+        {
+            "name": "Book",
+            "description": "Book related API's"
+        },
+        {
+            "name": "Page",
+            "description": "Page related API's"
+        },
+        {
+            "name": "Section",
+            "description": "Section related API's"
+        },
+        {
+            "name": "Question",
+            "description": "Question related API's"
         }
     ]
 }

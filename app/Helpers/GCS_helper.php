@@ -49,5 +49,15 @@ class GCS_helper {
 
         return TRUE;
     }
+    
+    static public function download_object($objectName, $destination) {
+        $storage = new StorageClient([
+            'keyFilePath' => Config::get('constants.gcs_key'),
+            'projectId' => Config::get('constants.gcs_bucket_name')
+        ]);
+        $bucket = $storage->bucket(Config::get('constants.gcs_bucket_name'));
+        $object = $bucket->object($objectName);
+        $object->downloadToFile($destination);
+    }
 
 }
