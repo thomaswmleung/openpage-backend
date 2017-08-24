@@ -46,6 +46,7 @@ return [
     'organization_doesnot_exist' => 'E910',
     'invalid_subject_id' => 'E111',
     'invalid_book_id' => 'E121',
+    'invalid_layout_id' => 'E131',
     
     
     

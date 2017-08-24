@@ -18,6 +18,14 @@ class LayoutModel extends Eloquent {
         return $result->_id;
     }
     
+     public function layout_details($layout_array = NULL) {
+        if ($layout_array != NULL) {
+            $layout_data = LayoutModel::where($layout_array)->first();
+        } else {
+            $layout_data = LayoutModel::all();
+        }
+        return $layout_data;
+    }
 
 
 }

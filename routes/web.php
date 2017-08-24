@@ -80,6 +80,13 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('subject', 'SubjectController@create_subject');
     Route::put('subject', 'SubjectController@create_subject');
     Route::delete('subject', 'SubjectController@delete_subject');
+    
+    Route::get('layout', 'LayoutController@layout_list');
+    Route::get('layout/{_id}', 'LayoutController@layout_list');
+    Route::post('layout', 'LayoutController@add_or_update_layout');
+    Route::put('layout', 'LayoutController@add_or_update_layout');
+    Route::delete('layout', 'LayoutController@delete_layout');
+    
 });
 
 //Route::get('page_group', 'PageGroupController@create_page_group');
