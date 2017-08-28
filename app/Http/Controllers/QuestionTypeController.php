@@ -65,14 +65,12 @@ class QuestionTypeController extends Controller {
             );
             $question_type_details = $questionTypeModel->question_type_details($data_array);
             if ($question_type_details == NULL) {
-                $error['error'] = array("Invalid user id");
-
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_type_id'),
                         "ERR_MSG" => config('error_messages' . "." .
                                 config('error_constants.invalid_question_type_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
-                return response(json_encode($response_array), 400);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
         } else {
 
@@ -81,7 +79,7 @@ class QuestionTypeController extends Controller {
         }
 
         $response_array = array("success" => TRUE, "data" => $question_type_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
@@ -139,12 +137,12 @@ class QuestionTypeController extends Controller {
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
 
             QuestionTypeModel::create($question_type_array);
             $response_array = array("success" => TRUE, "errors" => array());
-            return response(json_encode($response_array), 200);
+            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }
 
@@ -215,14 +213,15 @@ class QuestionTypeController extends Controller {
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             $result = $this->edit_question_type($question_type_array);
             if ($result) {
-                return response("Question type updated successfully", 200);
+                $responseArray = array("success" => TRUE);
+                return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
             } else {
-                $error['error'] = array("Something went wrong");
-                return response(json_encode($error), 400);
+                $responseArray = array("success" => FALSE, "errors" => "Something went wrong");
+                return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
             }
         }
     }
@@ -274,10 +273,11 @@ class QuestionTypeController extends Controller {
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             QuestionTypeModel::destroy($question_type_id);
-            return response("Question type deleted successfully", 200);
+            $responseArray = array("success" => TRUE);
+            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
         
         

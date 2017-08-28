@@ -76,7 +76,7 @@ class UserController extends Controller {
                                                             config('error_constants.invalid_user_id')))) ; 
                 
                 $response_array = array("success"=>FALSE,"errors"=>$error_messages);
-                return response(json_encode($response_array), 400);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
         } else {
             
@@ -85,7 +85,7 @@ class UserController extends Controller {
         }
         
         $response_array = array("success" => TRUE,"data"=>$user_details,"errors"=>array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
@@ -161,7 +161,7 @@ class UserController extends Controller {
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
 
             $user_data['username'] = strtolower(trim($request->email));
@@ -180,16 +180,10 @@ class UserController extends Controller {
             //Need SMTP credentials to send Email from instance
 //            EmailController::send_activation_mail($email_data);
             $responseArray = array("success" => TRUE,"data"=> array("_id"=>$data->_id), "message" => "User created successfully.");
-            return response(json_encode($responseArray), 200);
+            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
     }
 
-    public function messages() {
-        return [
-            'title.required' => 'A title is required',
-            'body.required' => 'A message is required',
-        ];
-    }
 
     /**
      * @SWG\Get(path="/activate",
@@ -233,12 +227,23 @@ class UserController extends Controller {
             'username' => 'required|exists:users,username',
             'activation_key' => 'required|exists:users,activation_key'
         );
-        $validator = Validator::make($user_data, $rules);
+        $messages = [
+            'username.required' => config('error_constants.username_required'),
+            'activation_key.required' => config('error_constants.activation_key_required'),
+            'activation_key.exists' => config('error_constants.activation_key_exists'),
+        ];
+        
+        
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+        $validator = Validator::make($user_data, $rules,$formulated_messages);
         if ($validator->fails()) {
-            return response($validator->messages(), 400);
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             $this->activate_user($user_data);
-            return response("Activated", 200);
+            $responseArray = array("success" => TRUE);
+            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
     }
 

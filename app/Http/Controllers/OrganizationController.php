@@ -72,7 +72,7 @@ class OrganizationController extends Controller {
                                 config('error_constants.invalid_organization_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
-                return response(json_encode($response_array), 400);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
         } else {
 
@@ -81,7 +81,7 @@ class OrganizationController extends Controller {
         }
 
         $response_array = array("success" => TRUE, "data" => $organization_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
@@ -219,11 +219,11 @@ class OrganizationController extends Controller {
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             OrganizationModel::create($organization_array);
             $response_array = array("success" => TRUE, "errors" => array());
-            return response(json_encode($response_array), 200);
+            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }
     
@@ -269,10 +269,11 @@ class OrganizationController extends Controller {
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             OrganizationModel::destroy($organization_id);
-            return response("Organization deleted successfully", 200);
+            $response_array = array("success" => FALSE);
+            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
         
         

@@ -75,14 +75,14 @@ class BookController extends Controller {
                                 config('error_constants.invalid_book_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
-                return response(json_encode($response_array), 400);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
         } else {
             $book_details = $bookModel->book_details();
         }
 
         $response_array = array("success" => TRUE, "data" => $book_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
     
     /**
@@ -145,7 +145,7 @@ class BookController extends Controller {
         $book_data_array = json_decode($json_data, true);
 
         if ($book_data_array == null) {
-            return response(json_encode(array("error" => "Invalid Json")));
+            return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
         $book_array = array(
@@ -188,17 +188,10 @@ class BookController extends Controller {
 
         $validator = Validator::make($book_array, $rules, $formulated_messages);
         if ($validator->fails()) {
-//            Log::error("errors in create media");
-//            Log::error(json_encode($validator->messages()));
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
-
-
-
-
-
             $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
 
             $domain = array();
@@ -311,7 +304,7 @@ class BookController extends Controller {
                 $success_msg = 'Book Created Successfully';
             }
             $response_array = array("success" => TRUE, "data" => $success_msg, "errors" => array());
-            return response(json_encode($response_array), 200);
+            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }
     
@@ -345,11 +338,15 @@ class BookController extends Controller {
         $bookModel = new BookModel();
         $book_data = $bookModel->book_details(array('_id' => $book_id));
         if ($book_data == null) {
-            $error['error'] = array("book data not found");
-            return response(json_encode($error), 400);
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_book_id'),
+                                        "ERR_MSG"=> config('error_messages'.".".
+                                                            config('error_constants.invalid_book_id')))) ; 
+            $responseArray = array("success" => FALSE, "errors" => $error_messages);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         }
         BookModel::destroy($book_id);
-        return response("Book deleted successfully", 200);
+        $responseArray = array("success" => TRUE, "data" => "Book deleted successfully");
+        return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
     }
 
     public function print_book(Request $request) {

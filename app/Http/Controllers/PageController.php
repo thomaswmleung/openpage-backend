@@ -7,6 +7,7 @@ use App\PageModel;
 use App\MainModel;
 use App\SectionModel;
 use App\QuestionsModel;
+
 class PageController extends Controller {
     /**
      * @SWG\Get(path="/page",
@@ -60,8 +61,12 @@ class PageController extends Controller {
             $pageModel = new PageModel();
             $exists = $pageModel->get_page_details($page_id);
             if (!$exists) {
-                $response_array = array("success" => FALSE, "errors" => "Invalid page id");
-                return response(json_encode($response_array), 400);
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_id'),
+                        "ERR_MSG" => config('error_messages' . "." .
+                                config('error_constants.invalid_page_id'))));
+
+                $response_array = array("success" => FALSE, "errors" => $error_messages);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
         }
 
@@ -86,9 +91,9 @@ class PageController extends Controller {
         $page_details = $pageModel->page_list($data_array);
 
         $response_array = array("success" => TRUE, "data" => $page_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
-    
+
     /**
      * @SWG\Get(path="/page_search",
      *   tags={"Page"},
@@ -135,9 +140,9 @@ class PageController extends Controller {
         );
         $pageModel = new PageModel();
         $page_details = $pageModel->page_search($data_array);
-        
+
         $response_array = array("success" => TRUE, "data" => $page_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
@@ -195,7 +200,7 @@ class PageController extends Controller {
         $json_data = $request->getContent();
         $page = json_decode($json_data, true);
         if ($page == null) {
-            return response(json_encode(array("error" => "Invalid Json")));
+            return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
 //        $pdf_helper = new Pdf_helper();
@@ -324,7 +329,7 @@ class PageController extends Controller {
 
         $response_array['success'] = TRUE;
 
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     function create_or_update_question($insert_data, $question_id) {
@@ -350,7 +355,7 @@ class PageController extends Controller {
         $page_result = $pageModel->add_or_update_page($insert_page_data, $page_id);
         return $page_result->_id;
     }
-    
+
     /**
      * @SWG\Delete(path="/page",
      *   tags={"Page"},
@@ -380,11 +385,16 @@ class PageController extends Controller {
         $pageModel = new PageModel();
         $page_data = $pageModel->get_page(array('_id' => $page_id));
         if ($page_data == null) {
-            $error['error'] = array("page not found");
-            return response(json_encode($error), 400);
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_id'),
+                    "ERR_MSG" => config('error_messages' . "." .
+                            config('error_constants.invalid_page_id'))));
+
+            $response_array = array("success" => FALSE, "errors" => $error_messages);
+            return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
         }
         PageModel::destroy($page_id);
-        return response("Page deleted successfully", 200);
+        $response_array = array("success" => TRUE);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
 }

@@ -10,7 +10,7 @@ use App\LayoutModel;
 
 class LayoutController extends Controller {
 
-        public function layout_list(Request $request) {
+    public function layout_list(Request $request) {
         $layoutModel = new LayoutModel();
         if (isset($request->_id) && $request->_id != "") {
             $layout_id = $request->_id;
@@ -26,23 +26,22 @@ class LayoutController extends Controller {
                                 config('error_constants.invalid_layout_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
-                return response(json_encode($response_array), 400);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
         } else {
             $layout_details = $layoutModel->layout_details();
         }
 
         $response_array = array("success" => TRUE, "data" => $layout_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
-    
-    
+
     public function add_or_update_layout(Request $request) {
         $json_data = $request->getContent();
         $layout_data_array = json_decode($json_data, true);
 
         if ($layout_data_array == null) {
-            return response(json_encode(array("error" => "Invalid Json")));
+            return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
         $layout_array = array(
@@ -56,7 +55,7 @@ class LayoutController extends Controller {
             'back_cover' => $layout_data_array['back_cover'],
         );
         // validation : TODO
-        
+
         $layout_id = $layout_data_array['_id'];
         $layoutModel = new LayoutModel();
         $layoutModel->create_or_update_layout($layout_array, $layout_id);
@@ -66,18 +65,23 @@ class LayoutController extends Controller {
             $success_msg = 'Layout Created Successfully';
         }
         $response_array = array("success" => TRUE, "data" => $success_msg, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
-     function delete_layout(Request $request) {
+    function delete_layout(Request $request) {
         $layout_id = trim($request->_id);
         $layoutModel = new LayoutModel();
         $layout_data = $layoutModel->layout_details(array('_id' => $layout_id));
         if ($layout_data == null) {
-            $error['error'] = array("Layout data not found");
-            return response(json_encode($error), 400);
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_layout_id'),
+                                        "ERR_MSG"=> config('error_messages'.".".
+                                                            config('error_constants.invalid_layout_id')))) ; 
+            $responseArray = array("success" => FALSE, "errors" => $error_messages);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         }
         LayoutModel::destroy($layout_id);
-        return response("Layout deleted successfully", 200);
+        $responseArray = array("success" => TRUE);
+        return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
     }
+
 }

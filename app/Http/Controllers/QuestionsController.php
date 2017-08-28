@@ -78,14 +78,14 @@ class QuestionsController extends Controller {
                                 config('error_constants.invalid_question_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
-                return response(json_encode($response_array), 400);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
         } else {
 
             $questions_details = $questionsModel->question_details();
         }
         $response_array = array("success" => TRUE, "data" => $questions_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
@@ -136,7 +136,7 @@ class QuestionsController extends Controller {
         $question_details = $questionsModel->question_search($data_array);
         
         $response_array = array("success" => TRUE, "data" => $question_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
      
     }
     
@@ -195,7 +195,7 @@ class QuestionsController extends Controller {
         $json_data = $request->getContent();
         $question = json_decode($json_data, true);
         if ($question == null) {
-            return response(json_encode(array("error" => "Invalid Json")));
+            return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
         $question_number = $question['question_no'];
@@ -230,7 +230,7 @@ class QuestionsController extends Controller {
 
         $response_array['success'] = TRUE;
 
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     function create_or_update_question($insert_data, $question_id) {
@@ -269,12 +269,17 @@ class QuestionsController extends Controller {
         $questionsModel = new QuestionsModel();
         $question_data = $questionsModel->get_question_details($question_id);
         if ($question_data == null) {
-            $error['error'] = array("question not found");
-            return response(json_encode($error), 400);
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_id'),
+                    "ERR_MSG" => config('error_messages' . "." .
+                            config('error_constants.invalid_question_id'))));
+
+            $response_array = array("success" => FALSE, "errors" => $error_messages);
+            return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
         }
 
         QuestionsModel::destroy($question_id);
-        return response("question deleted successfully", 200);
+        $response_array = array("success" => TRUE);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
 }

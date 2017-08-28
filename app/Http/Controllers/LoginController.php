@@ -53,11 +53,11 @@ class LoginController extends Controller {
         
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
         
-        $validator = Validator::make($request->all(), $rules);
+        $validator = Validator::make($request->all(), $rules,$formulated_messages);
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             $username = trim($request->username);
             $password = trim($request->password);
@@ -81,7 +81,7 @@ class LoginController extends Controller {
                 $responseArray = array("success" => FALSE, "errors" => $error_messages);
                 
                 
-                return response(json_encode($responseArray), 400);
+                return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
             }
 
             if ($is_valid_user) {
@@ -90,7 +90,7 @@ class LoginController extends Controller {
                 $token = $token_helper->generate_user_token($user_data->_id);
                 $result['token'] = $token;
                 $responseArray = array("success" => TRUE, "token" => $token);
-                return response(json_encode($responseArray),200);
+                return response(json_encode($responseArray),200)->header('Content-Type', 'application/json');
             }
         }
     }

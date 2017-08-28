@@ -17,6 +17,10 @@ return [
     'login_password_required' => 'E108',
     'login_invalid' => 'E109',
     'invalid_user_id' => 'E110',
+    'username_required' => 'E111',
+    'activation_key_required' => 'E112',
+    'activation_key_exists' => 'E113',
+    
     'media_type_required' => 'E301',
     'media_extension_required' => 'E302',
     'media_file_required' => 'E303',
@@ -26,14 +30,22 @@ return [
     'media_created_by_required' => 'E307',
     'invalid_media_created_by' => 'E308',
     'invalid_media_id' => 'E309',
+    'media_deleted_success' => 'E310',
+    
     'invalid_page_group_id' => 'E401',
+    
     'invalid_page_id' => 'E501',
+    'page_deleted_success' => 'E502',
+    
     'invalid_section_id' => 'E601',
+    
     'invalid_question_id' => 'E701',
+    
     'question_type_required' => 'E801',
     'block_required' => 'E802',
     'question_type_id_required' => 'E803',
     'invalid_question_type_id' => 'E804',
+    
     'organization_name_required' => 'E901',
     'organization_email_required' => 'E902',
     'organization_contact_person_required' => 'E903',
@@ -44,9 +56,29 @@ return [
     'invalid_organization_id' => 'E908',
     'organization_id_required' => 'E909',
     'organization_doesnot_exist' => 'E910',
-    'invalid_subject_id' => 'E111',
-    'invalid_book_id' => 'E121',
-    'invalid_layout_id' => 'E131',
+    'organization_deleted_success' => 'E911',
+    
+    'invalid_subject_id' => 'E1101',
+    
+    
+    
+    'invalid_layout_id' => 'E1301',
+    
+    'book_id_required' => 'E1401',
+    'book_page_required' => 'E1402',
+    'book_toc_required' => 'E1403',
+    'book_cover_required' => 'E1404',
+    'book_syllabus_required' => 'E1405',
+    'book_keyword_required' => 'E1406',
+    'book_organisation_required' => 'E1407',
+    'invalid_book_id' => 'E1408',
+    
+    'subject_id_required' => 'E1501',
+    'subject_code_required' => 'E1502',
+    'subject_title_required' => 'E1503',
+    'subject_domain_required' => 'E1504',
+    
+    
     
     
     

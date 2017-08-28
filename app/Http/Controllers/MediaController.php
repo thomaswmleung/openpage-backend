@@ -11,9 +11,7 @@ use App\Helpers\Token_helper;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\ErrorMessageHelper;
 
-
 class MediaController extends Controller {
-    
     /**
      * @SWG\Get(path="/media",
      *   tags={"Media"},
@@ -64,8 +62,8 @@ class MediaController extends Controller {
      *   }}
      * )
      */
-    public function media(Request $request) {    
-       $mediaModel = new MediaModel();
+    public function media(Request $request) {
+        $mediaModel = new MediaModel();
         if (isset($request->mid) && $request->mid != "") {
             $media_id = $request->mid;
 
@@ -75,21 +73,20 @@ class MediaController extends Controller {
             );
             $media_details = $mediaModel->media_details($data_array);
             if ($media_details == NULL) {
-                $error['error'] = array("Invalid media id");
-                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
-                                        "ERR_MSG"=> config('error_messages'.".".
-                                                            config('error_constants.invalid_media_id')))) ; 
-                
-                $response_array = array("success"=>FALSE,"errors"=>$error_messages);
-                return response(json_encode($response_array), 400);
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
+                        "ERR_MSG" => config('error_messages' . "." .
+                                config('error_constants.invalid_media_id'))));
+
+                $response_array = array("success" => FALSE, "errors" => $error_messages);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
-        }else {
+        } else {
             $search_key = $request->search;
-            $media_details = $mediaModel->media_details(NULL,$search_key);
+            $media_details = $mediaModel->media_details(NULL, $search_key);
         }
-        
-        $response_array = array("success" => TRUE,"data"=>$media_details,"errors"=>array());
-        return response(json_encode($response_array), 200);
+
+        $response_array = array("success" => TRUE, "data" => $media_details, "errors" => array());
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
@@ -185,7 +182,7 @@ class MediaController extends Controller {
             'usage' => 'required',
             'created_by' => 'required|exists:users,_id',
         );
-        
+
         $messages = [
             'type.required' => config('error_constants.media_type_required'),
             'extension.required' => config('error_constants.media_extension_required'),
@@ -196,16 +193,14 @@ class MediaController extends Controller {
             'created_by.required' => config('error_constants.media_created_by_required'),
             'created_by.exists' => config('error_constants.invalid_media_created_by')
         ];
-        
-         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
-         
-        $validator = Validator::make($media_array, $rules,$formulated_messages);
+
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+
+        $validator = Validator::make($media_array, $rules, $formulated_messages);
         if ($validator->fails()) {
-//            Log::error("errors in create media");
-//            Log::error(json_encode($validator->messages()));
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
 
             if ($request->hasFile('media_file')) {
@@ -219,26 +214,24 @@ class MediaController extends Controller {
 
                 $gcs_result = GCS_helper::upload_to_gcs('images/' . $media_name);
                 if (!$gcs_result) {
-                    $error['error'] = array("Error in upload of GCS");
-                    return response(json_encode($error), 400);
+                    $error['error'] = array("success" => FALSE, "error" => "Error in upload of GCS");
+                    return response(json_encode($error), 400)->header('Content-Type', 'application/json');
                 }
                 // delete your local pdf file here
                 unlink($destinationPath . "/" . $media_name);
 
                 $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
                 $media_array['url'] = $media_url;
-//                $media_array['url'] = "oiuytr";
-                
             } else {
                 $error['error'] = array("Something went wrong");
-                return response(json_encode($error), 400);
+                return response(json_encode($error), 400)->header('Content-Type', 'application/json');
             }
             //insert media
 
             MediaModel::create($media_array);
-            $response_array = array("success" => TRUE,"errors"=>array());
+            $response_array = array("success" => TRUE, "errors" => array());
 //            Log::error(json_encode($response_array));
-            return response(json_encode($response_array), 200);
+            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }
 
@@ -301,26 +294,26 @@ class MediaController extends Controller {
      * )
      */
     public function update_media(Request $request) {
-        
+
 //        $media_json = $request->getContent();
 //        $media_array = json_decode($media_json, TRUE);
 //        dd($request->json()->all());
 //
         $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
-        
+
         $rules = array(
             '_id' => 'required|exists:media,_id',
                 // 'updated_by' => 'required|exists:users,_id',
         );
 
-        
+
         $media_array = array();
 
         $media_array['_id'] = $request->mid;
         if (isset($request->owner) && $request->owner != "") {
             $media_array['owner'] = $request->owner;
         }
-        
+
         if (isset($request->usage) && $request->usage != "") {
             $media_array['usage'] = $request->usage;
         }
@@ -330,23 +323,37 @@ class MediaController extends Controller {
         if (isset($request->tag) && $request->tag != "") {
             $media_array['tag'] = $request->tag;
         }
-        
+
 
         $media_array['updated_by'] = $user_id;
+        $messages = [
+            'type.required' => config('error_constants.media_type_required'),
+            'extension.required' => config('error_constants.media_extension_required'),
+            'media_file.required' => config('error_constants.media_file_required'),
+            'media_file.mimes' => config('error_constants.invalid_media_file_mime'),
+            'owner.required' => config('error_constants.media_owner_required'),
+            'usage.required' => config('error_constants.media_usage_required'),
+            'created_by.required' => config('error_constants.media_created_by_required'),
+            'created_by.exists' => config('error_constants.invalid_media_created_by')
+        ];
 
-   
-        $validator = Validator::make($media_array, $rules);
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+
+        $validator = Validator::make($media_array, $rules, $formulated_messages);
         if ($validator->fails()) {
-            return response($validator->messages(), 400);
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             //$media_array = $request->all();
 
             $result = $this->update_media_data($media_array);
             if ($result) {
-                return response("Media updated successfully", 200);
+                $responseArray = array("success" => TRUE, "data" => "Media updated successfully");
+                return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
             } else {
-                $error['error'] = array("Something went wrong");
-                return response(json_encode($error), 400);
+                $responseArray = array("success" => FALSE, "error" => "Something went wrong");
+                return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
             }
         }
     }
@@ -387,18 +394,23 @@ class MediaController extends Controller {
         $mediaModel = new MediaModel();
         $media_data = $mediaModel->media_details(array('_id' => $media_id));
         if ($media_data == null) {
-            $error['error'] = array("media not found");
-            return response(json_encode($error), 400);
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
+                    "ERR_MSG" => config('error_messages' . "." .
+                            config('error_constants.invalid_media_id'))));
+
+            $response_array = array("success" => FALSE, "errors" => $error_messages);
+            return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
         }
         $data = explode("/", $media_data['url']); // fetching file name from URL
         $objectName = end($data);
         $gcs_result = GCS_helper::delete_from_gcs($objectName);
         if ($gcs_result) {
             MediaModel::destroy($media_id);
-            return response("Media Deleted successfully", 200);
+            $response_array = array("success" => TRUE);
+            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         } else {
-            $error['error'] = array("Something went wrong");
-            return response(json_encode($error), 400);
+            $responseArray = array("success" => FALSE, "errors" => "Something went wrong");
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         }
     }
 
