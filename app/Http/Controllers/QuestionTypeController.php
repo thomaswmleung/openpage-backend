@@ -266,7 +266,7 @@ class QuestionTypeController extends Controller {
         );
         $messages = [
             '_id.required' => config('error_constants.question_type_id_required'),
-            'exists.required' => config('error_constants.invalid_question_type_id'),
+            '_id.exists' => config('error_constants.invalid_question_type_id'),
         ];
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
         $validator = Validator::make($question_type_array, $rules, $formulated_messages);

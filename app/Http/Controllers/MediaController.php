@@ -223,14 +223,13 @@ class MediaController extends Controller {
                 $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
                 $media_array['url'] = $media_url;
             } else {
-                $error['error'] = array("Something went wrong");
-                return response(json_encode($error), 400)->header('Content-Type', 'application/json');
+                $response_array = array("success" => FALSE, "errors" => "Something went wrong");
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
             //insert media
 
             MediaModel::create($media_array);
             $response_array = array("success" => TRUE, "errors" => array());
-//            Log::error(json_encode($response_array));
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }

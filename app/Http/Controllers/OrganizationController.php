@@ -262,7 +262,7 @@ class OrganizationController extends Controller {
         );
         $messages = [
             '_id.required' => config('error_constants.organization_id_required'),
-            'exists.required' => config('error_constants.organization_doesnot_exist'),
+            '_id.exists' => config('error_constants.organization_doesnot_exist'),
         ];
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
         $validator = Validator::make($organization_array, $rules, $formulated_messages);

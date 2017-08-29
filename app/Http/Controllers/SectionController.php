@@ -68,13 +68,13 @@ class SectionController extends Controller {
                                 config('error_constants.invalid_section_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
-                return response(json_encode($response_array), 400);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
         } else {
             $section_details = $sectionModel->section_list();
         }
         $response_array = array("success" => TRUE, "data" => $section_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
     
     /**
@@ -125,7 +125,7 @@ class SectionController extends Controller {
         $section_details = $sectionModel->section_search($data_array);
         
         $response_array = array("success" => TRUE, "data" => $section_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
      
     }
 
@@ -184,7 +184,7 @@ class SectionController extends Controller {
         $json_data = $request->getContent();
         $section = json_decode($json_data, true);
         if ($section == null) {
-            return response(json_encode(array("error" => "Invalid Json")));
+            return response(json_encode(array("success"=>FALSE,"error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
         $questions_ids = array();
@@ -256,7 +256,7 @@ class SectionController extends Controller {
 
         $response_array['success'] = TRUE;
 
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     function create_or_update_question($insert_data, $question_id) {
@@ -300,11 +300,16 @@ class SectionController extends Controller {
         $sectionModel = new SectionModel();
         $section_data = $sectionModel->get_section_details($section_id);
         if ($section_data == null) {
-            $error['error'] = array("section not found");
-            return response(json_encode($error), 400);
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_section_id'),
+                    "ERR_MSG" => config('error_messages' . "." .
+                            config('error_constants.invalid_section_id'))));
+
+            $response_array = array("success" => FALSE, "errors" => $error_messages);
+            return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
         }
         SectionModel::destroy($section_id);
-        return response("Section deleted successfully", 200);
+        $response_array = array("success" => TRUE);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
 }

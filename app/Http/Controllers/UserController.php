@@ -159,6 +159,7 @@ class UserController extends Controller {
         $validator = Validator::make($user_data, $rules,$formulated_messages);
         
         if ($validator->fails()) {
+            dd($validator->messages());
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');

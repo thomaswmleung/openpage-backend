@@ -77,14 +77,14 @@ class SubjectController extends Controller {
                                 config('error_constants.invalid_subject_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
-                return response(json_encode($response_array), 400);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             }
         } else {
             $subject_details = $subjectModel->subject_details();
         }
 
         $response_array = array("success" => TRUE, "data" => $subject_details, "errors" => array());
-        return response(json_encode($response_array), 200);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
@@ -147,7 +147,7 @@ class SubjectController extends Controller {
         $subject_data_array = json_decode($json_data, true);
 
         if ($subject_data_array == null) {
-            return response(json_encode(array("error" => "Invalid Json")));
+            return response(json_encode(array("success"=>FALSE,"error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
         $subject_array = array(
@@ -343,7 +343,7 @@ class SubjectController extends Controller {
 
             if (count($result)) {
                 $response_array['success'] = TRUE;
-                return response('Subject ' . ($subject_id == "" ? " Created " : " Updated ") . ' Successfully', 200);
+                return response('Subject ' . ($subject_id == "" ? " Created " : " Updated ") . ' Successfully', 200)->header('Content-Type', 'application/json');
             }
         }
     }
@@ -378,10 +378,16 @@ class SubjectController extends Controller {
         $subject_data = $subjectModel->subject_details(array('_id' => $subject_id));
         if ($subject_data == null) {
             $error['error'] = array("subject not found");
-            return response(json_encode($error), 400);
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_subject_id'),
+                    "ERR_MSG" => config('error_messages' . "." .
+                            config('error_constants.invalid_subject_id'))));
+
+            $response_array = array("success" => FALSE, "errors" => $error_messages);
+            return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
         }
         SubjectModel::destroy($subject_id);
-        return response("Subject deleted successfully", 200);
+        $response_array = array("success" => TRUE);
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
 }
