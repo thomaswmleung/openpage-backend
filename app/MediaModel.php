@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class MediaModel extends Eloquent {
 
     protected $collection = 'media';
-    protected $fillable = array('type', 'extension', 'url', 'owner', 'right', 'usage', 'remark', 'tag', 'created_by', 'updated_by');
+    protected $fillable = array('type', 'extension', 'url', 'right', 'usage', 'remark', 'tag', 'created_by', 'updated_by');
 
     public function media_details($media_array = NULL, $search_key = NULL) {
         $media_query = DB::collection('media');

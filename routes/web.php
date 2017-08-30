@@ -87,6 +87,11 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::put('layout', 'LayoutController@add_or_update_layout');
     Route::delete('layout', 'LayoutController@delete_layout');
     
+    Route::get('resource', 'ResourceController@resource');
+    Route::get('resource/{_id}', 'ResourceController@resource');
+    Route::post('resource', 'ResourceController@create_or_update_resource');
+   
+    
 });
 
 //Route::get('page_group', 'PageGroupController@create_page_group');

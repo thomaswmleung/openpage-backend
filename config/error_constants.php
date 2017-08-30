@@ -78,8 +78,12 @@ return [
     'subject_title_required' => 'E1503',
     'subject_domain_required' => 'E1504',
     
-    
-    
+    'resource_title_required' => 'E1601',
+    'resource_description_required' => 'E1602',
+    'resource_type_required' => 'E1603',
+    'resource_url_required' => 'E1604',
+    'resource_id_required' => 'E1605',
+    'invalid_resource_id' => 'E1606',
     
     
 ];

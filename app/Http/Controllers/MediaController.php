@@ -119,13 +119,6 @@ class MediaController extends Controller {
      *         type="file"
      *     ),
      *   @SWG\Parameter(
-     *     name="owner",
-     *     in="query",
-     *     description="user_id or organization_id",
-     *     required=true,
-     *     type="string"
-     *   ),
-     *   @SWG\Parameter(
      *     name="usage[]",
      *     in="query",
      *     description="The page ids array field.",
@@ -168,7 +161,6 @@ class MediaController extends Controller {
             'type' => $request->type,
             'extension' => $request->extension,
             'media_file' => $request->file('media_file'),
-            'owner' => $request->owner,
             'usage' => $request->usage,
             'remark' => $request->remark,
             'tag' => $request->tag,
@@ -178,7 +170,6 @@ class MediaController extends Controller {
             'type' => 'required',
             'extension' => 'required',
             'media_file' => 'required|mimes:jpeg,png,jpg,mp3,ogg,mp4,pdf,zip',
-            'owner' => 'required',
             'usage' => 'required',
             'created_by' => 'required|exists:users,_id',
         );
@@ -188,7 +179,6 @@ class MediaController extends Controller {
             'extension.required' => config('error_constants.media_extension_required'),
             'media_file.required' => config('error_constants.media_file_required'),
             'media_file.mimes' => config('error_constants.invalid_media_file_mime'),
-            'owner.required' => config('error_constants.media_owner_required'),
             'usage.required' => config('error_constants.media_usage_required'),
             'created_by.required' => config('error_constants.media_created_by_required'),
             'created_by.exists' => config('error_constants.invalid_media_created_by')
@@ -228,8 +218,8 @@ class MediaController extends Controller {
             }
             //insert media
 
-            MediaModel::create($media_array);
-            $response_array = array("success" => TRUE, "errors" => array());
+            $media_data = MediaModel::create($media_array);
+            $response_array = array("success" => TRUE,"data"=>$media_data, "errors" => array());
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }
@@ -245,13 +235,6 @@ class MediaController extends Controller {
      *     name="mid",
      *     in="query",
      *     description="ID of the media that needs to be updated",
-     *     required=true,
-     *     type="string"
-     *   ),
-     *   @SWG\Parameter(
-     *     name="owner",
-     *     in="query",
-     *     description="user_id or organization_id",
      *     required=true,
      *     type="string"
      *   ),
@@ -309,9 +292,6 @@ class MediaController extends Controller {
         $media_array = array();
 
         $media_array['_id'] = $request->mid;
-        if (isset($request->owner) && $request->owner != "") {
-            $media_array['owner'] = $request->owner;
-        }
 
         if (isset($request->usage) && $request->usage != "") {
             $media_array['usage'] = $request->usage;
@@ -330,7 +310,6 @@ class MediaController extends Controller {
             'extension.required' => config('error_constants.media_extension_required'),
             'media_file.required' => config('error_constants.media_file_required'),
             'media_file.mimes' => config('error_constants.invalid_media_file_mime'),
-            'owner.required' => config('error_constants.media_owner_required'),
             'usage.required' => config('error_constants.media_usage_required'),
             'created_by.required' => config('error_constants.media_created_by_required'),
             'created_by.exists' => config('error_constants.invalid_media_created_by')

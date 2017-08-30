@@ -71,6 +71,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   name="Question",
  *   description="Question related API's"
  * )
+ * @SWG\Tag(
+ *   name="Resource",
+ *   description="Resource related API's"
+ * )
  * 
  */
 class Controller extends BaseController

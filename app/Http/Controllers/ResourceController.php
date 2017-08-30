@@ -1,0 +1,209 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Config;
+use App\Helpers\Token_helper;
+use Illuminate\Support\Facades\Log;
+use App\Helpers\ErrorMessageHelper;
+use App\ResourceModel;
+
+class ResourceController extends Controller {
+    /**
+     * @SWG\Get(path="/resource",
+     *   tags={"Resource"},
+     *   summary="Returns list of resource",
+     *   description="Returns resource data",
+     *   operationId="resource",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="search",
+     *     in="query",
+     *     description="Search based on remark and tags",
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+    /**
+     * @SWG\Get(path="/resource/{_id}",
+     *   tags={"Resource"},
+     *   summary="Returns resource data",
+     *   description="Returns resource data",
+     *   operationId="resource",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="path",
+     *     description="ID of the resource that needs to be displayed",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid resource id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function resource(Request $request) {
+        $resourceModel = new ResourceModel();
+        if (isset($request->_id) && $request->_id != "") {
+            $resource_id = $request->_id;
+
+            // get details
+            $data_array = array(
+                '_id' => $resource_id
+            );
+            $resource_details = $resourceModel->$resource_details($data_array);
+            if ($resource_details == NULL) {
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
+                        "ERR_MSG" => config('error_messages' . "." .
+                                config('error_constants.invalid_media_id'))));
+
+                $response_array = array("success" => FALSE, "errors" => $error_messages);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            }
+        } else {
+            $search_key = $request->search;
+            $resource_details = $resourceModel->resource_details(NULL, $search_key);
+        }
+
+        $response_array = array("success" => TRUE, "data" => $resource_details, "errors" => array());
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
+    }
+
+    /**
+     * @SWG\Post(path="/resource",
+     *   tags={"Resource"},
+     *   summary="Creating/Storing new resource ",
+     *   description="Stores resource in the system",
+     *   operationId="create_or_update_resource",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="title",
+     *     in="query",
+     *     description="Title of resource",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="description",
+     *     in="query",
+     *     description="Description of resource",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="type",
+     *     in="query",
+     *     description="Type of resource",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="url",
+     *     in="query",
+     *     description="URL of resource",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="remark",
+     *     in="query",
+     *     description="Remark of the resource",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="tag[]",
+     *     in="query",
+     *     description="tags for the resource.",
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function create_or_update_resource(Request $request) {
+        $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
+        
+        
+
+        $section_id = $this->create_or_update_section($insert_data, $section_id);
+        $resource_array = array(
+            'title' => $request->title,
+            'description' => $request->description,
+            'type' => $request->type,
+            'url' => $request->url,
+            'remark' => $request->remark,
+            'tag' => $request->tag,
+            'created_by' => $user_id,
+        );
+        $rules = array(
+            'title' => 'required',
+            'description' => 'required',
+            'type' => 'required',
+            'url' => 'required',
+            'created_by' => 'required|exists:users,_id',
+        );
+
+        if (isset($request->_id) && $request->_id != "") {
+            $resource_id = $request->_id;
+            $resource_array['_id'] = $resource_id;
+            $rules['_id']='required|exists:resource,_id';
+        }
+        $messages = [
+            'title.required' => config('error_constants.resource_title_required'),
+            'description.required' => config('error_constants.resource_description_required'),
+            'type.required' => config('error_constants.resource_type_required'),
+            'url.required' => config('error_constants.resource_url_required'),
+            'created_by.required' => config('error_constants.media_created_by_required'),
+            'created_by.exists' => config('error_constants.invalid_media_created_by'),
+            '_id.required' => config('error_constants.resource_id_required'),
+            '_id.exists' => config('error_constants.invalid_resource_id')
+        ];
+
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+
+        $validator = Validator::make($resource_array, $rules, $formulated_messages);
+        if ($validator->fails()) {
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+        } else {
+
+            $resource_data = ResourceModel::create($resource_array);
+            $response_array = array("success" => TRUE,"data"=>$resource_data, "errors" => array());
+            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
+        }
+    }
+
+
+
+
+}

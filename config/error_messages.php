@@ -75,4 +75,11 @@ return [
     config('error_constants.subject_code_required') => "Subject Code is Required",
     config('error_constants.subject_title_required') => "Subject title is Required",
     config('error_constants.subject_domain_required') => "Subject Domain is Required",
+    
+    config('error_constants.resource_id_required') => "Resourse ID is Required",
+    config('error_constants.invalid_resource_id') => "Invalid resource id",
+    config('error_constants.resource_title_required') => "Resourse title is Required",
+    config('error_constants.resource_description_required') => "Description is Required",
+    config('error_constants.resource_type_required') => "Resourse type is Required",
+    config('error_constants.resource_url_required') => "Resourse url is Required",
 ];
