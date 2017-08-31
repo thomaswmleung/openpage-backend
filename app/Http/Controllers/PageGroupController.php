@@ -296,12 +296,25 @@ class PageGroupController extends Controller {
                     /*  $page_back_ground_id = $this->create_background($back_ground_data); */
 
                     $page_remark = $page['remark'];
-
+                    
+                    $page_preview_index_array = array();
+                    $page_preview_url_array = array();
+                    if(isset($page['actual_page_index_array'])
+                            && isset($page_data_array['preview_image_array'])){
+                        $page_preview_index_array = $page['actual_page_index_array'];
+                        foreach($page_preview_index_array as $actualPageIndex){
+                            if(isset($page_data_array['preview_image_array'][$actualPageIndex])){
+                                array_push($page_preview_url_array, $page_data_array['preview_image_array'][$actualPageIndex]); 
+                            }
+                        }
+                     
+                    }
                     $insert_page_data = array(
                         'overlay' => $ovelay_data,
                         'main_id' => $main_id,
                         'background' => $back_ground_data,
-                        'remark' => $page_remark
+                        'remark' => $page_remark,
+                        'preview_images' => $page_preview_url_array
                     );
 
                     $page_id = "";
