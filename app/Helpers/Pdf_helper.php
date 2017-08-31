@@ -39,8 +39,10 @@ class Pdf_helper {
                 $count = $im->getNumberImages();
 
                 for ($page_index = 0; $page_index < $count; $page_index++) {
-
-                    $pdf_img = new Imagick($pdf_path . "[" . $page_index . "]");
+                    $pdf_img =new Imagick();
+                    $pdf_img->setresolution(210, 297);
+                    $pdf_img->readimage($pdf_path . "[" . $page_index . "]");
+//                    $pdf_img = new Imagick($pdf_path . "[" . $page_index . "]");
                     $pdf_img->setImageFormat('jpg');
 
                     $image_name_from_file = substr($filename, 0, strpos($filename, "."));
@@ -49,9 +51,9 @@ class Pdf_helper {
                     $image_absolute_path = public_path($image_path);
 
 
-                    $pdf_img->setResolution(2100, 2970);
-                    $pdf_img->setImageCompression(Imagick::COMPRESSION_JPEG);
-                    $pdf_img->setImageCompressionQuality(100);
+//                    $pdf_img->setResolution(2100, 2970);
+//                    $pdf_img->setImageCompression(Imagick::COMPRESSION_JPEG);
+//                    $pdf_img->setImageCompressionQuality(100);
                     $pdf_img->writeImage($image_absolute_path);
 
 //                    var_dump($image_absolute_path);
