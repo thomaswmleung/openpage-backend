@@ -18,6 +18,7 @@ class Pdf_helper {
         $fpdf = new tFPDF();
         $fpdf->AddFont('msjh', '', 'msjh.ttf', true);
         $fpdf->SetFont('msjh', '', 14);
+        $fpdf->SetAutoPageBreak(false);
         $responseArray = $page_data_array;
 
         if (isset($page_data_array['page_group']['page'])) {
@@ -27,7 +28,6 @@ class Pdf_helper {
             if (isset($responseArray['page_group']['import_url']) && $responseArray['page_group']['import_url'] != null) {
 
                 $filename = basename($responseArray['page_group']['import_url']);
-//                var_dump($filename);
 
                 $uniqueId = uniqid();
 
@@ -39,8 +39,10 @@ class Pdf_helper {
                 $count = $im->getNumberImages();
 
                 for ($page_index = 0; $page_index < $count; $page_index++) {
-
-                    $pdf_img = new Imagick($pdf_path . "[" . $page_index . "]");
+                    $pdf_img = new Imagick();
+                    $pdf_img->setresolution(210, 297);
+                    $pdf_img->readimage($pdf_path . "[" . $page_index . "]");
+//                    $pdf_img = new Imagick($pdf_path . "[" . $page_index . "]");
                     $pdf_img->setImageFormat('jpg');
 
                     $image_name_from_file = substr($filename, 0, strpos($filename, "."));
@@ -49,9 +51,9 @@ class Pdf_helper {
                     $image_absolute_path = public_path($image_path);
 
 
-                    $pdf_img->setResolution(2100, 2970);
-                    $pdf_img->setImageCompression(Imagick::COMPRESSION_JPEG);
-                    $pdf_img->setImageCompressionQuality(100);
+//                    $pdf_img->setResolution(2100, 2970);
+//                    $pdf_img->setImageCompression(Imagick::COMPRESSION_JPEG);
+//                    $pdf_img->setImageCompressionQuality(100);
                     $pdf_img->writeImage($image_absolute_path);
 
 //                    var_dump($image_absolute_path);
@@ -103,12 +105,13 @@ class Pdf_helper {
             $page_array = $page_data_array['page_group']['page'];
             $responseArray['page_group']['page'] = $page_array;
 
+            $actualPDFPageIndex = 0;
             foreach ($page_array as $page) {
-
-
+                $actualPageIndexArray = array();
+                array_push($actualPageIndexArray,$actualPDFPageIndex);
                 // create new blank page
                 $fpdf->AddPage();
-
+                $actualPDFPageIndex++;
                 // displaying background image
                 $background_data = $page['background'];
                 $background_image_path = $background_data[0]['url'];
@@ -165,34 +168,65 @@ class Pdf_helper {
                         $questionsRespoonseArray = array();
 
                         foreach ($section_question_array as $question) {
+                            $estimatedHeight = 0;
+//                            $estimatedHeight = $fpdf->getStringHeight (200, $question['question_text']);
+                            $estimatedHeight = $this->getStringHeight ($fpdf,200,5, $question['question_text']);
+                            
+                            $question_image_url = $question['image'];
+                            $answer_array = $question['answer'];
+                            if ($question_image_url != "") {
+                                $imgAttrArray = getimagesize($question_image_url);
 
+                                $imageWidthInPixel = $imgAttrArray[0];
+                                $imageHeightInPixel = $imgAttrArray[1];
+//                              $imgRatio = $imgAttrArray[0] / $imgAttrArray[1];
+                                $imageWidth = $imageWidthInPixel / 3.78;
+                                $imageHeight = $imageHeightInPixel / 3.78;
+                                if ($imageWidth > 200) {
+                                    $imageWidthResized = 200;
+                                    $imageHeightResized = ($imageHeight / $imageWidth) * 200;
+                                } else {
+                                    $imageWidthResized = $imageWidth;
+                                    $imageHeightResized = $imageHeight;
+                                }
+                                $estimatedHeight += $imageHeightResized;
+                            }
+                            
+                            $estimatedHeight += sizeof($answer_array) * 5;
+                            // Answers will have a heading of height 5
+                            $estimatedHeight += 5;
+                            
+                            if($fpdf->CheckPageBreak($estimatedHeight)){
+                                $currentY = 50;
+                                $fpdf->AddPage();
+                                array_push($actualPageIndexArray,$actualPDFPageIndex);
+                                $actualPDFPageIndex++;
+                            }
                             $fpdf->SetXY(10, $currentY);
                             $question['x'] = 10;
                             $question['y'] = $currentY;
                             $question_number = $question['question_no'];
                             $question_text = $question['question_text'];
 //                        $question_type = $questions['question_type'];
-                            $question_image_url = $question['image'];
 
-                            $fpdf->MultiCell(200, 5, $question_text, 0, 'L');
+
+                            $fpdf->MultiCell(200, 5, $question_number . ") " . $question_text, 0, 'L');
                             $currentY = $fpdf->GetY() + 5;
 
-                            $imgAttrArray = getimagesize($question_image_url);
 
-                            $imgRatio = $imgAttrArray[0] / $imgAttrArray[1];
 
 
                             if (isset($question_image_url)
                                     AND $question_image_url != ""
                                     AND $question_image_url != NULL) {
-                                $fpdf->Image($question_image_url, 10, $currentY, 100, 20);
+                                $fpdf->Image($question_image_url, 10, $currentY, $imageWidthResized, $imageHeightResized);
                             }
-                            $currentY += 20;
+                            $currentY += $imageHeightResized;
                             $fpdf->SetXY(10, $currentY);
                             $fpdf->MultiCell(200, 5, "Answers: ", 0, 'L');
                             $currentY = $fpdf->GetY() + 3;
 
-                            $answer_array = $question['answer'];
+                            
 //                        if (sizeof($answer_array) == 0) {
 //                            $isValidJson = FALSE;
 //                        }
@@ -218,6 +252,7 @@ class Pdf_helper {
                             $questionsRespoonseArray[] = $question;
                         }
                         $responseArray['page_group']['page'][$pageCOunt]['main']['section'][$sectionCount]['question'] = $questionsRespoonseArray;
+                        
                         $sectionCount++;
                     }
                 }
@@ -249,8 +284,8 @@ class Pdf_helper {
                         $text_h = $overlay['h'];
 
                         // Set font size based on w and h 
-                        if($text_w != "" && $text_h != "" ){
-                        $fpdf->MultiCell($text_w, $text_h, $overlay_text, 0, 'C');
+                        if ($text_w != "" && $text_h != "") {
+                            $fpdf->MultiCell($text_w, $text_h, $overlay_text, 0, 'C');
                         }
                     }
 
@@ -267,6 +302,7 @@ class Pdf_helper {
                 if (isset($overlay_data[0]['string']) && $overlay_data[0]['string'] != "" && $overlay_data[0]['string'] != NULL) {
                     
                 }
+                $responseArray['page_group']['page'][$pageCOunt]['actual_page_index_array']= $actualPageIndexArray;
                 $pageCOunt++;
             }
         } else {
@@ -303,7 +339,11 @@ class Pdf_helper {
         $im->destroy();
         $preview_image_array = array();
         for ($pageIndex = 0; $pageIndex < $page_count; $pageIndex++) {
-            $pdf_img = new Imagick($pdf_path . "[" . $pageIndex . "]");
+            
+            $pdf_img = new Imagick();
+            $pdf_img->setresolution(210, 297);
+            $pdf_img->readimage($pdf_path . "[" . $pageIndex . "]");
+//            $pdf_img = new Imagick($pdf_path . "[" . $pageIndex . "]");
             $pdf_img->setImageFormat('jpg');
             $image_name = $pdf_name . "pdf_image_" . $pageIndex . ".jpg";
             $gcs_path = "pdf_images" . DIRECTORY_SEPARATOR . $image_name;
@@ -331,6 +371,15 @@ class Pdf_helper {
         return json_encode($responseArray);
     }
 
+    public function getStringHeight($fpdf,$width,$lineHeight,$text){
+        $tempPdf = clone $fpdf;
+        $currentY= $tempPdf->GetY();
+        
+        $tempPdf->MultiCell($width, $lineHeight, $text, 0, 'L');
+        
+        $finalY = $tempPdf->GetY();
+        return $finalY - $currentY;
+    }
     static public function create_page($fpdf, $page) {
 
         // create new blank page

@@ -8,7 +8,7 @@ use App\MainModel;
 class PageModel extends Eloquent {
 
     protected $collection = 'page';
-    protected $fillable = array('overlay', 'main_id', 'background', 'remark');
+    protected $fillable = array('overlay', 'main_id', 'background', 'remark','is_imported','preview_images');
 
      public function add_or_update_page($insert_data, $page_id = "") {
         if (!isset($insert_data['is_imported'])
