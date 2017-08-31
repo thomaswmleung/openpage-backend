@@ -70,7 +70,7 @@ class LoginController extends Controller {
             $user_data = $user_model->aunthenticate($data_array);
             $is_valid_user = TRUE;
             if (count($user_data) != 0) {
-                $result['user_id'] = $user_data->_id;
+                $result['_id'] = $user_data->_id;
             } else {
                 $is_valid_user = FALSE;
                 $error_messages = array(array("ERR_CODE" => config('error_constants.login_invalid'),
@@ -89,7 +89,7 @@ class LoginController extends Controller {
               //  $token = $token_helper->generate_token();
                 $token = $token_helper->generate_user_token($user_data->_id);
                 $result['token'] = $token;
-                $responseArray = array("success" => TRUE, "token" => $token);
+                $responseArray = array("success" => TRUE, "data" => $result);
                 return response(json_encode($responseArray),200)->header('Content-Type', 'application/json');
             }
         }

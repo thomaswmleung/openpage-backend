@@ -30,14 +30,16 @@ class ResourceModel extends Eloquent {
         }
         return $result_data;
     }
-
-    public function update_media($data) {
-        $result = MediaModel::find($data['_id'])->update($data);
-        return $result;
+    public function resource_data($resource_id) {
+        $result_data = ResourceModel::find($resource_id);
+        return $result_data;
     }
 
-    public function get_random_media() {
-        return MediaModel::all()->first();
+
+    
+    public function add_or_edit_resource($resource_data, $resource_id) {       
+        $result = ResourceModel::updateOrCreate(['_id' => $resource_id], $resource_data);
+        return $result;
     }
 
 }

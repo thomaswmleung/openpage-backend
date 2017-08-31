@@ -287,6 +287,7 @@ class BookController extends Controller {
             $data_array = array(
                 'page' => $book_data_array['page'],
                 'toc' => $book_data_array['toc'],
+                'cover' => $book_data_array['cover'],
                 'syllabus' => $book_data_array['syllabus'],
                 'organisation' => $book_data_array['organisation'],
                 'created_by' => $book_data_array['created_by'],

@@ -90,6 +90,8 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::get('resource', 'ResourceController@resource');
     Route::get('resource/{_id}', 'ResourceController@resource');
     Route::post('resource', 'ResourceController@create_or_update_resource');
+    Route::put('resource', 'ResourceController@create_or_update_resource');
+    Route::delete('resource', 'ResourceController@delete_resource');
    
     
 });
