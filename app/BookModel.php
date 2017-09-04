@@ -7,24 +7,62 @@ use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 class BookModel extends Eloquent {
 
     protected $collection = 'book';
-    protected $fillable = array('page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation','created_by','updated_by');
+    protected $fillable = array('page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation', 'created_by', 'updated_by');
 
-       
-     public function create_book($insert_data, $main_id) {       
+    public function create_book($insert_data, $main_id) {
         //$result = MainModel::create($insert_data);
-         $result = BookModel::updateOrCreate(
-                 ['_id' => $main_id],
-                 $insert_data
-                 );
+        $result = BookModel::updateOrCreate(
+                        ['_id' => $main_id], $insert_data
+        );
         return $result->_id;
     }
-    
-    public function book_details($book_array = NULL) {
-        if ($book_array != NULL) {
-            $book_data = BookModel::where($book_array)->first();
+
+    public function book_details($query_details = NULL) {
+        if ($query_details == NULL) {
+            $skip = 0;
+            $limit = config('constants.default_query_limit');
+            $search_key = "";
         } else {
-            $book_data = BookModel::all();
+            if (isset($query_details['skip'])) {
+                $skip = $query_details['skip'];
+            } else {
+                $skip = 0;
+            }
+            if (isset($query_details['limit'])) {
+                $limit = $query_details['limit'];
+            } else {
+                $limit = config('constants.default_query_limit');
+            }
+            if (isset($query_details['search_key'])) {
+                $search_key = $query_details['search_key'];
+            } else {
+                $search_key = "";
+            }
         }
+
+        if ($search_key != "") {
+            $book_data = BookModel::where('keyword', 'like', "%$search_key%")
+                    ->skip($skip)
+                    ->take($limit)
+                    ->get();
+        } else {
+            $book_data = BookModel::skip($skip)->take($limit)->get();
+        }
+        return $book_data;
+    }
+
+    public function total_count($search_key) {
+        if ($search_key != "") {
+            $total_count = BookModel::where('keyword', 'like', "%$search_key%")
+                    ->count();
+        } else {
+            $total_count = BookModel::count();
+        }
+        return $total_count;
+    }
+
+    public function find_book_details($book_id) {
+        $book_data = BookModel::find($book_id);
         return $book_data;
     }
 

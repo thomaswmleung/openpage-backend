@@ -16,7 +16,24 @@ class PageController extends Controller {
      *   description="Returns page data",
      *   operationId="page_list",
      *   produces={"application/json"},
-     *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -55,93 +72,46 @@ class PageController extends Controller {
      * )
      */
     public function page_list(Request $request) {
-        $page_id = NULL;
+        $pageModel = new PageModel();
         if (isset($request->page_id) && $request->page_id != "") {
             $page_id = $request->page_id;
-            $pageModel = new PageModel();
-            $exists = $pageModel->get_page_details($page_id);
-            if (!$exists) {
+            
+            $page_data = $pageModel->find_page_details($page_id);
+            if ($page_data == NULL) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_id'),
                         "ERR_MSG" => config('error_messages' . "." .
                                 config('error_constants.invalid_page_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            }else{
+                $response_array = array("success" => TRUE, "data" => $page_data, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
+        }else{
+            $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int) $request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int) $request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
+
+            $page_data = $pageModel->page_list($query_details);
+            $total_count = $pageModel->total_count($search_key);
         }
 
-//        $skip = NULL;
-        $skip = 0;
-        if (isset($request->skip) && $request->skip != "") {
-            $skip = $request->skip;
-        }
-//        $limit = NULL;
-        $limit = 100;
-        if (isset($request->limit) && $request->limit != "") {
-            $limit = $request->limit;
-        }
-
-        $data_array = array(
-            '_id' => $page_id,
-            'skip' => $skip,
-            'limit' => $limit
-        );
-
-        $pageModel = new PageModel();
-        $page_details = $pageModel->page_list($data_array);
-
-        $response_array = array("success" => TRUE, "data" => $page_details, "errors" => array());
-        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
-    }
-
-    /**
-     * @SWG\Get(path="/page_search",
-     *   tags={"Page"},
-     *   summary="Returns page data based on search keyword",
-     *   description="Returns page data",
-     *   operationId="page_search",
-     *   produces={"application/json"},
-     *   @SWG\Parameter(
-     *     name="search_key",
-     *     in="query",
-     *     description="Search keyword that needs to searched in pages",
-     *     required=true,
-     *     type="string"
-     *   ),
-     *   @SWG\Response(
-     *     response=200,
-     *     description="successful operation",
-     *   ),
-     *  @SWG\Response(
-     *     response=400,
-     *     description="Invalid page id",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
-     * )
-     */
-    public function page_search(Request $request) {
-        $search_key = $request->search_key;
-//      $skip = NULL;
-        $skip = 0;
-        if (isset($request->skip) && $request->skip != "") {
-            $skip = $request->skip;
-        }
-//      $limit = NULL;
-        $limit = 100;
-        if (isset($request->limit) && $request->limit != "") {
-            $limit = $request->limit;
-        }
-        $data_array = array(
-            'search_key' => $search_key,
-            'skip' => $skip,
-            'limit' => $limit
-        );
-        $pageModel = new PageModel();
-        $page_details = $pageModel->page_search($data_array);
-
-        $response_array = array("success" => TRUE, "data" => $page_details, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $page_data,"total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 

@@ -15,7 +15,24 @@ class OrganizationController extends Controller {
      *   description="Returns organization  data",
      *   operationId="organization",
      *   produces={"application/json"},
-     *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -56,14 +73,8 @@ class OrganizationController extends Controller {
     public function organization(Request $request) {
         $organizationModel = new OrganizationModel();
         if (isset($request->_id)) {
-
-
             $organization_id = $request->_id;
-            // get user details
-            $data_array = array(
-                '_id' => $organization_id
-            );
-            $organization_details = $organizationModel->organization_details($data_array);
+            $organization_details = $organizationModel->find_organization_details($organization_id);
             if ($organization_details == NULL) {
                 $error['error'] = array("Invalid user id");
 
@@ -73,14 +84,35 @@ class OrganizationController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            }else{
+                $response_array = array("success" => TRUE, "data" => $organization_details, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
+             $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int) $request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int) $request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
 
+            $organization_details = $organizationModel->organization_details($query_details);
+            $total_count = $organizationModel->total_count($search_key);
             
-            $organization_details = $organizationModel->organization_details();
         }
 
-        $response_array = array("success" => TRUE, "data" => $organization_details, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $organization_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 

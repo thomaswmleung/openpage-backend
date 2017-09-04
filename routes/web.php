@@ -56,7 +56,7 @@ Route::group(['middleware' => ['login_auth']], function () {
 
     Route::get('page', 'PageController@page_list');
     Route::get('page/{page_id}', 'PageController@page_list');
-    Route::get('page_search', 'PageController@page_search');
+//    Route::get('page_search', 'PageController@page_search');
     Route::post('page', 'PageController@add_or_update_page');
     Route::put('page', 'PageController@add_or_update_page');
     Route::delete('page', 'PageController@delete_page');

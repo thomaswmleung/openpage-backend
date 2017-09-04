@@ -10,17 +10,53 @@ class MediaModel extends Eloquent {
     protected $collection = 'media';
     protected $fillable = array('type', 'extension', 'url', 'right', 'usage', 'remark', 'tag', 'created_by', 'updated_by');
 
-    public function media_details($media_array = NULL, $search_key = NULL) {
-        $media_query = DB::collection('media');
-        if ($media_array != NULL) {
-            $media_query->where($media_array)->first();
+    public function media_details($query_details = NULL) {
+        if ($query_details == NULL) {
+            $skip = 0;
+            $limit = config('constants.default_query_limit');
+            $search_key = "";
         } else {
-            if (isset($search_key) AND $search_key != "") {
-                $media_query->orwhere('remark', 'like', '%' . $search_key . '%');
-                $media_query->orwhere('tag', 'like', '%' . $search_key . '%');
+            if (isset($query_details['skip'])) {
+                $skip = $query_details['skip'];
+            } else {
+                $skip = 0;
+            }
+            if (isset($query_details['limit'])) {
+                $limit = $query_details['limit'];
+            } else {
+                $limit = config('constants.default_query_limit');
+            }
+            if (isset($query_details['search_key'])) {
+                $search_key = $query_details['search_key'];
+            } else {
+                $search_key = "";
             }
         }
-        return $media_query->get();
+
+        if ($search_key != "") {
+            $media_data = MediaModel::where('remark', 'like', "%$search_key%")
+                    ->orWhere('tag', 'like', "%$search_key%")
+                    ->orWhere('type', 'like', "%$search_key%")
+                    ->skip($skip)
+                    ->take($limit)
+                    ->get();
+        } else {
+            $media_data = MediaModel::skip($skip)->take($limit)->get();
+        }
+        return $media_data;
+
+    }
+    
+    public function total_count($search_key) {
+        if ($search_key != "") {
+            $total_count = MediaModel::where('remark', 'like', "%$search_key%")
+                    ->orWhere('tag', 'like', "%$search_key%")
+                    ->orWhere('type', 'like', "%$search_key%")
+                    ->count();
+        } else {
+            $total_count = MediaModel::count();
+        }
+        return $total_count;
     }
 
     public function update_media($data) {
@@ -30,6 +66,11 @@ class MediaModel extends Eloquent {
 
     public function get_random_media() {
         return MediaModel::all()->first();
+    }
+
+    public function find_media_details($media_id) {
+        $media_info = MediaModel::find($media_id);
+        return $media_info;
     }
 
 }

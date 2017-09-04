@@ -97,7 +97,7 @@ class LayoutController extends Controller {
             }
             $limit = config('constants.default_query_limit');
             if (isset($request->limit)) {
-                $search_key = $request->limit;
+                $limit = $request->limit;
             }
             $query_details = array(
                 'search_key' => $search_key,

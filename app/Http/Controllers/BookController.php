@@ -21,7 +21,24 @@ class BookController extends Controller {
      *   description="Returns book data",
      *   operationId="book_list",
      *   produces={"application/json"},
-     *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -63,12 +80,7 @@ class BookController extends Controller {
         $bookModel = new BookModel();
         if (isset($request->_id) && $request->_id != "") {
             $book_id = $request->_id;
-
-            // get media details
-            $data_array = array(
-                '_id' => $book_id
-            );
-            $book_details = $bookModel->book_details($data_array);
+            $book_details = $bookModel->find_book_details($book_id);
             if ($book_details == NULL) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_book_id'),
                         "ERR_MSG" => config('error_messages' . "." .
@@ -76,12 +88,34 @@ class BookController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            }else{
+                $response_array = array("success" => TRUE, "data" => $book_details, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
-            $book_details = $bookModel->book_details();
+                         $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int) $request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int) $request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
+
+            $book_details = $bookModel->book_details($query_details);
+            $total_count = $bookModel->total_count($search_key);
         }
 
-        $response_array = array("success" => TRUE, "data" => $book_details, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $book_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
     
