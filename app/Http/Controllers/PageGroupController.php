@@ -31,12 +31,6 @@ class PageGroupController extends Controller {
      *   produces={"application/json"},
      *   parameters={},
      *   @SWG\Parameter(
-     *     name="search_key",
-     *     in="query",
-     *     description="Search parameter or key word to search",
-     *     type="string"
-     *   ),
-     *   @SWG\Parameter(
      *     name="skip",
      *     in="query",
      *     description="this is offset or skip the records",
