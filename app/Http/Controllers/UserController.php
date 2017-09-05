@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\EmailController;
 use App\Helpers\ErrorMessageHelper;
 use Illuminate\Support\Facades\Log;
+
 class UserController extends Controller {
     /**
      * @SWG\Get(path="/user",
@@ -19,6 +20,24 @@ class UserController extends Controller {
      *   operationId="user",
      *   produces={"application/json"},
      *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -57,40 +76,55 @@ class UserController extends Controller {
      * )
      */
     public function user(Request $request) {
-        
+
         $userModel = new UsersModel();
         if (isset($request->uid)) {
-            
-           
+
             $user_id = $request->uid;
-            // get user details
-            $data_array = array(
-                '_id' => $user_id
-            );
-            $user_details = $userModel->user_details($data_array);
+            $user_details = $userModel->find_user_details($user_id);
             if ($user_details == NULL) {
                 $error['error'] = array("Invalid user id");
-                
+
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_user_id'),
-                                        "ERR_MSG"=> config('error_messages'.".".
-                                                            config('error_constants.invalid_user_id')))) ; 
-                
-                $response_array = array("success"=>FALSE,"errors"=>$error_messages);
+                        "ERR_MSG" => config('error_messages' . "." .
+                                config('error_constants.invalid_user_id'))));
+
+                $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            } else {
+                $response_array = array("success" => TRUE, "data" => $user_details, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
-            
-            
-            $user_details = $userModel->user_details();
+            $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int)$request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int)$request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
+
+            $user_details = $userModel->user_details($query_details);
+            $total_count = $userModel->total_count($search_key);
         }
-        
-        $response_array = array("success" => TRUE,"data"=>$user_details,"errors"=>array());
+
+        $response_array = array("success" => TRUE, "data" => $user_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
      * @SWG\Post(path="/register",
-      * tags={"User"},
+     * tags={"User"},
      *   summary="User registration into the system",
      *   description="User registration into the system",
      *   operationId="register",
@@ -143,7 +177,7 @@ class UserController extends Controller {
             'password' => 'required',
             'email' => 'min:3|required|email|unique:users,email'
         );
-        
+
         $messages = [
             'first_name.required' => config('error_constants.first_name_required'),
             'last_name.required' => config('error_constants.last_name_required'),
@@ -152,12 +186,12 @@ class UserController extends Controller {
             'email.unique' => config('error_constants.email_already_taken'),
             'password.required' => config('error_constants.password_required')
         ];
-        
-        
+
+
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
 
-        $validator = Validator::make($user_data, $rules,$formulated_messages);
-        
+        $validator = Validator::make($user_data, $rules, $formulated_messages);
+
         if ($validator->fails()) {
             dd($validator->messages());
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
@@ -180,15 +214,14 @@ class UserController extends Controller {
             );
             //Need SMTP credentials to send Email from instance
 //            EmailController::send_activation_mail($email_data);
-            $responseArray = array("success" => TRUE,"data"=> array("_id"=>$data->_id), "message" => "User created successfully.");
+            $responseArray = array("success" => TRUE, "data" => array("_id" => $data->_id), "message" => "User created successfully.");
             return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
     }
 
-
     /**
      * @SWG\Get(path="/activate",
-      * tags={"User"},
+     * tags={"User"},
      *   summary="Activates user into the system",
      *   description="Activates user into the system",
      *   operationId="activate",
@@ -233,10 +266,10 @@ class UserController extends Controller {
             'activation_key.required' => config('error_constants.activation_key_required'),
             'activation_key.exists' => config('error_constants.activation_key_exists'),
         ];
-        
-        
+
+
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
-        $validator = Validator::make($user_data, $rules,$formulated_messages);
+        $validator = Validator::make($user_data, $rules, $formulated_messages);
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);

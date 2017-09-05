@@ -20,10 +20,22 @@ class MediaController extends Controller {
      *   operationId="media",
      *   produces={"application/json"},
      *   @SWG\Parameter(
-     *     name="search",
+     *     name="search_key",
      *     in="query",
      *     description="Search based on remark and tags",
      *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
      *   ),
      *   @SWG\Response(
      *     response=200,
@@ -66,12 +78,7 @@ class MediaController extends Controller {
         $mediaModel = new MediaModel();
         if (isset($request->mid) && $request->mid != "") {
             $media_id = $request->mid;
-
-            // get media details
-            $data_array = array(
-                '_id' => $media_id
-            );
-            $media_details = $mediaModel->media_details($data_array);
+            $media_details = $mediaModel->find_media_details($media_id);
             if ($media_details == NULL) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
                         "ERR_MSG" => config('error_messages' . "." .
@@ -79,13 +86,34 @@ class MediaController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            } else {
+                $response_array = array("success" => TRUE, "data" => $media_details, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
-            $search_key = $request->search;
-            $media_details = $mediaModel->media_details(NULL, $search_key);
+            $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int) $request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int) $request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
+
+            $media_details = $mediaModel->media_details($query_details);
+            $total_count = $mediaModel->total_count($search_key);
         }
 
-        $response_array = array("success" => TRUE, "data" => $media_details, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $media_details,"total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
@@ -219,7 +247,7 @@ class MediaController extends Controller {
             //insert media
 
             $media_data = MediaModel::create($media_array);
-            $response_array = array("success" => TRUE,"data"=>$media_data, "errors" => array());
+            $response_array = array("success" => TRUE, "data" => $media_data, "errors" => array());
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }

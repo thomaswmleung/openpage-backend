@@ -30,6 +30,24 @@ class PageGroupController extends Controller {
      *   operationId="get_page_group",
      *   produces={"application/json"},
      *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -71,12 +89,7 @@ class PageGroupController extends Controller {
         $pageGroupModel = new PageGroupModel();
         if (isset($request->pid) && $request->pid != "") {
             $page_group_id = $request->pid;
-
-            // get media details
-            $data_array = array(
-                '_id' => $page_group_id
-            );
-            $page_group_details = $pageGroupModel->page_group_details($data_array);
+            $page_group_details = $pageGroupModel->find_page_group_details($page_group_id);
             if ($page_group_details == NULL) {
                 $error['error'] = array("Invalid id");
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_group_id'),
@@ -85,12 +98,34 @@ class PageGroupController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            } else {
+                $response_array = array("success" => TRUE, "data" => $page_group_details, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
-            $page_group_details = $pageGroupModel->page_group_details();
+            $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int) $request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int) $request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
+
+            $page_group_details = $pageGroupModel->page_group_details($query_details);
+            $total_count = $pageGroupModel->total_count($search_key);
         }
 
-        $response_array = array("success" => TRUE, "data" => $page_group_details, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $page_group_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
@@ -296,18 +331,16 @@ class PageGroupController extends Controller {
                     /*  $page_back_ground_id = $this->create_background($back_ground_data); */
 
                     $page_remark = $page['remark'];
-                    
+
                     $page_preview_index_array = array();
                     $page_preview_url_array = array();
-                    if(isset($page['actual_page_index_array'])
-                            && isset($page_data_array['preview_image_array'])){
+                    if (isset($page['actual_page_index_array']) && isset($page_data_array['preview_image_array'])) {
                         $page_preview_index_array = $page['actual_page_index_array'];
-                        foreach($page_preview_index_array as $actualPageIndex){
-                            if(isset($page_data_array['preview_image_array'][$actualPageIndex])){
-                                array_push($page_preview_url_array, $page_data_array['preview_image_array'][$actualPageIndex]); 
+                        foreach ($page_preview_index_array as $actualPageIndex) {
+                            if (isset($page_data_array['preview_image_array'][$actualPageIndex])) {
+                                array_push($page_preview_url_array, $page_data_array['preview_image_array'][$actualPageIndex]);
                             }
                         }
-                     
                     }
                     $insert_page_data = array(
                         'overlay' => $ovelay_data,
@@ -420,9 +453,8 @@ class PageGroupController extends Controller {
 
             $response_array = array("success" => TRUE);
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
-            
         } else {
-            $error['error'] = array("success" => FALSE,"error"=>"Something went wrong");
+            $error['error'] = array("success" => FALSE, "error" => "Something went wrong");
             return response(json_encode($error), 400)->header('Content-Type', 'application/json');
         }
     }

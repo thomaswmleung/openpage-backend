@@ -16,6 +16,24 @@ class QuestionTypeController extends Controller {
      *   operationId="question_type",
      *   produces={"application/json"},
      *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -56,14 +74,8 @@ class QuestionTypeController extends Controller {
     public function question_type(Request $request) {
         $questionTypeModel = new QuestionTypeModel();
         if (isset($request->_id)) {
-
-
             $question_type_id = $request->_id;
-            // get user details
-            $data_array = array(
-                '_id' => $question_type_id
-            );
-            $question_type_details = $questionTypeModel->question_type_details($data_array);
+            $question_type_details = $questionTypeModel->find_question_type($question_type_id);
             if ($question_type_details == NULL) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_type_id'),
                         "ERR_MSG" => config('error_messages' . "." .
@@ -71,14 +83,35 @@ class QuestionTypeController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            }else{
+                $response_array = array("success" => TRUE, "data" => $question_type_details, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
+            $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int) $request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int) $request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
 
+            $question_type_details = $questionTypeModel->question_type_details($query_details);
+            $total_count = $questionTypeModel->total_count($search_key);
 
-            $question_type_details = $questionTypeModel->question_type_details();
         }
 
-        $response_array = array("success" => TRUE, "data" => $question_type_details, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $question_type_details, "total_count" => $total_count,"errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
@@ -279,9 +312,6 @@ class QuestionTypeController extends Controller {
             $responseArray = array("success" => TRUE);
             return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
-        
-        
-     
     }
 
 }
