@@ -52,7 +52,7 @@ class SubjectModel extends Eloquent {
         return $subject_data;
     }
 
-        public function total_count($search_key) {
+    public function total_count($search_key) {
         if ($search_key != "") {
             $total_count = SubjectModel::where('code', 'like', "%$search_key%")
                     ->orWhere('title', 'like', "%$search_key%")

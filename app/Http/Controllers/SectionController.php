@@ -14,7 +14,24 @@ class SectionController extends Controller {
      *   description="Returns section data",
      *   operationId="section_list",
      *   produces={"application/json"},
-     *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -57,76 +74,42 @@ class SectionController extends Controller {
         $sectionModel = new SectionModel();
         if (isset($request->_id) && $request->_id != "") {
             $section_id = $request->_id;
-
-            $data_array = array(
-                '_id' => $section_id
-            );
-            $section_details = $sectionModel->section_list($data_array);
-            if (!count($section_details)) {
+            $section_details = $sectionModel->find_section_details($section_id);
+            if ($section_details == NULL) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_section_id'),
                         "ERR_MSG" => config('error_messages' . "." .
                                 config('error_constants.invalid_section_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            } else {
+                $response_array = array("success" => TRUE, "data" => $section_details, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
-            $section_details = $sectionModel->section_list();
+            $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int) $request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int) $request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
+
+            $section_details = $sectionModel->section_list($query_details);
+            $total_count = $sectionModel->total_count($search_key);
         }
-        $response_array = array("success" => TRUE, "data" => $section_details, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $section_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
-    }
-    
-    /**
-     * @SWG\Get(path="/section_search",
-     *   tags={"Section"},
-     *   summary="Returns section data based on search keyword",
-     *   description="Returns section data",
-     *   operationId="section_search",
-     *   produces={"application/json"},
-     *   @SWG\Parameter(
-     *     name="search_key",
-     *     in="query",
-     *     description="Search keyword that needs to searched in sections",
-     *     required=true,
-     *     type="string"
-     *   ),
-     *   @SWG\Response(
-     *     response=200,
-     *     description="successful operation",
-     *   ),
-     *  @SWG\Response(
-     *     response=400,
-     *     description="Invalid data",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
-     * )
-     */
-    public function section_search(Request $request) {
-        $search_key = $request->search_key;
-//      $skip = NULL;
-        $skip = 0;
-        if (isset($request->skip) && $request->skip != "") {
-            $skip = $request->skip;
-        }
-//      $limit = NULL;
-        $limit = 100;
-        if (isset($request->limit) && $request->limit != "") {
-            $limit = $request->limit;
-        }
-        $data_array = array(
-            'search_key' => $search_key,
-            'skip' => $skip,
-            'limit' => $limit
-        );
-        $sectionModel = new SectionModel();
-        $section_details = $sectionModel->section_search($data_array);
-        
-        $response_array = array("success" => TRUE, "data" => $section_details, "errors" => array());
-        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
-     
     }
 
     /**
@@ -184,7 +167,7 @@ class SectionController extends Controller {
         $json_data = $request->getContent();
         $section = json_decode($json_data, true);
         if ($section == null) {
-            return response(json_encode(array("success"=>FALSE,"error" => "Invalid Json")))->header('Content-Type', 'application/json');
+            return response(json_encode(array("success" => FALSE, "error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
         $questions_ids = array();

@@ -13,7 +13,24 @@ class QuestionsController extends Controller {
      *   description="Returns question data",
      *   operationId="question_list",
      *   produces={"application/json"},
-     *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -52,94 +69,47 @@ class QuestionsController extends Controller {
      * )
      */
     public function question_list(Request $request) {
-        $search_key = NULL;
-        if (isset($request->search_key) && $request->search_key != "") {
-            $search_key = $request->search_key;
-        }
-        $skip = NULL;
-        if (isset($request->skip) && $request->skip != "") {
-            $skip = $request->skip;
-        }
-        $limit = NULL;
-        if (isset($request->limit) && $request->limit != "") {
-            $limit = $request->limit;
-        }
         $questionsModel = new QuestionsModel();
         if (isset($request->_id) && $request->_id != "") {
             $question_id = $request->_id;
-
-            $data_array = array(
-                '_id' => $question_id
-            );
-            $questions_details = $questionsModel->question_details($data_array);
-            if (!count($questions_details)) {
+            $questions_details = $questionsModel->find_question_details($question_id);
+            if ($questions_details == NULL) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_id'),
                         "ERR_MSG" => config('error_messages' . "." .
                                 config('error_constants.invalid_question_id'))));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            } else {
+                $response_array = array("success" => TRUE, "data" => $questions_details, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
+            $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int) $request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int) $request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
 
-            $questions_details = $questionsModel->question_details();
+            $questions_details = $questionsModel->question_details($query_details);
+            $total_count = $questionsModel->total_count($search_key);
         }
-        $response_array = array("success" => TRUE, "data" => $questions_details, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $questions_details,  "total_count" => $total_count,"errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
-    /**
-     * @SWG\Get(path="/question_search",
-     *   tags={"Question"},
-     *   summary="Returns question data based on search keyword",
-     *   description="Returns question data",
-     *   operationId="question_search",
-     *   produces={"application/json"},
-     *   @SWG\Parameter(
-     *     name="search_key",
-     *     in="query",
-     *     description="Search keyword that needs to be searched in question",
-     *     required=true,
-     *     type="string"
-     *   ),
-     *   @SWG\Response(
-     *     response=200,
-     *     description="successful operation",
-     *   ),
-     *  @SWG\Response(
-     *     response=400,
-     *     description="Invalid data",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
-     * )
-     */
-    public function question_search(Request $request) {
-        $search_key = $request->search_key;
-//      $skip = NULL;
-        $skip = 0;
-        if (isset($request->skip) && $request->skip != "") {
-            $skip = $request->skip;
-        }
-//      $limit = NULL;
-        $limit = 100;
-        if (isset($request->limit) && $request->limit != "") {
-            $limit = $request->limit;
-        }
-        $data_array = array(
-            'search_key' => $search_key,
-            'skip' => $skip,
-            'limit' => $limit
-        );
-        $questionsModel = new QuestionsModel();
-        $question_details = $questionsModel->question_search($data_array);
-        
-        $response_array = array("success" => TRUE, "data" => $question_details, "errors" => array());
-        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
-     
-    }
-    
     /**
      * @SWG\Post(path="/question",
      *   tags={"Question"},
