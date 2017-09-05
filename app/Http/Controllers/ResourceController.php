@@ -19,10 +19,22 @@ class ResourceController extends Controller {
      *   operationId="resource",
      *   produces={"application/json"},
      *   @SWG\Parameter(
-     *     name="search",
+     *     name="search_key",
      *     in="query",
      *     description="Search based on remark and tags",
      *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="skip",
+     *     in="query",
+     *     description="this is offset or skip the records",
+     *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="limit",
+     *     in="query",
+     *     description="Number of records to be retrieved ",
+     *     type="integer"
      *   ),
      *   @SWG\Response(
      *     response=200,
@@ -65,12 +77,7 @@ class ResourceController extends Controller {
         $resourceModel = new ResourceModel();
         if (isset($request->_id) && $request->_id != "") {
             $resource_id = $request->_id;
-
-            // get details
-            $data_array = array(
-                '_id' => $resource_id
-            );
-            $resource_details = $resourceModel->$resource_details($data_array);
+            $resource_details = $resourceModel->resource_data($resource_id);
             if ($resource_details == NULL) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
                         "ERR_MSG" => config('error_messages' . "." .
@@ -78,13 +85,34 @@ class ResourceController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            } else {
+                $response_array = array("success" => TRUE, "data" => $resource_details, "errors" => array());
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
-            $search_key = $request->search;
-            $resource_details = $resourceModel->resource_details(NULL, $search_key);
+            $search_key = "";
+            if (isset($request->search_key)) {
+                $search_key = $request->search_key;
+            }
+            $skip = 0;
+            if (isset($request->skip)) {
+                $skip = (int) $request->skip;
+            }
+            $limit = config('constants.default_query_limit');
+            if (isset($request->limit)) {
+                $limit = (int) $request->limit;
+            }
+            $query_details = array(
+                'search_key' => $search_key,
+                'limit' => $limit,
+                'skip' => $skip
+            );
+
+            $resource_details = $resourceModel->resource_details($query_details);
+            $total_count = $resourceModel->total_count($search_key);
         }
 
-        $response_array = array("success" => TRUE, "data" => $resource_details, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $resource_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
