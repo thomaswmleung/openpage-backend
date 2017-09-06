@@ -261,6 +261,7 @@ class UserController extends Controller {
         );
         $messages = [
             'username.required' => config('error_constants.username_required'),
+            'username.exists' => config('error_constants.invalid_user_id'),
             'activation_key.required' => config('error_constants.activation_key_required'),
             'activation_key.exists' => config('error_constants.activation_key_exists'),
         ];
