@@ -78,9 +78,8 @@ class PageController extends Controller {
             
             $page_data = $pageModel->find_page_details($page_id);
             if ($page_data == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_page_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_page_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -355,9 +354,8 @@ class PageController extends Controller {
         $pageModel = new PageModel();
         $page_data = $pageModel->get_page(array('_id' => $page_id));
         if ($page_data == null) {
-            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_id'),
-                    "ERR_MSG" => config('error_messages' . "." .
-                            config('error_constants.invalid_page_id'))));
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_id')['error_code'],
+                    "ERR_MSG" => config('error_constants.invalid_page_id')['error_message']));
 
             $response_array = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');

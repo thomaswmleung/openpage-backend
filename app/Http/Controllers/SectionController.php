@@ -76,9 +76,8 @@ class SectionController extends Controller {
             $section_id = $request->_id;
             $section_details = $sectionModel->find_section_details($section_id);
             if ($section_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_section_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_section_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_section_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_section_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -283,9 +282,8 @@ class SectionController extends Controller {
         $sectionModel = new SectionModel();
         $section_data = $sectionModel->get_section_details($section_id);
         if ($section_data == null) {
-            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_section_id'),
-                    "ERR_MSG" => config('error_messages' . "." .
-                            config('error_constants.invalid_section_id'))));
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_section_id')['error_code'],
+                    "ERR_MSG" => config('error_constants.invalid_section_id')['error_message']));
 
             $response_array = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');

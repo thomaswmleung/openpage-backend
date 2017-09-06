@@ -77,9 +77,8 @@ class QuestionTypeController extends Controller {
             $question_type_id = $request->_id;
             $question_type_details = $questionTypeModel->find_question_type($question_type_id);
             if ($question_type_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_type_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_question_type_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_type_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_question_type_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');

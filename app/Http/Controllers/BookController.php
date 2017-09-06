@@ -82,9 +82,8 @@ class BookController extends Controller {
             $book_id = $request->_id;
             $book_details = $bookModel->find_book_details($book_id);
             if ($book_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_book_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_book_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_book_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_book_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -373,9 +372,8 @@ class BookController extends Controller {
         $bookModel = new BookModel();
         $book_data = $bookModel->book_details(array('_id' => $book_id));
         if ($book_data == null) {
-            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_book_id'),
-                                        "ERR_MSG"=> config('error_messages'.".".
-                                                            config('error_constants.invalid_book_id')))) ; 
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_book_id')['error_code'],
+                                        "ERR_MSG"=> config('error_constants.invalid_book_id')['error_message'])) ; 
             $responseArray = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         }

@@ -79,9 +79,8 @@ class ResourceController extends Controller {
             $resource_id = $request->_id;
             $resource_details = $resourceModel->resource_data($resource_id);
             if ($resource_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_media_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_media_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');

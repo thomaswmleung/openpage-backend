@@ -79,9 +79,8 @@ class LayoutController extends Controller {
 
             $layout_details = $layoutModel->find_layout_details($layout_id);
             if ($layout_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_layout_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_layout_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_layout_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_layout_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -225,9 +224,8 @@ class LayoutController extends Controller {
         $layoutModel = new LayoutModel();
         $layout_data = $layoutModel->layout_details(array('_id' => $layout_id));
         if ($layout_data == null) {
-            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_layout_id'),
-                    "ERR_MSG" => config('error_messages' . "." .
-                            config('error_constants.invalid_layout_id'))));
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_layout_id')['error_code'],
+                    "ERR_MSG" => config('error_constants.invalid_layout_id')['error_message']));
             $responseArray = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         }

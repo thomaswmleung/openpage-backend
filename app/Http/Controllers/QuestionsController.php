@@ -74,9 +74,8 @@ class QuestionsController extends Controller {
             $question_id = $request->_id;
             $questions_details = $questionsModel->find_question_details($question_id);
             if ($questions_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_question_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_question_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -239,9 +238,8 @@ class QuestionsController extends Controller {
         $questionsModel = new QuestionsModel();
         $question_data = $questionsModel->get_question_details($question_id);
         if ($question_data == null) {
-            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_id'),
-                    "ERR_MSG" => config('error_messages' . "." .
-                            config('error_constants.invalid_question_id'))));
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_question_id')['error_code'],
+                    "ERR_MSG" => config('error_constants.invalid_question_id')['error_message']));
 
             $response_array = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');

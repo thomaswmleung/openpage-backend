@@ -86,9 +86,8 @@ class PageGroupController extends Controller {
             $page_group_details = $pageGroupModel->find_page_group_details($page_group_id);
             if ($page_group_details == NULL) {
                 $error['error'] = array("Invalid id");
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_group_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_page_group_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_group_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_page_group_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -429,9 +428,8 @@ class PageGroupController extends Controller {
         $pageGroupModel = new PageGroupModel();
         $page_group_data = $pageGroupModel->page_group_details(array('_id' => $page_group_id));
         if ($page_group_data == null) {
-            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_group_id'),
-                    "ERR_MSG" => config('error_messages' . "." .
-                            config('error_constants.invalid_page_group_id'))));
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_group_id')['error_code'],
+                    "ERR_MSG" => config('error_constants.invalid_page_group_id')['error_message']));
 
             $response_array = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -441,9 +439,6 @@ class PageGroupController extends Controller {
         $gcs_result = GCS_helper::delete_from_gcs($objectName);
         if ($gcs_result) {
             PageGroupModel::destroy($page_group_id);
-            $error_messages = array(array("ERR_CODE" => config('error_constants.page_group_deleted_success'),
-                    "ERR_MSG" => config('error_messages' . "." .
-                            config('error_constants.page_group_deleted_success'))));
 
             $response_array = array("success" => TRUE);
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
