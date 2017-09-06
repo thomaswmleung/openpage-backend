@@ -108,7 +108,7 @@ class Pdf_helper {
             $actualPDFPageIndex = 0;
             foreach ($page_array as $page) {
                 $actualPageIndexArray = array();
-                array_push($actualPageIndexArray,$actualPDFPageIndex);
+                array_push($actualPageIndexArray, $actualPDFPageIndex);
                 // create new blank page
                 $fpdf->AddPage();
                 $actualPDFPageIndex++;
@@ -170,8 +170,8 @@ class Pdf_helper {
                         foreach ($section_question_array as $question) {
                             $estimatedHeight = 0;
 //                            $estimatedHeight = $fpdf->getStringHeight (200, $question['question_text']);
-                            $estimatedHeight = $this->getStringHeight ($fpdf,200,5, $question['question_text']);
-                            
+                            $estimatedHeight = $this->getStringHeight($fpdf, 200, 5, $question['question_text']);
+
                             $question_image_url = $question['image'];
                             $answer_array = $question['answer'];
                             if ($question_image_url != "") {
@@ -191,15 +191,15 @@ class Pdf_helper {
                                 }
                                 $estimatedHeight += $imageHeightResized;
                             }
-                            
+
                             $estimatedHeight += sizeof($answer_array) * 5;
                             // Answers will have a heading of height 5
                             $estimatedHeight += 5;
-                            
-                            if($fpdf->CheckPageBreak($estimatedHeight)){
+
+                            if ($fpdf->CheckPageBreak($estimatedHeight)) {
                                 $currentY = 50;
                                 $fpdf->AddPage();
-                                array_push($actualPageIndexArray,$actualPDFPageIndex);
+                                array_push($actualPageIndexArray, $actualPDFPageIndex);
                                 $actualPDFPageIndex++;
                             }
                             $fpdf->SetXY(10, $currentY);
@@ -226,7 +226,7 @@ class Pdf_helper {
                             $fpdf->MultiCell(200, 5, "Answers: ", 0, 'L');
                             $currentY = $fpdf->GetY() + 3;
 
-                            
+
 //                        if (sizeof($answer_array) == 0) {
 //                            $isValidJson = FALSE;
 //                        }
@@ -252,7 +252,7 @@ class Pdf_helper {
                             $questionsRespoonseArray[] = $question;
                         }
                         $responseArray['page_group']['page'][$pageCOunt]['main']['section'][$sectionCount]['question'] = $questionsRespoonseArray;
-                        
+
                         $sectionCount++;
                     }
                 }
@@ -302,7 +302,7 @@ class Pdf_helper {
                 if (isset($overlay_data[0]['string']) && $overlay_data[0]['string'] != "" && $overlay_data[0]['string'] != NULL) {
                     
                 }
-                $responseArray['page_group']['page'][$pageCOunt]['actual_page_index_array']= $actualPageIndexArray;
+                $responseArray['page_group']['page'][$pageCOunt]['actual_page_index_array'] = $actualPageIndexArray;
                 $pageCOunt++;
             }
         } else {
@@ -339,7 +339,7 @@ class Pdf_helper {
         $im->destroy();
         $preview_image_array = array();
         for ($pageIndex = 0; $pageIndex < $page_count; $pageIndex++) {
-            
+
             $pdf_img = new Imagick();
             $pdf_img->setresolution(210, 297);
             $pdf_img->readimage($pdf_path . "[" . $pageIndex . "]");
@@ -371,15 +371,16 @@ class Pdf_helper {
         return json_encode($responseArray);
     }
 
-    public function getStringHeight($fpdf,$width,$lineHeight,$text){
+    public function getStringHeight($fpdf, $width, $lineHeight, $text) {
         $tempPdf = clone $fpdf;
-        $currentY= $tempPdf->GetY();
-        
+        $currentY = $tempPdf->GetY();
+
         $tempPdf->MultiCell($width, $lineHeight, $text, 0, 'L');
-        
+
         $finalY = $tempPdf->GetY();
         return $finalY - $currentY;
     }
+
     static public function create_page($fpdf, $page) {
 
         // create new blank page
@@ -416,8 +417,10 @@ class Pdf_helper {
                 $text_h = $background_data['h'];
                 //TODO Set font size based on w and h 
 
-                $fpdf->SetXY($text_x, $text_y);
-                $fpdf->MultiCell($text_w, $text_h, $background_text, 0, 'C');
+                if ($text_w != "" && $text_h != "") {
+                    $fpdf->SetXY($text_x, $text_y);
+                    $fpdf->MultiCell($text_w, $text_h, $background_text, 0, 'C');
+                }
             }
         }
 
@@ -558,8 +561,8 @@ class Pdf_helper {
 
     static public function generate_book($input_json) {
         // temprorily reading it from file
-        $json_data = file_get_contents(url('book.json'));
-        $book_data_array = json_decode($json_data, true);
+//        $json_data = file_get_contents(url('book.json'));
+        $book_data_array = json_decode($input_json, true);
 
         $fpdf = new tFPDF();
 //        $fpdf->AddFont('msjh', '', 'msjh.ttf', true);
@@ -685,16 +688,63 @@ class Pdf_helper {
             // page details
 
             $page_data = PageModel::get_page_details($page_details['_id']);
-
-            $page_data_array = json_decode(json_encode($page_data));
-//            var_dump($page_data);
-//            exit();
             $fpdf->SetXY(20, 20);
             $fpdf = Pdf_helper::create_page($fpdf, $page_data);
         }
 
 
-        $fpdf->Output('sample_book.pdf', 'I');
+//        $fpdf->Output('sample_book.pdf', 'I');
+        $pdf_name = "book-" . uniqid() . ".pdf";
+        if (!file_exists(public_path('pdfs'))) {
+            mkdir(public_path('pdfs'), 0777, true);
+        }
+        $pdf_path = public_path('pdfs' . DIRECTORY_SEPARATOR . $pdf_name);
+        $fpdf->Output($pdf_path, 'F');
+
+        // upload to GCS
+        $gcs_result = GCS_helper::upload_to_gcs('pdfs/' . $pdf_name);
+        if (!$gcs_result) {
+            $responseArray['error'] = "Error in upload of GCS";
+            return $responseArray;
+        }
+        // generate images
+        if (!file_exists(public_path('pdf_images'))) {
+            mkdir(public_path('pdf_images'), 0777, true);
+        }
+        $im = new Imagick($pdf_path);
+        $page_count = $im->getNumberImages();
+        $im->destroy();
+        $preview_image_array = array();
+        for ($pageIndex = 0; $pageIndex < $page_count; $pageIndex++) {
+
+            $pdf_img = new Imagick();
+            $pdf_img->setresolution(210, 297);
+            $pdf_img->readimage($pdf_path . "[" . $pageIndex . "]");
+//            $pdf_img = new Imagick($pdf_path . "[" . $pageIndex . "]");
+            $pdf_img->setImageFormat('jpg');
+            $image_name = $pdf_name . "pdf_image_" . $pageIndex . ".jpg";
+            $gcs_path = "pdf_images" . DIRECTORY_SEPARATOR . $image_name;
+            $image_path = public_path($gcs_path);
+            $pdf_img->writeImage($image_path);
+            $gcs_result = GCS_helper::upload_to_gcs($gcs_path);
+
+            //upload image to GCS
+            if (!$gcs_result) {
+                $responseArray['error'] = "Error in upload of GCS";
+                return $responseArray;
+            }
+            unlink($image_path);
+            $preview_image_array[] = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $image_name;
+            $pdf_img->destroy();
+        }
+        // delete your local pdf file here
+        unlink($pdf_path);
+
+        $pdf_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $pdf_name;
+        $book_data_array['preview_url'] = $pdf_url;
+        $book_data_array['preview_image_array'] = $preview_image_array;
+
+        return $book_data_array;
     }
 
 }
