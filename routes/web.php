@@ -93,6 +93,7 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::put('resource', 'ResourceController@create_or_update_resource');
     Route::delete('resource', 'ResourceController@delete_resource');
    
+    Route::post('keyword','KeywordController@create_keyword');
     
 });
 

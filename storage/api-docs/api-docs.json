@@ -17,7 +17,26 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -170,6 +189,189 @@
                 ]
             }
         },
+        "/layout": {
+            "get": {
+                "tags": [
+                    "Layout"
+                ],
+                "summary": "Returns list of layout",
+                "description": "Returns layout data",
+                "operationId": "layout_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "string"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Layout"
+                ],
+                "summary": "Update layout details",
+                "description": "",
+                "operationId": "add_or_update_layout",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Subject json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Layout"
+                ],
+                "summary": "Create a layout",
+                "description": "",
+                "operationId": "add_or_update_layout",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "subject json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Layout"
+                ],
+                "summary": "delete layout data",
+                "description": "Delete layout from system",
+                "operationId": "delete_layout",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the layout that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/layout/{_id}": {
+            "get": {
+                "tags": [
+                    "Layout"
+                ],
+                "summary": "Returns layout data",
+                "description": "Returns layout data",
+                "operationId": "layout_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the layout that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid layout id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
         "/login": {
             "post": {
                 "tags": [
@@ -220,10 +422,22 @@
                 ],
                 "parameters": [
                     {
-                        "name": "search",
+                        "name": "search_key",
                         "in": "query",
                         "description": "Search based on remark and tags",
                         "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
                     }
                 ],
                 "responses": {
@@ -252,13 +466,6 @@
                         "name": "mid",
                         "in": "query",
                         "description": "ID of the media that needs to be updated",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "owner",
-                        "in": "query",
-                        "description": "user_id or organization_id",
                         "required": true,
                         "type": "string"
                     },
@@ -338,13 +545,6 @@
                         "description": "file to upload",
                         "required": true,
                         "type": "file"
-                    },
-                    {
-                        "name": "owner",
-                        "in": "query",
-                        "description": "user_id or organization_id",
-                        "required": true,
-                        "type": "string"
                     },
                     {
                         "name": "usage[]",
@@ -468,7 +668,26 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -665,7 +884,26 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -818,41 +1056,6 @@
                 ]
             }
         },
-        "/page_search": {
-            "get": {
-                "tags": [
-                    "Page"
-                ],
-                "summary": "Returns page data based on search keyword",
-                "description": "Returns page data",
-                "operationId": "page_search",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "search_key",
-                        "in": "query",
-                        "description": "Search keyword that needs to searched in pages",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid page id"
-                    }
-                },
-                "security": [
-                    {
-                        "token": []
-                    }
-                ]
-            }
-        },
         "/page_group": {
             "get": {
                 "tags": [
@@ -864,7 +1067,20 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -1028,7 +1244,26 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -1213,7 +1448,26 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -1366,14 +1620,14 @@
                 ]
             }
         },
-        "/question_search": {
+        "/resource": {
             "get": {
                 "tags": [
-                    "Question"
+                    "Resource"
                 ],
-                "summary": "Returns question data based on search keyword",
-                "description": "Returns question data",
-                "operationId": "question_search",
+                "summary": "Returns list of resource",
+                "description": "Returns resource data",
+                "operationId": "resource",
                 "produces": [
                     "application/json"
                 ],
@@ -1381,7 +1635,195 @@
                     {
                         "name": "search_key",
                         "in": "query",
-                        "description": "Search keyword that needs to be searched in question",
+                        "description": "Search based on remark and tags",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Resource"
+                ],
+                "summary": "Creating/Storing new resource ",
+                "description": "Stores resource in the system",
+                "operationId": "create_or_update_resource",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "Resource id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Title of resource",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "Description of resource",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of resource",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "url",
+                        "in": "query",
+                        "description": "URL of resource",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "remark",
+                        "in": "query",
+                        "description": "Remark of the resource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "tag[]",
+                        "in": "query",
+                        "description": "tags for the resource.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Resource"
+                ],
+                "summary": "Creating/Storing new resource ",
+                "description": "Stores resource in the system",
+                "operationId": "create_or_update_resource",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Title of resource",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "Description of resource",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of resource",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "url",
+                        "in": "query",
+                        "description": "URL of resource",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "remark",
+                        "in": "query",
+                        "description": "Remark of the resource",
+                        "type": "string"
+                    },
+                    {
+                        "name": "tag[]",
+                        "in": "query",
+                        "description": "tags for the resource.",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Resource"
+                ],
+                "summary": "delete resource data",
+                "description": "Delete resource from system",
+                "operationId": "delete_resource",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the resource that needs to be deleted",
                         "required": true,
                         "type": "string"
                     }
@@ -1391,7 +1833,42 @@
                         "description": "successful operation"
                     },
                     "400": {
-                        "description": "Invalid data"
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/resource/{_id}": {
+            "get": {
+                "tags": [
+                    "Resource"
+                ],
+                "summary": "Returns resource data",
+                "description": "Returns resource data",
+                "operationId": "resource",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the resource that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid resource id"
                     }
                 },
                 "security": [
@@ -1412,7 +1889,26 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -1565,41 +2061,6 @@
                 ]
             }
         },
-        "/section_search": {
-            "get": {
-                "tags": [
-                    "Section"
-                ],
-                "summary": "Returns section data based on search keyword",
-                "description": "Returns section data",
-                "operationId": "section_search",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "search_key",
-                        "in": "query",
-                        "description": "Search keyword that needs to searched in sections",
-                        "required": true,
-                        "type": "string"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid data"
-                    }
-                },
-                "security": [
-                    {
-                        "token": []
-                    }
-                ]
-            }
-        },
         "/subject": {
             "get": {
                 "tags": [
@@ -1611,7 +2072,26 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -1775,7 +2255,26 @@
                 "produces": [
                     "application/json"
                 ],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
@@ -1964,6 +2463,14 @@
         {
             "name": "Question",
             "description": "Question related API's"
+        },
+        {
+            "name": "Resource",
+            "description": "Resource related API's"
+        },
+        {
+            "name": "Layout",
+            "description": "Layout related API's"
         }
     ]
 }

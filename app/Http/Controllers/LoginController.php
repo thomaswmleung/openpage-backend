@@ -47,12 +47,13 @@ class LoginController extends Controller {
         
         $messages=[
             'username.required' => config('error_constants.login_user_name_required'),
-            'username.required' => config('error_constants.login_password_required')
+            'password.required' => config('error_constants.login_password_required')
             
         ];
         
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
-        
+//        var_dump($formulated_messages);
+//        exit();
         $validator = Validator::make($request->all(), $rules,$formulated_messages);
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
@@ -73,9 +74,8 @@ class LoginController extends Controller {
                 $result['_id'] = $user_data->_id;
             } else {
                 $is_valid_user = FALSE;
-                $error_messages = array(array("ERR_CODE" => config('error_constants.login_invalid'),
-                                        "ERR_MSG"=> config('error_messages'.".".
-                                                            config('error_constants.login_invalid')))) ;       
+                $error_messages = array(array("ERR_CODE" => config('error_constants.login_invalid')['error_code'],
+                                        "ERR_MSG"=> config('error_constants.login_invalid')['error_message'])) ;       
                 
                 
                 $responseArray = array("success" => FALSE, "errors" => $error_messages);

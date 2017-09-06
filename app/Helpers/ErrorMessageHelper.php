@@ -13,25 +13,35 @@ class ErrorMessageHelper {
     public static function formulateErrorMessages($err_msgs_array) {
 
         $messages = array();
-
         foreach ($err_msgs_array as $key => $value) {
-            $messages[$key] = json_encode(array($value
-                => config('error_messages' . "." . $value)));
+            $messages[$key] = json_encode(array($value['error_code']
+                => $value['error_message']));
         }
         return $messages;
     }
+//    public static function formulateErrorMessages($err_msgs_array) {
+//
+//        $messages = array();
+//
+//        foreach ($err_msgs_array as $key => $value) {
+//            $messages[$key] = json_encode(array($value
+//                => config('error_messages' . "." . $value)));
+//        }
+//        return $messages;
+//    }
 
     public static function getResponseErrorMessages($errors) {
         $errors_array = $errors->messages();
         $response_error_array = array();
         $error_index = 0;
-
-
+        
+       
         foreach ($errors_array as $key => $err_msgs_array) {
 
-
+    
             foreach ($err_msgs_array as $err_details_json) {
-
+//                var_dump($err_details_json);
+//                exit();
                 $error_detail_array = json_decode($err_details_json, true);
 
                 foreach ($error_detail_array as $code => $msg) {

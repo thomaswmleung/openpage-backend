@@ -80,9 +80,8 @@ class MediaController extends Controller {
             $media_id = $request->mid;
             $media_details = $mediaModel->find_media_details($media_id);
             if ($media_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_media_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_media_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -400,9 +399,8 @@ class MediaController extends Controller {
         $mediaModel = new MediaModel();
         $media_data = $mediaModel->media_details(array('_id' => $media_id));
         if ($media_data == null) {
-            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id'),
-                    "ERR_MSG" => config('error_messages' . "." .
-                            config('error_constants.invalid_media_id'))));
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id')['error_code'],
+                    "ERR_MSG" => config('error_constants.invalid_media_id')['error_message']));
 
             $response_array = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -415,7 +413,8 @@ class MediaController extends Controller {
             $response_array = array("success" => TRUE);
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         } else {
-            $responseArray = array("success" => FALSE, "errors" => "Something went wrong");
+            $responseArray = array("success" => FALSE, "errors" => array(array('ERROR_CODE' => "GLOBAL_ERROR",
+                                                                                'ERR_MSG'=> 'Something went wrong.')));
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         }
     }

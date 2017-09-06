@@ -254,13 +254,11 @@
     ]
   },
   "keyword": [
-    "string",
-    "string",
-    "string"
+    "key1",
+    "key2",
+    "key3"
   ],
-  "organisation": "organisation_id",
-  "created_by": "",
-  "created_at": "timestamp",
-  "updated_by": "",
-  "updated_at": "timestamp"
+  "organisation": "59ad508135686e261c000876",
+  "created_by": "5977575c32081ddc19000035",
+  "updated_by": "5977575c32081ddc19000035"
 }

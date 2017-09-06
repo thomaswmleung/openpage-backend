@@ -85,9 +85,8 @@ class UserController extends Controller {
             if ($user_details == NULL) {
                 $error['error'] = array("Invalid user id");
 
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_user_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_user_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_user_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_user_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -193,7 +192,6 @@ class UserController extends Controller {
         $validator = Validator::make($user_data, $rules, $formulated_messages);
 
         if ($validator->fails()) {
-            dd($validator->messages());
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');

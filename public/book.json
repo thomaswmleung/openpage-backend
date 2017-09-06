@@ -3,7 +3,7 @@
   "page": [
     {
       "type": "exercise/test",
-      "_id": "5975af3132081dec1900002e",
+      "_id": "599464d9c74b1b02c40069a6",
       "unit": "页面单元",
       "topic": "页面主题",
       "page_code":"1A",
@@ -18,7 +18,7 @@
     },
     {
       "type": "exercise/test",
-      "_id": "5975af3132081dec19000033",
+      "_id": "599464d9c74b1b02c40069ab",
       "unit": "页面单元",
       "topic": "页面主题",
       "page_code":"2A",
@@ -114,9 +114,9 @@
     "layout": "learnfree",
     "title": "string",
     "subtitle": "string",
-    "school_logo": "http://localhost/openpage-backend/public/images/pdf_images/sample_school_logo.png",
+    "school_logo": "http://localhost/openpage-backend/public/test_images/test.png",
     "school_name": "string",
-    "cover_image": "http://localhost/openpage-backend/public/images/pdf_images/coverpage.png",
+    "cover_image": "http://localhost/openpage-backend/public/test_images/test.png",
     "level": "p1",
     "color": "lightgreen/red/blue/yellow/purple",
     "version": "string",
@@ -170,8 +170,6 @@
     "string"
   ],
   "organisation": "organisation_id",
-  "created_by": "user_id",
-  "created_at": "timestamp",
-  "updated_by": "user_id",
-  "updated_at": "timestamp"
+  "created_by": "user_id"
+
 }

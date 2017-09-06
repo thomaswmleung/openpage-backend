@@ -83,9 +83,8 @@ class SubjectController extends Controller {
             $subject_id = $request->_id;
             $subject_details = $subjectModel->find_subject_details($subject_id);
             if ($subject_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_subject_id'),
-                        "ERR_MSG" => config('error_messages' . "." .
-                                config('error_constants.invalid_subject_id'))));
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_subject_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_subject_id')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
@@ -411,9 +410,8 @@ class SubjectController extends Controller {
         $subject_data = $subjectModel->subject_details(array('_id' => $subject_id));
         if ($subject_data == null) {
             $error['error'] = array("subject not found");
-            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_subject_id'),
-                    "ERR_MSG" => config('error_messages' . "." .
-                            config('error_constants.invalid_subject_id'))));
+            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_subject_id')['error_code'],
+                    "ERR_MSG" => config('error_constants.invalid_subject_id')['error_message']));
 
             $response_array = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
