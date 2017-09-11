@@ -114,29 +114,31 @@ class Pdf_helper {
                 $actualPDFPageIndex++;
                 // displaying background image
                 $background_data = $page['background'];
-                $background_image_path = $background_data[0]['url'];
-
-                // display image only if image exist.
-                if (isset($background_image_path) && $background_image_path != "" && $background_image_path != NULL) {
-                    $bg_image_x = $background_data[0]['x'];
-                    $bg_image_y = $background_data[0]['y'];
-                    $bg_image_w = $background_data[0]['w'];
-                    $bg_image_h = $background_data[0]['h'];
-
-                    $fpdf->Image($background_image_path, $bg_image_x, $bg_image_y, $bg_image_w, $bg_image_h);
+                foreach ($background_data as $background) {
+                    if ($background['type'] == "image") {
+                        $background_image_path = $background['url'];
+                        // display image only if image exist.
+                        if (isset($background_image_path) && $background_image_path != "" && $background_image_path != NULL) {
+                            $bg_image_x = $background['x'];
+                            $bg_image_y = $background['y'];
+                            $bg_image_w = $background['w'];
+                            $bg_image_h = $background['h'];
+                            $fpdf->Image($background_image_path, $bg_image_x, $bg_image_y, $bg_image_w, $bg_image_h);
+                        }
+                    }
+                    if ($background['type'] == "text") {
+                        // display text only if text exist.
+                        if (isset($background['string']) && $background['string'] != "" && $background['string'] != NULL) {
+                            $background_text = $background['string'];
+                            $text_x = $background['x'];
+                            $text_y = $background['y'];
+                            $text_w = $background['w'];
+                            $text_h = $background['h'];
+                            // Set font size based on w and h 
+                            $fpdf->MultiCell($text_x, $text_y, $background_text, 0, 'C');
+                        }
+                    }
                 }
-
-                // display text only if text exist.
-                if (isset($background_data[0]['string']) && $background_data[0]['string'] != "" && $background_data[0]['string'] != NULL) {
-                    $background_text = $background_data[0]['string'];
-                    $text_x = $background_data[0]['x'];
-                    $text_y = $background_data[0]['y'];
-                    $text_w = $background_data[0]['w'];
-                    $text_h = $background_data[0]['h'];
-                    // Set font size based on w and h 
-                    $fpdf->MultiCell($text_x, $text_y, $background_text, 0, 'C');
-                }
-
 
                 if (isset($page['main'])) {
                     $main_data_array = $page['main'];
@@ -173,6 +175,9 @@ class Pdf_helper {
                             $estimatedHeight = $this->getStringHeight($fpdf, 200, 5, $question['question_text']);
 
                             $question_image_url = $question['image'];
+                            if (!filter_var($question_image_url, FILTER_VALIDATE_URL)) {
+                                return response(json_encode(array("error" => "Invalid question image")))->header('Content-Type', 'application/json');
+                            }
                             $answer_array = $question['answer'];
                             if ($question_image_url != "") {
                                 $imgAttrArray = getimagesize($question_image_url);
@@ -386,6 +391,9 @@ class Pdf_helper {
         // create new blank page
 //        $fpdf->AddPage();
         // displaying background image
+        
+        $currentBookIndex = $page['current_book_index'];
+        $pageIndexArray[]=$currentBookIndex;
         $background_data_array = $page->background;
 
 
@@ -395,6 +403,9 @@ class Pdf_helper {
 
             if ($background_data['type'] == 'image') {
                 $background_image_path = $background_data['url'];
+                if (getimagesize($background_image_path) === false) {
+                    return response(json_encode(array("error" => "Invalid background image")))->header('Content-Type', 'application/json');
+                }
                 // display image only if image exist.
                 if (isset($background_image_path) && $background_image_path != "" && $background_image_path != NULL) {
                     $bg_image_x = $background_data['x'];
@@ -466,6 +477,9 @@ class Pdf_helper {
 
                 $fpdf->MultiCell(200, 5, $question_text, 0, 'L');
                 $currentY = $fpdf->GetY() + 5;
+                if (getimagesize($question_image_url) === false) {
+                    return response(json_encode(array("error" => "Invalid question image")))->header('Content-Type', 'application/json');
+                }
                 if (file_exists($question_image_url)) {
                     $imgAttrArray = getimagesize($question_image_url);
 
@@ -520,6 +534,9 @@ class Pdf_helper {
             $overlay_type = $overlay['type'];
             if ($overlay_type == "image") {
                 $image_path = $overlay['url'];
+                if (getimagesize($image_path) === false) {
+                    return response(json_encode(array("error" => "Invalid Overlay image")))->header('Content-Type', 'application/json');
+                }
                 $image_x = $overlay['x'];
                 $image_y = $overlay['y'];
                 $image_w = $overlay['w'];
@@ -555,8 +572,12 @@ class Pdf_helper {
             
         }
 
+        $resultPdf = array(
+            '$fpdf'=>$fpdf,
+            'pageIndexArray'=>$pageIndexArray
+        );
 
-        return $fpdf;
+        return $resultPdf;
     }
 
     static public function generate_book($input_json) {
@@ -569,9 +590,9 @@ class Pdf_helper {
         $fpdf->AddFont('msjhb', '', 'msjhb.ttf', true);
         $fpdf->AddFont('msjh', '', 'msjh.ttf', true);
         $fpdf->SetFont('msjhb', '', 18);
-
+        $actualPDFPageIndex = 0;
         $fpdf->AddPage();
-
+        
         //setting book title
 
         $fpdf->SetXY(5, 5);
@@ -583,9 +604,15 @@ class Pdf_helper {
         $fpdf->MultiCell(200, 5, $sub_title, 0, 'C');
 
         $cover_img_url = $book_data_array['cover']['cover_image'];
+        if (getimagesize($cover_img_url) === false) {
+            return response(json_encode(array("error" => "Invalid cover image")))->header('Content-Type', 'application/json');
+        }
         $fpdf->Image($cover_img_url, 5, $fpdf->GetY(), 200, 270);
 
         $school_logo = $book_data_array['cover']['school_logo'];
+        if (getimagesize($school_logo) === false) {
+            return response(json_encode(array("error" => "Invalid school logo image")))->header('Content-Type', 'application/json');
+        }
         $school_name = $book_data_array['cover']['school_name'];
         $fpdf->Image($school_logo, 25, 250, 30, 25);
         $fpdf->SetFont('msjh', '', 15);
@@ -597,6 +624,7 @@ class Pdf_helper {
         $toc_array = $book_data_array['toc'];
 
         $fpdf->AddPage();
+        $actualPDFPageIndex++;
         $fpdf->SetXY(5, 55);
         $toc_col1x = 5;
         $toc_col2x = 50;
@@ -611,7 +639,7 @@ class Pdf_helper {
         $tocy = $fpdf->GetY();
         $fpdf->SetFont('msjh', '', 12);
         foreach ($toc_array as $toc) {
-
+            
 //            var_dump($toc);
 //            exit();
             if ($toc['type'] == 'unit') {
@@ -650,14 +678,22 @@ class Pdf_helper {
 //            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
 //            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
             }
-
+            if($fpdf->CheckPageBreak(30)){
+                $fpdf->AddPage();
+                $tocy = 30;
+                $actualPDFPageIndex++;
+            }
             $fpdf->SetXY(5, $tocy);
         }
 
         $page_array = $book_data_array['page'];
-
+        
         foreach ($page_array AS $page_details) {
+            $pageIndex=0;
+            $actualPageIndexArray = array();
+            array_push($actualPageIndexArray, $actualPDFPageIndex);
             $fpdf->AddPage();
+            $actualPDFPageIndex++;
             $fpdf->SetXY(5, 5);
             $fpdf->SetFont('msjhb', '', 18);
             $fpdf->MultiCell(13, 10, $page_details['page_code'], 0);
@@ -688,10 +724,15 @@ class Pdf_helper {
             // page details
 
             $page_data = PageModel::get_page_details($page_details['_id']);
+            $page_data['current_book_index'] = $actualPDFPageIndex;
             $fpdf->SetXY(20, 20);
-            $fpdf = Pdf_helper::create_page($fpdf, $page_data);
+            $page_fpdf = Pdf_helper::create_page($fpdf, $page_data);
+//            $page_details['page_image_indexs']=$page_fpdf['pageIndexArray'];
+            $book_data_array['page'][$pageIndex]['page_image_indexs'] = $page_fpdf['pageIndexArray'];
+//            $page_data_array['page'][] = $page_details;
+            $pageIndex++;
         }
-
+        
 
 //        $fpdf->Output('sample_book.pdf', 'I');
         $pdf_name = "book-" . uniqid() . ".pdf";

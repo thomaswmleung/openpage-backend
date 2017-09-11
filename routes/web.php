@@ -92,6 +92,18 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('resource', 'ResourceController@create_or_update_resource');
     Route::put('resource', 'ResourceController@create_or_update_resource');
     Route::delete('resource', 'ResourceController@delete_resource');
+    
+    Route::get('class', 'ClassController@class_list');
+    Route::get('class/{_id}', 'ClassController@class_list');
+    Route::post('class', 'ClassController@add_or_update_class');
+    Route::put('class', 'ClassController@add_or_update_class');
+    Route::delete('class', 'ClassController@delete_class');
+    
+    Route::get('class_flow', 'ClassFlowController@class_flow_list');
+    Route::get('class_flow/{_id}', 'ClassFlowController@class_flow_list');
+    Route::post('class_flow', 'ClassFlowController@add_or_update_class_flow');
+    Route::put('class_flow', 'ClassFlowController@add_or_update_class_flow');
+    Route::delete('class_flow', 'ClassFlowController@delete_class_flow');
    
     Route::post('keyword','KeywordController@create_keyword');
     

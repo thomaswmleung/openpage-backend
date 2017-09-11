@@ -182,7 +182,7 @@ class PageGroupController extends Controller {
         $page_data_array = json_decode($json_data, true);
 
         if ($page_data_array == null) {
-            return response(json_encode(array("error" => "Invalid Json")));
+            return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
         $page_group_id = $page_data_array['_id'];

@@ -189,6 +189,372 @@
                 ]
             }
         },
+        "/class": {
+            "get": {
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Returns list of class",
+                "description": "Returns class data",
+                "operationId": "class_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Update class details",
+                "description": "",
+                "operationId": "add_or_update_class",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Subject json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Create a class",
+                "description": "",
+                "operationId": "add_or_update_class",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "subject json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Class"
+                ],
+                "summary": "delete class data",
+                "description": "Delete class from system",
+                "operationId": "delete_class",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the class that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/class/{_id}": {
+            "get": {
+                "tags": [
+                    "Class"
+                ],
+                "summary": "Returns class data",
+                "description": "Returns class data",
+                "operationId": "class_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the class that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid class id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/class_flow": {
+            "get": {
+                "tags": [
+                    "Class Flow"
+                ],
+                "summary": "Returns list of class flow",
+                "description": "Returns class flow data",
+                "operationId": "class_flow_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Class Flow"
+                ],
+                "summary": "Update class flow details",
+                "description": "",
+                "operationId": "add_or_update_class_flow",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Subject json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Class Flow"
+                ],
+                "summary": "Create a class flow",
+                "description": "",
+                "operationId": "add_or_update_class_flow",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "subject json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Class Flow"
+                ],
+                "summary": "delete class flow data",
+                "description": "Delete class flow from system",
+                "operationId": "delete_class flow",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the class_flow that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/class_flow/{_id}": {
+            "get": {
+                "tags": [
+                    "Class Flow"
+                ],
+                "summary": "Returns class flow data",
+                "description": "Returns class flow data",
+                "operationId": "class_flow_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the class that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid class flow id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
         "/layout": {
             "get": {
                 "tags": [
@@ -2470,6 +2836,14 @@
         },
         {
             "name": "Layout",
+            "description": "Layout related API's"
+        },
+        {
+            "name": "Class",
+            "description": "Layout related API's"
+        },
+        {
+            "name": "Class Flow",
             "description": "Layout related API's"
         }
     ]

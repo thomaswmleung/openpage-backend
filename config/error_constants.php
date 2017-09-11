@@ -35,6 +35,8 @@ return [
     'invalid_page_group_id' => array('error_code'=>'E401','error_message' =>"Invalid Page Group id."),
     
     'invalid_page_id' =>  array('error_code'=>'E501','error_message' =>"Invalid Page id."),
+    'page_id_required' =>  array('error_code'=>'E502','error_message' =>"Page id is required"),
+    'page_id_exists' =>  array('error_code'=>'E503','error_message' =>"Page id doesn't exists"),
     
     
     'invalid_section_id' => array('error_code'=>'E601','error_message' =>"Invalid Section id."),
@@ -85,6 +87,15 @@ return [
     'resource_url_required' => array('error_code'=>'E1604','error_message' =>"Invalid subject id."),
     'resource_id_required' => array('error_code'=>'E1605','error_message' =>"Invalid subject id."),
     'invalid_resource_id' => array('error_code'=>'E1606','error_message' =>"Invalid subject id."),
+    
+    'class_name_required' => array('error_code'=>'E1701','error_message' =>"Class name is required"),
+    'class_name_unique' => array('error_code'=>'E1702','error_message' =>"Class name already exists"),
+    'class_id_required' => array('error_code'=>'E1703','error_message' =>"Class id is required"),
+    'class_id_invalid' => array('error_code'=>'E1704','error_message' =>"Class id is invalid"),
+    
+    'class_flow_title_required' => array('error_code'=>'E1801','error_message' =>"Class flow title is required"),
+    'class_flow_id_required' => array('error_code'=>'E1803','error_message' =>"Class flow id is required"),
+    'class_flow_id_invalid' => array('error_code'=>'E1804','error_message' =>"Class flow id is invalid"),
     
     
 ];

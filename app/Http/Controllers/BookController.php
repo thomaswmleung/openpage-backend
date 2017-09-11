@@ -92,7 +92,7 @@ class BookController extends Controller {
                 return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
-                         $search_key = "";
+            $search_key = "";
             if (isset($request->search_key)) {
                 $search_key = $request->search_key;
             }
