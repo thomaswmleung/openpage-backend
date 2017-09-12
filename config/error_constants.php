@@ -94,6 +94,7 @@ return [
     'class_id_invalid' => array('error_code'=>'E1704','error_message' =>"Class id is invalid"),
     
     'class_flow_title_required' => array('error_code'=>'E1801','error_message' =>"Class flow title is required"),
+    'class_flow_resource_required' => array('error_code'=>'E1802','error_message' =>"Class flow resource is required"),
     'class_flow_id_required' => array('error_code'=>'E1803','error_message' =>"Class flow id is required"),
     'class_flow_id_invalid' => array('error_code'=>'E1804','error_message' =>"Class flow id is invalid"),
     
