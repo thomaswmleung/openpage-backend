@@ -81,11 +81,11 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  * )
  * @SWG\Tag(
  *   name="Class",
- *   description="Layout related API's"
+ *   description="Class related API's"
  * )
  * @SWG\Tag(
  *   name="Class Flow",
- *   description="Layout related API's"
+ *   description="Class Flow related API's"
  * )
  * 
  */
