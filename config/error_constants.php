@@ -15,7 +15,7 @@ return [
     'email_already_taken' => array('error_code'=>'E106','error_message' =>"Email is already taken."),
     'login_user_name_required' => array('error_code'=>'E107','error_message' =>"User name is required."),
     'login_password_required' =>  array('error_code'=>'E108','error_message' =>"Password is required."),
-    'login_invalid' => array('error_code'=>'E109','error_message' =>"User name is required."),
+    'login_invalid' => array('error_code'=>'E109','error_message' =>"Username/password is invalid"),
     'invalid_user_id' => array('error_code'=>'E110','error_message' =>"Invalid user id."),
     'username_required' => array('error_code'=>'E111','error_message' =>"Username is required."),
     'activation_key_required' => array('error_code'=>'E112','error_message' =>"Activation key is required."),

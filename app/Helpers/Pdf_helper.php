@@ -391,9 +391,9 @@ class Pdf_helper {
         // create new blank page
 //        $fpdf->AddPage();
         // displaying background image
-        
+
         $currentBookIndex = $page['current_book_index'];
-        $pageIndexArray[]=$currentBookIndex;
+        $pageIndexArray[] = $currentBookIndex;
         $background_data_array = $page->background;
 
 
@@ -573,8 +573,8 @@ class Pdf_helper {
         }
 
         $resultPdf = array(
-            '$fpdf'=>$fpdf,
-            'pageIndexArray'=>$pageIndexArray
+            '$fpdf' => $fpdf,
+            'pageIndexArray' => $pageIndexArray
         );
 
         return $resultPdf;
@@ -592,7 +592,7 @@ class Pdf_helper {
         $fpdf->SetFont('msjhb', '', 18);
         $actualPDFPageIndex = 0;
         $fpdf->AddPage();
-        
+
         //setting book title
 
         $fpdf->SetXY(5, 5);
@@ -608,13 +608,14 @@ class Pdf_helper {
             return response(json_encode(array("error" => "Invalid cover image")))->header('Content-Type', 'application/json');
         }
         $fpdf->Image($cover_img_url, 5, $fpdf->GetY(), 200, 270);
-
-        $school_logo = $book_data_array['cover']['school_logo'];
-        if (getimagesize($school_logo) === false) {
-            return response(json_encode(array("error" => "Invalid school logo image")))->header('Content-Type', 'application/json');
+        if (isset($book_data_array['cover']['school_logo']) AND $book_data_array['cover']['school_logo'] != "") {
+            $school_logo = $book_data_array['cover']['school_logo'];
+            if (getimagesize($school_logo) === false) {
+                return response(json_encode(array("error" => "Invalid school logo image")))->header('Content-Type', 'application/json');
+            }
+            $fpdf->Image($school_logo, 25, 250, 30, 25);
         }
         $school_name = $book_data_array['cover']['school_name'];
-        $fpdf->Image($school_logo, 25, 250, 30, 25);
         $fpdf->SetFont('msjh', '', 15);
         $fpdf->SetXY(55, 265);
         $fpdf->MultiCell(140, 5, $school_name, 0, 'L');
@@ -639,7 +640,7 @@ class Pdf_helper {
         $tocy = $fpdf->GetY();
         $fpdf->SetFont('msjh', '', 12);
         foreach ($toc_array as $toc) {
-            
+
 //            var_dump($toc);
 //            exit();
             if ($toc['type'] == 'unit') {
@@ -678,7 +679,7 @@ class Pdf_helper {
 //            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
 //            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
             }
-            if($fpdf->CheckPageBreak(30)){
+            if ($fpdf->CheckPageBreak(30)) {
                 $fpdf->AddPage();
                 $tocy = 30;
                 $actualPDFPageIndex++;
@@ -687,9 +688,9 @@ class Pdf_helper {
         }
 
         $page_array = $book_data_array['page'];
-        
+
         foreach ($page_array AS $page_details) {
-            $pageIndex=0;
+            $pageIndex = 0;
             $actualPageIndexArray = array();
             array_push($actualPageIndexArray, $actualPDFPageIndex);
             $fpdf->AddPage();
@@ -707,7 +708,10 @@ class Pdf_helper {
             $fpdf->SetXY(5, 260);
             $fpdf->MultiCell(8, 5, $page_details['page_number'], 0);
 
-            $author_info_array = $page_details['author'];
+            $author_info_array = array();
+            if (isset($page_details['author'])) {
+                $author_info_array = $page_details['author'];
+            }
             $fpdf->SetFont('msjh', '', 8);
             $authory = 260;
             foreach ($author_info_array as $author_info) {
@@ -732,7 +736,7 @@ class Pdf_helper {
 //            $page_data_array['page'][] = $page_details;
             $pageIndex++;
         }
-        
+
 
 //        $fpdf->Output('sample_book.pdf', 'I');
         $pdf_name = "book-" . uniqid() . ".pdf";

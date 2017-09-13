@@ -37,6 +37,7 @@ class MediaModel extends Eloquent {
             $media_data = MediaModel::where('remark', 'like', "%$search_key%")
                     ->orWhere('tag', 'like', "%$search_key%")
                     ->orWhere('type', 'like', "%$search_key%")
+                    ->orWhere('extension', 'like', "%$search_key%")
                     ->skip($skip)
                     ->take($limit)
                     ->get();
