@@ -97,5 +97,9 @@ return [
     'class_flow_id_required' => array('error_code'=>'E1803','error_message' =>"Class flow id is required"),
     'class_flow_id_invalid' => array('error_code'=>'E1804','error_message' =>"Class flow id is invalid"),
     
-    
+    'keyword_required' =>array('error_code'=>'E1607','error_message' =>"Keyword is Required"),
+    'keyword_ID_required' =>array('error_code'=>'E1608','error_message' =>"Keyword ID is Required"),
+    'invalid_keyword_id' => array('error_code'=>'E1609','error_message' =>"Invalid Keyword ID."),
+
+
 ];
