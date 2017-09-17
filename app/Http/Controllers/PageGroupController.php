@@ -29,7 +29,12 @@ class PageGroupController extends Controller {
      *   description="Returns page group data",
      *   operationId="get_page_group",
      *   produces={"application/json"},
-     *   parameters={},
+     *   @SWG\Parameter(
+     *     name="search_key",
+     *     in="query",
+     *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
      *   @SWG\Parameter(
      *     name="skip",
      *     in="query",
@@ -356,6 +361,8 @@ class PageGroupController extends Controller {
 
                 $page_group_insert_data = array(
                     'page' => $page_ids,
+                    'title' => $page_data_array['page_group']['title'],
+                    'sub_title' => $page_data_array['page_group']['sub_title'],
                     'preview_url' => $page_data_array['preview_url'],
                     'preview_image_array' => $page_data_array['preview_image_array'],
                 );

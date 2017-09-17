@@ -7,7 +7,7 @@ use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 class PageGroupModel extends Eloquent {
 
     protected $collection = 'page_group';
-    protected $fillable = array('page', 'preview_url');
+    protected $fillable = array('page', 'title', 'sub_title', 'preview_url', 'preview_image_array');
 
     public function add_page_group($insert_data) {
         $result = PageGroupModel::create($insert_data);
@@ -52,6 +52,8 @@ class PageGroupModel extends Eloquent {
 
         if ($search_key != "") {
             $page_group_data = PageGroupModel::where('preview_url', 'like', "%$search_key%")
+                    ->orWhere('title', 'like', "%$search_key%")
+                    ->orWhere('sub_title', 'like', "%$search_key%")
                     ->skip($skip)
                     ->take($limit)
                     ->get();
@@ -64,6 +66,8 @@ class PageGroupModel extends Eloquent {
     public function total_count($search_key) {
         if ($search_key != "") {
             $total_count = PageGroupModel::where('preview_url', 'like', "%$search_key%")
+                    ->orWhere('title', 'like', "%$search_key%")
+                    ->orWhere('sub_title', 'like', "%$search_key%")
                     ->count();
         } else {
             $total_count = PageGroupModel::count();
