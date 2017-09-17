@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Controllers\EmailController;
 use App\Helpers\ErrorMessageHelper;
 use Illuminate\Support\Facades\Log;
+use App\Helpers\GCS_helper;
+use Illuminate\Support\Facades\Config;
 
 class UserController extends Controller {
     /**
@@ -101,11 +103,11 @@ class UserController extends Controller {
             }
             $skip = 0;
             if (isset($request->skip)) {
-                $skip = (int)$request->skip;
+                $skip = (int) $request->skip;
             }
             $limit = config('constants.default_query_limit');
             if (isset($request->limit)) {
-                $limit = (int)$request->limit;
+                $limit = (int) $request->limit;
             }
             $query_details = array(
                 'search_key' => $search_key,
@@ -124,10 +126,17 @@ class UserController extends Controller {
     /**
      * @SWG\Post(path="/register",
      * tags={"User"},
+     *   consumes={"multipart/form-data"},
      *   summary="User registration into the system",
      *   description="User registration into the system",
      *   operationId="register",
      *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *      description="file to upload",
+     *      in="formData",
+     *      name="profile_image",
+     *      type="file"
+     *   ),
      *   @SWG\Parameter(
      *     name="first_name",
      *     in="query",
@@ -165,6 +174,7 @@ class UserController extends Controller {
      */
     public function register(Request $request) {
         $user_data = array(
+            'profile_image' => $request->file('profile_image'),
             'first_name' => trim($request->first_name),
             'last_name' => trim($request->last_name),
             'email' => strtolower(trim($request->email)),
@@ -176,8 +186,11 @@ class UserController extends Controller {
             'password' => 'required',
             'email' => 'min:3|required|email|unique:users,email'
         );
-
+        if ($request->hasFile('profile_image')) {
+            $rules['profile_image']='mimes:jpeg,png,jpg,tiff,gif';
+        }
         $messages = [
+            'profile_image.mimes' => config('error_constants.profile_image_invalid_format'),
             'first_name.required' => config('error_constants.first_name_required'),
             'last_name.required' => config('error_constants.last_name_required'),
             'email.email' => config('error_constants.email_vaild'),
@@ -196,7 +209,26 @@ class UserController extends Controller {
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
+            if ($request->hasFile('profile_image')) {
+                $image = $request->file('profile_image');
+                $input['profile_image'] = time() . uniqid() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('images');
+                $profile_image_name = $input['profile_image'];
+                $image->move($destinationPath, $profile_image_name);
 
+                //upload to GCS
+
+                $gcs_result = GCS_helper::upload_to_gcs('images/' . $profile_image_name);
+                if (!$gcs_result) {
+                    $error['error'] = array("success" => FALSE, "error" => "Error in upload of GCS");
+                    return response(json_encode($error), 400)->header('Content-Type', 'application/json');
+                }
+                // delete your local pdf file here
+                unlink($destinationPath . "/" . $profile_image_name);
+
+                $image_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $profile_image_name;
+                $user_data['profile_image'] = $image_url;
+            }
             $user_data['username'] = strtolower(trim($request->email));
             // generate activation code
             $user_data['activation_key'] = rand(123456789, 987456321);

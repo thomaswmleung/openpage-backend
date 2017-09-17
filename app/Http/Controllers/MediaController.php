@@ -196,7 +196,7 @@ class MediaController extends Controller {
         $rules = array(
             'type' => 'required',
             'extension' => 'required',
-            'media_file' => 'required|mimes:jpeg,png,jpg,mp3,ogg,mp4,pdf,zip',
+            'media_file' => 'required|mimes:jpeg,png,jpg,mp3,ogg,mp4,pdf,zip,mpga,wav',
             'usage' => 'required',
             'created_by' => 'required|exists:users,_id',
         );

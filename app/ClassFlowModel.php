@@ -7,7 +7,7 @@ use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 class ClassFlowModel extends Eloquent {
 
     protected $collection = 'class_flow';
-    protected $fillable = array('class_id','title','page_id','resource_array');
+    protected $fillable = array('class_id','title','page_id','resource_ids');
 
     public function create_or_update_class_flow($insert_data, $id) {
         $result = ClassFlowModel::updateOrCreate(

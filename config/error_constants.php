@@ -15,11 +15,12 @@ return [
     'email_already_taken' => array('error_code'=>'E106','error_message' =>"Email is already taken."),
     'login_user_name_required' => array('error_code'=>'E107','error_message' =>"User name is required."),
     'login_password_required' =>  array('error_code'=>'E108','error_message' =>"Password is required."),
-    'login_invalid' => array('error_code'=>'E109','error_message' =>"User name is required."),
+    'login_invalid' => array('error_code'=>'E109','error_message' =>"Username/password is invalid"),
     'invalid_user_id' => array('error_code'=>'E110','error_message' =>"Invalid user id."),
     'username_required' => array('error_code'=>'E111','error_message' =>"Username is required."),
     'activation_key_required' => array('error_code'=>'E112','error_message' =>"Activation key is required."),
     'activation_key_exists' => array('error_code'=>'E113','error_message' =>"Activation key is invalid."),
+    'profile_image_invalid_format' => array('error_code'=>'E114','error_message' =>"Invalid profile image format."),
     
     'media_type_required' => array('error_code'=>'E301','error_message' =>"Media type is missing."),
     'media_extension_required' => array('error_code'=>'E302','error_message' =>"Media extension is required."),
@@ -94,6 +95,7 @@ return [
     'class_id_invalid' => array('error_code'=>'E1704','error_message' =>"Class id is invalid"),
     
     'class_flow_title_required' => array('error_code'=>'E1801','error_message' =>"Class flow title is required"),
+    'class_flow_resource_required' => array('error_code'=>'E1802','error_message' =>"Class flow resource is required"),
     'class_flow_id_required' => array('error_code'=>'E1803','error_message' =>"Class flow id is required"),
     'class_flow_id_invalid' => array('error_code'=>'E1804','error_message' =>"Class flow id is invalid"),
     

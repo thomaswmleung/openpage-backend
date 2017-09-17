@@ -186,28 +186,29 @@ class ClassFlowController extends Controller {
         if (isset($class_flow_data_array['page_id'])) {
             $page_id = $class_flow_data_array['page_id'];
         }
-        $resource_array = "";
-        if (isset($class_flow_data_array['resource_array'])) {
-            $resource_array = $class_flow_data_array['resource_array'];
+        $resource_ids = "";
+        if (isset($class_flow_data_array['resource_ids'])) {
+            $resource_ids = $class_flow_data_array['resource_ids'];
         }
 
         $class_flow_array = array(
             '_id' => $class_flow_id,
             'title' => $title,
             'page_id' => $page_id,
-            'resource_array' => $resource_array,
+            'resource_ids' => $resource_ids,
         );
 
         // validation : TODO
         if ($request->isMethod('post')) {
             $rules = array(
                 'title' => 'required',
-                'page_id' => 'required|exists:page,_id',
+                'page_id' => 'required',
+                'resource_ids' => 'required',
             );
             $messages = [
                 'page_id.required' => config('error_constants.page_id_required'),
-                'page_id.exists' => config('error_constants.page_id_exists'),
                 'title.required' => config('error_constants.class_flow_title_required'),
+                'resource_ids.required' => config('error_constants.class_flow_resource_required'),
             ];
         }
         if ($request->isMethod('put')) {
@@ -215,11 +216,13 @@ class ClassFlowController extends Controller {
                 '_id' => 'required',
                 'title' => 'required',
                 'page_id' => 'required',
+                'resource_ids' => 'required',
             );
             $messages = [
                 '_id.required' => config('error_constants.class_flow_id_invalid'),
                 'page_id.required' => config('error_constants.page_id_required'),
                 'title.required' => config('error_constants.class_flow_title_required'),
+                'resource_ids.required' => config('error_constants.class_flow_resource_required'),
             ];
         }
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
