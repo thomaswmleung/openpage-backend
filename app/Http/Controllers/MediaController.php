@@ -184,6 +184,7 @@ class MediaController extends Controller {
      */
     public function create_media(Request $request) {
         $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
+        
         $media_array = array(
             'type' => $request->type,
             'extension' => $request->extension,
@@ -196,7 +197,7 @@ class MediaController extends Controller {
         $rules = array(
             'type' => 'required',
             'extension' => 'required',
-            'media_file' => 'required|mimes:jpeg,png,jpg,mp3,ogg,mp4,pdf,zip,mpga,wav',
+            'media_file' => 'required|max:10240|mimetypes:image/jpeg,image/png,image/gif,image/bmp,video/mp4,video/x-flv,video/webm,video/avi,video/mpeg,video/quicktime,audio/mpga,audio/mpeg,application/octet-stream',
             'usage' => 'required',
             'created_by' => 'required|exists:users,_id',
         );
@@ -205,7 +206,8 @@ class MediaController extends Controller {
             'type.required' => config('error_constants.media_type_required'),
             'extension.required' => config('error_constants.media_extension_required'),
             'media_file.required' => config('error_constants.media_file_required'),
-            'media_file.mimes' => config('error_constants.invalid_media_file_mime'),
+            'media_file.max' => config('error_constants.file_limit_exceeded'),
+            'media_file.mimetypes' => config('error_constants.invalid_media_file_mime'),
             'usage.required' => config('error_constants.media_usage_required'),
             'created_by.required' => config('error_constants.media_created_by_required'),
             'created_by.exists' => config('error_constants.invalid_media_created_by')

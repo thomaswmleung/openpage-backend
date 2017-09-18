@@ -8,28 +8,28 @@ use Illuminate\Support\Facades\Validator;
 
 class KeywordHelper {
 
-    public function create_or_update_keyword($keyword, $document_id, $type, $keyword_id) {
+    public function add_or_update_keyword($keyword, $document_id, $type, $keyword_id) {
 
         $insert_data = array(
             'keyword' => $keyword
         );
 
         $keywordModel = new KeywordModel();
-        $keyword_id = $keywordModel->create_or_update_keyword($insert_data, $keyword_id);
+        $latest_keyword_id = $keywordModel->add_or_edit_keyword($insert_data, $keyword_id);
 
         if ($document_id != "" && $type != "") {
 
             $insert_data = array(
                 'document_id' => $document_id,
-                'keyword_id' => $keyword_id,
+                'keyword_id' => $latest_keyword_id,
                 'type' => $type
             );
 
             $keywordIndexModel = new KeywordIndexModel();
-            $keywordIndexModel->create_or_update_keyword_index($insert_data, $keyword_id);
+            $keywordIndexModel->create_or_update_keyword_index($insert_data, $latest_keyword_id);
         }
 
-        return $keyword_id;
+        return $latest_keyword_id;
     }
 
     public static function indexKeyword($keyword, $document_id, $document_type) {

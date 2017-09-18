@@ -31,7 +31,7 @@ return [
     'media_created_by_required' => array('error_code'=>'E307','error_message' =>"Created by is required."),
     'invalid_media_created_by' => array('error_code'=>'E308','error_message' =>"Created by has invalid id."),
     'invalid_media_id' =>array('error_code'=>'E309','error_message' =>"Invalid Media id.") ,
-    'media_deleted_success' => array('error_code'=>'E310','error_message' =>"Media deleted successfully."),
+    'file_limit_exceeded' => array('error_code'=>'E310','error_message' =>"Media file size is limited to 10 MB"),
     
     'invalid_page_group_id' => array('error_code'=>'E401','error_message' =>"Invalid Page Group id."),
     
@@ -88,6 +88,9 @@ return [
     'resource_url_required' => array('error_code'=>'E1604','error_message' =>"Invalid subject id."),
     'resource_id_required' => array('error_code'=>'E1605','error_message' =>"Invalid subject id."),
     'invalid_resource_id' => array('error_code'=>'E1606','error_message' =>"Invalid subject id."),
+    'keyword_required' =>array('error_code'=>'E1607','error_message' =>"Keyword is Required"),
+    'keyword_ID_required' =>array('error_code'=>'E1608','error_message' =>"Keyword ID is Required"),
+    'invalid_keyword_id' => array('error_code'=>'E1609','error_message' =>"Invalid Keyword ID."),
     
     'class_name_required' => array('error_code'=>'E1701','error_message' =>"Class name is required"),
     'class_name_unique' => array('error_code'=>'E1702','error_message' =>"Class name already exists"),
@@ -99,9 +102,7 @@ return [
     'class_flow_id_required' => array('error_code'=>'E1803','error_message' =>"Class flow id is required"),
     'class_flow_id_invalid' => array('error_code'=>'E1804','error_message' =>"Class flow id is invalid"),
     
-    'keyword_required' =>array('error_code'=>'E1607','error_message' =>"Keyword is Required"),
-    'keyword_ID_required' =>array('error_code'=>'E1608','error_message' =>"Keyword ID is Required"),
-    'invalid_keyword_id' => array('error_code'=>'E1609','error_message' =>"Invalid Keyword ID."),
+    
 
 
 ];

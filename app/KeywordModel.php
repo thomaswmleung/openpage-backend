@@ -9,8 +9,7 @@ class KeywordModel extends Eloquent {
     protected $collection = 'keyword';
     protected $fillable = array('keyword');
 
-    public function create_or_update_keyword($insert_data, $id) {
-        //$result = MainModel::create($insert_data);
+    public function add_or_edit_keyword($insert_data, $id) {
         $result = KeywordModel::updateOrCreate(
                         ['_id' => $id], 
                         $insert_data
@@ -19,10 +18,10 @@ class KeywordModel extends Eloquent {
     }   
     
     public function getKeywordId($keyword) {
-       $keyword_data = KeywordModel::where(array('keyword'=>'$keyword'));
+       $keyword_data = KeywordModel::where(array('keyword'=>$keyword));
        if($keyword_data == NULL){
            return NULL;
        }
-       return $keyword_data->_id();
+       return $keyword_data->_id;
     }
 }
