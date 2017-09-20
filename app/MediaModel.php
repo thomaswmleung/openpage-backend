@@ -31,13 +31,28 @@ class MediaModel extends Eloquent {
             } else {
                 $search_key = "";
             }
+            if (isset($query_details['user_id'])) {
+                $user_id = $query_details['user_id'];
+            } else {
+                $user_id = "";
+            }
         }
 
-        if ($search_key != "") {
-            $media_data = MediaModel::where('remark', 'like', "%$search_key%")
-                    ->orWhere('tag', 'like', "%$search_key%")
-                    ->orWhere('type', 'like', "%$search_key%")
-                    ->orWhere('extension', 'like', "%$search_key%")
+        if ($search_key != "" || $user_id != "") {
+            $media_data = MediaModel::
+                    Where(function($userIdQuery)use ($user_id) {
+                        if ($user_id != "") {
+                            $userIdQuery->where('created_by', $user_id);
+                        }
+                    })
+                    ->Where(function($filterSeaarchQuery)use ($search_key) {
+                        if ($search_key != "") {
+                            $filterSeaarchQuery->where('remark', 'like', "%$search_key%")
+                            ->orWhere('tag', 'like', "%$search_key%")
+                            ->orWhere('type', 'like', "%$search_key%")
+                            ->orWhere('extension', 'like', "%$search_key%");
+                        }
+                    })
                     ->skip($skip)
                     ->take($limit)
                     ->get();
@@ -45,14 +60,26 @@ class MediaModel extends Eloquent {
             $media_data = MediaModel::skip($skip)->take($limit)->get();
         }
         return $media_data;
-
     }
-    
-    public function total_count($search_key) {
-        if ($search_key != "") {
-            $total_count = MediaModel::where('remark', 'like', "%$search_key%")
-                    ->orWhere('tag', 'like', "%$search_key%")
-                    ->orWhere('type', 'like', "%$search_key%")
+
+    public function total_count($query_details) {
+        $search_key = $query_details['search_key'];
+        $user_id = $query_details['user_id'];
+        if ($search_key != "" || $user_id != "") {
+            $total_count = MediaModel::
+                    Where(function($userIdQuery)use ($user_id) {
+                        if ($user_id != "") {
+                            $userIdQuery->where('created_by', $user_id);
+                        }
+                    })
+                    ->Where(function($filterSeaarchQuery)use ($search_key) {
+                        if ($search_key != "") {
+                            $filterSeaarchQuery->where('remark', 'like', "%$search_key%")
+                            ->orWhere('tag', 'like', "%$search_key%")
+                            ->orWhere('type', 'like', "%$search_key%")
+                            ->orWhere('extension', 'like', "%$search_key%");
+                        }
+                    })
                     ->count();
         } else {
             $total_count = MediaModel::count();

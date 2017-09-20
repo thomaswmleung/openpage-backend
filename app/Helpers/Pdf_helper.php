@@ -104,7 +104,7 @@ class Pdf_helper {
             $responseArray['page_group']['page'] = array();
             $page_array = $page_data_array['page_group']['page'];
             $responseArray['page_group']['page'] = $page_array;
-
+           
             $actualPDFPageIndex = 0;
             foreach ($page_array as $page) {
                 $actualPageIndexArray = array();
@@ -262,7 +262,7 @@ class Pdf_helper {
                     }
                 }
                 //Overlay Data
-
+                
                 $overlay_data = $page['overlay'];
                 // fectching only image part of overlay array
 
@@ -372,7 +372,8 @@ class Pdf_helper {
         $responseArray['preview_url'] = $pdf_url;
         $responseArray['preview_image_array'] = $preview_image_array;
 //        $responseArray['preview_url'] = "custom_url";
-
+        var_dump($responseArray);
+                exit();
         return json_encode($responseArray);
     }
 

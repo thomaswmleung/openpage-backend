@@ -56,7 +56,6 @@ Route::group(['middleware' => ['login_auth']], function () {
 
     Route::get('page', 'PageController@page_list');
     Route::get('page/{page_id}', 'PageController@page_list');
-//    Route::get('page_search', 'PageController@page_search');
     Route::post('page', 'PageController@add_or_update_page');
     Route::put('page', 'PageController@add_or_update_page');
     Route::delete('page', 'PageController@delete_page');
@@ -105,16 +104,10 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::put('class_flow', 'ClassFlowController@add_or_update_class_flow');
     Route::delete('class_flow', 'ClassFlowController@delete_class_flow');
    
-    Route::post('keyword','KeywordController@create_keyword');
+    Route::get('keyword','KeywordController@keyword_list');
+    Route::get('keyword/{_id}','KeywordController@keyword_list');
+    Route::post('keyword','KeywordController@create_or_update_keyword');
+    Route::put('keyword','KeywordController@create_or_update_keyword');
+    Route::delete('keyword','KeywordController@delete_keyword');
     
 });
-
-//Route::get('page_group', 'PageGroupController@create_page_group');
-
-Route::get('fpdf', 'PdfController@generate_pdf');
-
-
-
-
-
-

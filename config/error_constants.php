@@ -39,7 +39,6 @@ return [
     'page_id_required' =>  array('error_code'=>'E502','error_message' =>"Page id is required"),
     'page_id_exists' =>  array('error_code'=>'E503','error_message' =>"Page id doesn't exists"),
     
-    
     'invalid_section_id' => array('error_code'=>'E601','error_message' =>"Invalid Section id."),
     
     'invalid_question_id' => array('error_code'=>'E701','error_message' =>"Invalid Question id."),
@@ -60,11 +59,7 @@ return [
     'organization_id_required' => array('error_code'=>'E909','error_message' =>"Organization id is required."),
     'organization_doesnot_exist' => array('error_code'=>'E910','error_message' =>"Organization doesnt exists."),
     'organization_deleted_success' => array('error_code'=>'E911','error_message' =>"Organization deleted successfully."),
-    
-    
-    
    
-    
     'invalid_layout_id' => array('error_code'=>'E1301','error_message' =>"Invalid layout id."),
     
     'book_id_required' => array('error_code'=>'E1401','error_message' =>"Book ID is Required."),
@@ -102,7 +97,7 @@ return [
     'class_flow_id_required' => array('error_code'=>'E1803','error_message' =>"Class flow id is required"),
     'class_flow_id_invalid' => array('error_code'=>'E1804','error_message' =>"Class flow id is invalid"),
     
-    
-
+    'keyword_id_invalid' => array('error_code'=>'E1901','error_message' =>"Keyword id is invalid"),
+    'keyword_required' => array('error_code'=>'E1902','error_message' =>"Keyword is required"),
 
 ];

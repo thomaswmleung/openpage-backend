@@ -13,6 +13,8 @@ use App\PageModel;
 use App\PageGroupModel;
 use App\Helpers\Pdf_helper;
 use Illuminate\Support\Facades\Log;
+use App\KeywordModel;
+use App\Helpers\KeywordHelper;
 
 /*
  *  Class Name : PageGroupController
@@ -186,6 +188,7 @@ class PageGroupController extends Controller {
 //       return response(json_encode($json_data), 200);
         $page_data_array = json_decode($json_data, true);
 
+
         if ($page_data_array == null) {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
@@ -223,6 +226,10 @@ class PageGroupController extends Controller {
                         $section_ids = array();
                         $page_section_array = $main['section'];
 
+                        $page_keyword_array = array();
+                        if (isset($page['keywords']) AND is_array($page['keywords'])) {
+                            $page_keyword_array = $page['keywords'];
+                        }
                         foreach ($page_section_array as $section) {
 
                             $questions_ids = array();
@@ -259,7 +266,19 @@ class PageGroupController extends Controller {
 
                                 $question_id = $this->create_question($insert_data, $question_id);
 
+                                $question_keywords = array();
+                                if (isset($question['keywords']) AND is_array($question['keywords'])) {
+                                    $question_keywords = $question['keywords'];
+                                }
 
+                                array_merge($page_keyword_array, $question_keywords);
+                                // TODO index each keyword with question_id
+                                if (count($question_keywords) > 0) {
+                                    foreach ($question_keywords as $keyword) {
+                                        // check keyword in DB
+                                        $result = KeywordHelper::indexKeyword($keyword, $question_id, config('collection_constants.QUESTION'));
+                                    }
+                                }
                                 array_push($questions_ids, $question_id);
                             }
 
@@ -356,6 +375,13 @@ class PageGroupController extends Controller {
 
                     $page_id = $this->create_page($insert_page_data, $page_id);
 
+                    // page keywords index logic
+                    if (count($page_keyword_array) > 0) {
+                        foreach ($page_keyword_array as $keyword) {
+                            // check keyword in DB
+                            $result = KeywordHelper::indexKeyword($keyword, $page_id, config('collection_constants.PAGE'));
+                        }
+                    }
                     array_push($page_ids, $page_id);
                 }
 
@@ -372,6 +398,14 @@ class PageGroupController extends Controller {
                 
             }
 
+            // Keyword Logic 
+            $keyword_array = $page_data_array['page_group']['keywords'];
+            if (count($keyword_array) > 0) {
+                foreach ($keyword_array as $keyword) {
+                    // check keyword in DB
+                    $result = KeywordHelper::indexKeyword($keyword, $page_group_id, config('collection_constants.PAGE_GROUP'));
+                }
+            }
             $response_array['preview_url'] = $page_data_array['preview_url'];
             $response_array['preview_image_array'] = $page_data_array['preview_image_array'];
 

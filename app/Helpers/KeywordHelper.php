@@ -33,32 +33,33 @@ class KeywordHelper {
     }
 
     public static function indexKeyword($keyword, $document_id, $document_type) {
+        $return_value = FALSE;
+        $keyword_id = KeywordModel::getKeywordId($keyword);
 
-        // validating $keyword_id
-//        $rules = array(
-//            'keyword_id' => 'exists:keyword,_id'
-//        );
-//        $validator = Validator::make(array('keyword_id' => $keyword_id), $rules);
-        
-        $keyword_model = new KeywordModel();
-        $keyword_id = $keyword_model->getKeywordId($keyword);
-        var_dump($keyword_id);
-        exit();
-                
-        
-        if (!$validator->fails()) {
-            if ($document_id != "" && $type != "") {
-
-                $insert_data = array(
-                    'document_id' => $document_id,
-                    'keyword_id' => $keyword_id,
-                    'type' => $document_type
-                );
-
-                $keywordIndexModel = new KeywordIndexModel();
-                $keywordIndexModel->create_or_update_keyword_index($insert_data, $keyword_id);
-            }
+        if ($keyword_id == NULL) {
+            $keyword_id = KeywordHelper::create_keyword($keyword);
         }
+        if ($document_id != "" && $document_type != "") {
+
+            $insert_data = array(
+                'document_id' => $document_id,
+                'keyword_id' => $keyword_id,
+                'type' => $document_type
+            );
+
+            $keywordIndexModel = new KeywordIndexModel();
+            $keywordIndexModel->create_or_update_keyword_index($insert_data, $keyword_id);
+            $return_value = TRUE;
+        }
+        return $return_value;
+    }
+
+    public static function create_keyword($keyword) {
+        $insert_data = array(
+            'keyword' => $keyword
+        );
+        $keyword_data = KeywordModel::create($insert_data);
+        return $keyword_data->id;
     }
 
 }

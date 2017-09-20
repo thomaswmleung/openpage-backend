@@ -26,6 +26,12 @@ class MediaController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="user_id",
+     *     in="query",
+     *     description="Search based on user id",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="skip",
      *     in="query",
      *     description="this is offset or skip the records",
@@ -94,6 +100,10 @@ class MediaController extends Controller {
             if (isset($request->search_key)) {
                 $search_key = $request->search_key;
             }
+            $user_id = "";
+            if (isset($request->user_id)) {
+                $user_id = $request->user_id;
+            }
             $skip = 0;
             if (isset($request->skip)) {
                 $skip = (int) $request->skip;
@@ -104,12 +114,13 @@ class MediaController extends Controller {
             }
             $query_details = array(
                 'search_key' => $search_key,
+                'user_id' => $user_id,
                 'limit' => $limit,
                 'skip' => $skip
             );
 
             $media_details = $mediaModel->media_details($query_details);
-            $total_count = $mediaModel->total_count($search_key);
+            $total_count = $mediaModel->total_count($query_details);
         }
 
         $response_array = array("success" => TRUE, "data" => $media_details,"total_count" => $total_count, "errors" => array());
