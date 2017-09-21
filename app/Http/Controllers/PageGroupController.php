@@ -374,7 +374,6 @@ class PageGroupController extends Controller {
                     }
 
                     $page_id = $this->create_page($insert_page_data, $page_id);
-
                     // page keywords index logic
                     if (count($page_keyword_array) > 0) {
                         foreach ($page_keyword_array as $keyword) {

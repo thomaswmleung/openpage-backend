@@ -127,7 +127,7 @@ class ClassController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="subject json input",
+     *     description="class json input",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -153,7 +153,7 @@ class ClassController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="Subject json input",
+     *     description="class json input",
      *     required=true,
      *     @SWG\Schema()
      *   ),

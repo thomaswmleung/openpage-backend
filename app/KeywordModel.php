@@ -19,7 +19,7 @@ class KeywordModel extends Eloquent {
 
     public static function getKeywordId($keyword) {
         $keyword_data = KeywordModel::where(array('keyword' => $keyword))->first();
-        if ($keyword_data == NULL || $keyword_data=="") {
+        if ($keyword_data == NULL || $keyword_data == "") {
             return NULL;
         }
         return $keyword_data->_id;

@@ -116,11 +116,74 @@ class KeywordController extends Controller {
         $response_array = array("success" => TRUE, "data" => $keyword_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
-    
+
+    /**
+     * @SWG\Post(path="/keyword",
+     *   tags={"Keyword"},
+     *   summary="Create a keyword",
+     *   description="Create a keyword",
+     *   operationId="create_or_update_keyword",
+     *   consumes={"application/json"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="Keyword json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+    /**
+     * @SWG\Put(path="/keyword",
+     *   tags={"Keyword"},
+     *   summary="Update keyword details",
+     *   description="",
+     *   operationId="create_or_update_keyword",
+     *   consumes={"application/x-www-form-urlencoded"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="keyword json input",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */    
     public function create_or_update_keyword(Request $request) {
 
-         
-        $keyword = $request->keyword;
+        $json_data = $request->getContent();
+        $keyword_data_array = json_decode($json_data, true);
+        if ($keyword_data_array == null) {
+            return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
+        }
+        $keyword_id = "";
+        if (isset($keyword_data_array['_id'])) {
+            $keyword_id = $keyword_data_array['_id'];
+        }
+        $keyword = "";
+        if (isset($keyword_data_array['keyword'])) {
+            $keyword = $keyword_data_array['keyword'];
+        }
+       
         
 
         $keyword_array = array(
@@ -130,9 +193,14 @@ class KeywordController extends Controller {
         $rules = array(
             'keyword' => 'required'
         );
+        if($keyword_id!=""){
+            $rules['_id'] = 'exists:keyword,_id';
+            $keyword_array['_id'] = $keyword_data_array['_id'];
+        }
         
         $messages = [
             'keyword.required' => config('error_constants.keyword_required'),            
+            '_id.exists' => config('error_constants.keyword_id_invalid'),            
         ];
         
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
@@ -143,19 +211,15 @@ class KeywordController extends Controller {
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
-            $keyword_id = "";
-            if (isset($request->keyword_id)) {
-                $keyword_id = $request->keyword_id;
-            }
-            
+       
             $document_id = "";
-            if (isset($request->document_id)) {
-                $document_id = $request->document_id;
+            if (isset($keyword_data_array['document_id'])) {
+                $document_id = $keyword_data_array['document_id'];
             }
             
             $type = "";
-            if (isset($request->type)) {
-                $type = $request->type;
+            if (isset($keyword_data_array['type'])) {
+                $type = $keyword_data_array['type'];
             }
 
             $keywordHelper = new KeywordHelper;
@@ -174,5 +238,44 @@ class KeywordController extends Controller {
     
     public function getKeywordId(Request $request) {
        KeywordHelper::indexKeyword($request->keyword,"","");
+    }
+    
+    /**
+     * @SWG\Delete(path="/keyword",
+     *   tags={"Keyword"},
+     *   summary="delete keyword data",
+     *   description="Delete keyword from system",
+     *   operationId="delete_keyword",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="query",
+     *     description="ID of the keyword that needs to be deleted",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    function delete_keyword(Request $request) {
+        $keyword_id = trim($request->_id);
+        $keywordModel = new KeywordModel();
+        $keyword_data = $keywordModel->find_keyword_details($keyword_id);
+        if ($keyword_data == null) {
+            $error_messages = array(array("ERR_CODE" => config('error_constants.keyword_id_invalid')['error_code'],
+                    "ERR_MSG" => config('error_constants.keyword_id_invalid')['error_message']));
+            $responseArray = array("success" => FALSE, "errors" => $error_messages);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+        }
+        KeywordModel::destroy($keyword_id);
+        $responseArray = array("success" => TRUE);
+        return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
     }
 }
