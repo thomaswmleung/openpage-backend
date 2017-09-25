@@ -466,7 +466,7 @@ class PageGroupController extends Controller {
         $page_group_id = trim($request->pid);
 
         $pageGroupModel = new PageGroupModel();
-        $page_group_data = $pageGroupModel->page_group_details(array('_id' => $page_group_id));
+        $page_group_data = $pageGroupModel->find_page_group_details($page_group_id);
         if ($page_group_data == null) {
             $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_group_id')['error_code'],
                     "ERR_MSG" => config('error_constants.invalid_page_group_id')['error_message']));
@@ -474,9 +474,12 @@ class PageGroupController extends Controller {
             $response_array = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
         }
-        $data = explode("/", $page_group_data['preview_url']); // fetching file name from URL
-        $objectName = end($data);
-        $gcs_result = GCS_helper::delete_from_gcs($objectName);
+        $gcs_result=TRUE;
+        if (isset($page_group_data['preview_url']) && $page_group_data['preview_url'] != "") {
+            $data = explode("/", $page_group_data['preview_url']); // fetching file name from URL
+            $objectName = end($data);
+            $gcs_result = GCS_helper::delete_from_gcs($objectName);
+        }
         if ($gcs_result) {
             PageGroupModel::destroy($page_group_id);
 
