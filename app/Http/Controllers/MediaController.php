@@ -410,7 +410,7 @@ class MediaController extends Controller {
         $media_id = trim($request->mid);
 
         $mediaModel = new MediaModel();
-        $media_data = $mediaModel->media_details(array('_id' => $media_id));
+        $media_data = $mediaModel->find_media_details($media_id);
         if ($media_data == null) {
             $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id')['error_code'],
                     "ERR_MSG" => config('error_constants.invalid_media_id')['error_message']));
