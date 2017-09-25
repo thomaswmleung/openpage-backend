@@ -384,10 +384,20 @@ class PageGroupController extends Controller {
                     array_push($page_ids, $page_id);
                 }
 
+                $page_group_title_array = array();
+                if (isset($page_data_array['page_group']['title'])) {
+                    $page_group_title_array = $page_data_array['page_group']['title'];
+                }
+
+                $page_group_sub_title_array = array();
+                if (isset($page_data_array['page_group']['sub_title'])) {
+                    $page_group_sub_title_array = $page_data_array['page_group']['sub_title'];
+                }
+
                 $page_group_insert_data = array(
                     'page' => $page_ids,
-                    'title' => $page_data_array['page_group']['title'],
-                    'sub_title' => $page_data_array['page_group']['sub_title'],
+                    'title' => $page_group_title_array,
+                    'sub_title' => $page_group_sub_title_array,
                     'preview_url' => $page_data_array['preview_url'],
                     'preview_image_array' => $page_data_array['preview_image_array'],
                 );
@@ -398,7 +408,10 @@ class PageGroupController extends Controller {
             }
 
             // Keyword Logic 
-            $keyword_array = $page_data_array['page_group']['keywords'];
+            $keyword_array = array();
+            if (isset($page_data_array['page_group']['keywords'])) {
+                $keyword_array = $page_data_array['page_group']['keywords'];
+            }
             if (count($keyword_array) > 0) {
                 foreach ($keyword_array as $keyword) {
                     // check keyword in DB
@@ -474,7 +487,7 @@ class PageGroupController extends Controller {
             $response_array = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
         }
-        $gcs_result=TRUE;
+        $gcs_result = TRUE;
         if (isset($page_group_data['preview_url']) && $page_group_data['preview_url'] != "") {
             $data = explode("/", $page_group_data['preview_url']); // fetching file name from URL
             $objectName = end($data);

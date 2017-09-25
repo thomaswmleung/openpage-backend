@@ -13,8 +13,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Helpers\Pdf_helper;
 
 class BookController extends Controller {
-    
-        /**
+    /**
      * @SWG\Get(path="/book",
      *   tags={"Book"},
      *   summary="Returns list of books",
@@ -87,7 +86,7 @@ class BookController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
-            }else{
+            } else {
                 $response_array = array("success" => TRUE, "data" => $book_details, "errors" => array());
                 return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
@@ -117,7 +116,7 @@ class BookController extends Controller {
         $response_array = array("success" => TRUE, "data" => $book_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
-    
+
     /**
      * @SWG\Post(path="/book",
      *   tags={"Book"},
@@ -182,7 +181,6 @@ class BookController extends Controller {
         }
 
         $book_array = array(
-            '_id' => $book_data_array['_id'],
             'page' => $book_data_array['page'],
             'toc' => $book_data_array['toc'],
             'cover' => $book_data_array['cover'],
@@ -201,7 +199,7 @@ class BookController extends Controller {
         );
 
         if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
-
+            $book_array['_id'] = $book_data_array['_id'];
             $rules['_id'] = 'required|exists:book,_id';
         }
 
@@ -313,9 +311,7 @@ class BookController extends Controller {
             $book_data_array['syllabus']['subdomain'] = $sub_domain;
             $book_data_array['syllabus']['knowledge_unit'] = $knowledge_unit;
 
-            if ($book_data_array['created_by'] == "") {
-                $book_data_array['created_by'] = $user_id;
-            }
+
 
 
             $data_array = array(
@@ -327,12 +323,17 @@ class BookController extends Controller {
                 'organisation' => $book_data_array['organisation'],
                 'preview_url' => $book_data_array['preview_image_array'],
                 'preview_images' => $book_data_array['preview_url'],
-                'created_by' => $book_data_array['created_by'],
                 'updated_by' => $user_id
             );
 
-
-            $book_id = $book_data_array['_id'];
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $data_array['created_by'] = $user_id;
+            }
+            
+            $book_id = "";
+            if (isset($book_data_array['_id'])) {
+                $book_id = $book_data_array['_id'];
+            }
             $bookModel = new BookModel();
             $result = $bookModel->create_book($data_array, $book_id);
 
@@ -341,14 +342,13 @@ class BookController extends Controller {
             } else {
                 $success_msg = 'Book Created Successfully';
             }
-            $book_response['preview_url']=$book_data_array['preview_url'];
-            $book_response['preview_image_array']=$book_data_array['preview_image_array'];
+            $book_response['preview_url'] = $book_data_array['preview_url'];
+            $book_response['preview_image_array'] = $book_data_array['preview_image_array'];
             $response_array = array("success" => TRUE, "data" => $book_response, "errors" => array());
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }
-    
-    
+
     /**
      * @SWG\Delete(path="/book",
      *   tags={"Book"},
@@ -379,7 +379,7 @@ class BookController extends Controller {
         $book_data = $bookModel->book_details(array('_id' => $book_id));
         if ($book_data == null) {
             $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_book_id')['error_code'],
-                                        "ERR_MSG"=> config('error_constants.invalid_book_id')['error_message'])) ; 
+                    "ERR_MSG" => config('error_constants.invalid_book_id')['error_message']));
             $responseArray = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         }
