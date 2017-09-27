@@ -193,10 +193,24 @@ class PageGroupController extends Controller {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
-        $page_group_id = $page_data_array['_id'];
+        $page_group_id = "";
+        if ($request->isMethod('put')) {
+            if (isset($page_data_array['_id']) AND $page_data_array['_id'] != "") {
+                $page_group_id = $page_data_array['_id'];
+            } else {
+                // error page group id is required
+                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_group_id')['error_code'],
+                        "ERR_MSG" => config('error_constants.invalid_page_group_id')['error_message']));
+
+                $response_array = array("success" => FALSE, "errors" => $error_messages);
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            }
+        }
+
+
         $page_group_model = new PageGroupModel();
 
-        if (isset($page_data_array['_id']) && $page_data_array['_id'] == "") {
+        if ($page_group_id == "") {
             $page_group_id = $page_group_model->create_page_group();
             $page_data_array['_id'] = $page_group_id;
         }
@@ -384,20 +398,20 @@ class PageGroupController extends Controller {
                     array_push($page_ids, $page_id);
                 }
 
-                $page_group_title_array = array();
+                $page_group_title = "";
                 if (isset($page_data_array['page_group']['title'])) {
-                    $page_group_title_array = $page_data_array['page_group']['title'];
+                    $page_group_title = $page_data_array['page_group']['title'];
                 }
 
-                $page_group_sub_title_array = array();
+                $page_group_sub_title = "";
                 if (isset($page_data_array['page_group']['sub_title'])) {
-                    $page_group_sub_title_array = $page_data_array['page_group']['sub_title'];
+                    $page_group_sub_title = $page_data_array['page_group']['sub_title'];
                 }
 
                 $page_group_insert_data = array(
                     'page' => $page_ids,
-                    'title' => $page_group_title_array,
-                    'sub_title' => $page_group_sub_title_array,
+                    'title' => $page_group_title,
+                    'sub_title' => $page_group_sub_title,
                     'preview_url' => $page_data_array['preview_url'],
                     'preview_image_array' => $page_data_array['preview_image_array'],
                 );
@@ -423,7 +437,6 @@ class PageGroupController extends Controller {
 
             $response_array['success'] = TRUE;
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
-//            return json_encode($response_array);
         }
     }
 
