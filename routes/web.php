@@ -110,4 +110,10 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::put('keyword','KeywordController@create_or_update_keyword');
     Route::delete('keyword','KeywordController@delete_keyword');
     
+    Route::get('domain', 'DomainController@domain_list');
+    Route::get('domain/{_id}', 'DomainController@domain_list');
+    Route::post('domain', 'DomainController@add_or_update_domain');
+    Route::put('domain', 'DomainController@add_or_update_domain');
+    Route::delete('domain', 'DomainController@delete_domain');
+    
 });

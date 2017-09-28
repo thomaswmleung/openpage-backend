@@ -99,5 +99,9 @@ return [
     
     'keyword_id_invalid' => array('error_code'=>'E1901','error_message' =>"Keyword id is invalid"),
     'keyword_required' => array('error_code'=>'E1902','error_message' =>"Keyword is required"),
+    
+    'domain_id_invalid' => array('error_code'=>'E2001','error_message' =>"Domain id is invalid"),
+    'code_required' => array('error_code'=>'E2002','error_message' =>"Domain code is required"),
+    'domain_title_required' => array('error_code'=>'E2003','error_message' =>"Domain code is required"),
 
 ];
