@@ -103,5 +103,9 @@ return [
     'domain_id_invalid' => array('error_code'=>'E2001','error_message' =>"Domain id is invalid"),
     'code_required' => array('error_code'=>'E2002','error_message' =>"Domain code is required"),
     'domain_title_required' => array('error_code'=>'E2003','error_message' =>"Domain code is required"),
+    
+    'sub_domain_id_invalid' => array('error_code'=>'E2101','error_message' =>"Sub Domain id is invalid"),
+    'sub_code_required' => array('error_code'=>'E2102','error_message' =>"Sub Domain code is required"),
+    'sub_domain_title_required' => array('error_code'=>'E2103','error_message' =>"Sub Domain code is required"),
 
 ];

@@ -38,22 +38,50 @@ class BookModel extends Eloquent {
             } else {
                 $search_key = "";
             }
+            if (isset($query_details['organisation'])) {
+                $organisation = $query_details['organisation'];
+            } else {
+                $organisation = "";
+            }
         }
 
-        if ($search_key != "") {
-            $book_data = BookModel::where('keyword', 'like', "%$search_key%")
+        if ($search_key != "" || $organisation != "") {
+             $book_data = BookModel::
+                    Where(function($organisationIdQuery)use ($organisation) {
+                        if ($organisation != "") {
+                            $organisationIdQuery->where('organisation', $organisation);
+                        }
+                    })
+                    ->Where(function($filterSeaarchQuery)use ($search_key) {
+                        if ($search_key != "") {
+                            $filterSeaarchQuery->where('keyword', 'like', "%$search_key%");
+                        }
+                    })
                     ->skip($skip)
                     ->take($limit)
                     ->get();
+       
         } else {
             $book_data = BookModel::skip($skip)->take($limit)->get();
         }
         return $book_data;
     }
 
-    public function total_count($search_key) {
-        if ($search_key != "") {
-            $total_count = BookModel::where('keyword', 'like', "%$search_key%")
+    public function total_count($query_details) {
+        $search_key = $query_details['search_key'];
+        $organisation = $query_details['organisation'];
+        if ($search_key != "" || $organisation != "") {
+            $total_count = BookModel::
+                    Where(function($organisationIdQuery)use ($organisation) {
+                        if ($organisation != "") {
+                            $organisationIdQuery->where('organisation', $organisation);
+                        }
+                    })
+                    ->Where(function($filterSeaarchQuery)use ($search_key) {
+                        if ($search_key != "") {
+                            $filterSeaarchQuery->where('keyword', 'like', "%$search_key%");
+                        }
+                    })
                     ->count();
         } else {
             $total_count = BookModel::count();

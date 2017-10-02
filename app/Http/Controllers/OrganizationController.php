@@ -83,12 +83,12 @@ class OrganizationController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
-            }else{
+            } else {
                 $response_array = array("success" => TRUE, "data" => $organization_details, "errors" => array());
                 return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
-             $search_key = "";
+            $search_key = "";
             if (isset($request->search_key)) {
                 $search_key = $request->search_key;
             }
@@ -108,7 +108,6 @@ class OrganizationController extends Controller {
 
             $organization_details = $organizationModel->organization_details($query_details);
             $total_count = $organizationModel->total_count($search_key);
-            
         }
 
         $response_array = array("success" => TRUE, "data" => $organization_details, "total_count" => $total_count, "errors" => array());
@@ -125,7 +124,110 @@ class OrganizationController extends Controller {
      *   @SWG\Parameter(
      *     name="name",
      *     in="query",
-     *     description="name of the question",
+     *     description="Name of the organization",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="address",
+     *     in="query",
+     *     description="address of the organization",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="email",
+     *     in="query",
+     *     description="email of the organization",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="contact_person",
+     *     in="query",
+     *     description="contact person of the organization",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="type",
+     *     in="query",
+     *     description="Type of the organization",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="user_id[]",
+     *     in="query",
+     *     description="The user ids of organization",
+     *     required=true,
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
+     *   ),
+     *   @SWG\Parameter(
+     *     name="logo",
+     *     in="query",
+     *     description="logo of the organization",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="remark",
+     *     in="query",
+     *     description="remark of the organization",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="consultant[]",
+     *     in="query",
+     *     description="The consultants of organization",
+     *     required=true,
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
+     *   ),
+     *   @SWG\Parameter(
+     *     name="role[]",
+     *     in="query",
+     *     description="The roles of organization",
+     *     required=true,
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    /**
+     * @SWG\Put(path="/organization",
+     *   tags={"organization"},
+     *   summary="Updating organization information",
+     *   description="Updation of organization",
+     *   operationId="create_organization",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="_id",
+     *     in="query",
+     *     description="ID of organization",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="name",
+     *     in="query",
+     *     description="Name of the organization",
      *     required=true,
      *     type="string"
      *   ),
@@ -234,7 +336,16 @@ class OrganizationController extends Controller {
             'role' => 'required',
         );
 
+        $organization_id = "";
+        if ($request->isMethod('put')) {
+            $organization_array['_id'] = $request->_id;
+            $organization_id = $request->_id;
+            $rules['_id'] = 'required|exists:organization';
+        }
+
         $messages = [
+            '_id.required' => config('error_constants.organization_id_required'),
+            '_id.exists' => config('error_constants.invalid_organization_id'),
             'name.required' => config('error_constants.organization_name_required'),
             'email.required' => config('error_constants.organization_email_required'),
             'contact_person.required' => config('error_constants.organization_contact_person_required'),
@@ -252,12 +363,13 @@ class OrganizationController extends Controller {
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
-            OrganizationModel::create($organization_array);
+            $organizationModel = new OrganizationModel();
+            $data = $organizationModel->create_or_update_organization($organization_array, $organization_id);
             $response_array = array("success" => TRUE, "errors" => array());
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }
-    
+
     /**
      * @SWG\Delete(path="/organization",
      *   tags={"organization"},
@@ -306,9 +418,6 @@ class OrganizationController extends Controller {
             $response_array = array("success" => FALSE);
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
-        
-        
-     
     }
 
 }

@@ -61,5 +61,10 @@ class OrganizationModel extends Eloquent {
         $organization_info = OrganizationModel::find($organization_id);
         return $organization_info;
     }
+    
+    public function create_or_update_organization($organization_array, $organization_id) {
+        $result = OrganizationModel::updateOrCreate(['_id' => $organization_id], $organization_array);
+        return $result;
+    }
 
 }

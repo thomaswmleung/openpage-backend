@@ -5,15 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Helpers\ErrorMessageHelper;
 use Illuminate\Support\Facades\Validator;
-use App\DomainModel;
+use App\SubDomainModel;
 
-class DomainController extends Controller {
+class SubDomainController extends Controller {
     /**
-     * @SWG\Get(path="/domain",
-     *   tags={"Domain"},
-     *   summary="Returns list of domain",
-     *   description="Returns domain data",
-     *   operationId="domain_list",
+     * @SWG\Get(path="/sub_domain",
+     *   tags={"Sub Domain"},
+     *   summary="Returns list of sub domain",
+     *   description="Returns sub domain data",
+     *   operationId="sub_domain_list",
      *   produces={"application/json"},
      *   parameters={},
      *   @SWG\Parameter(
@@ -45,16 +45,16 @@ class DomainController extends Controller {
      */
 
     /**
-     * @SWG\Get(path="/domain/{_id}",
-     *   tags={"Domain"},
-     *   summary="Returns domain flow data",
-     *   description="Returns domain data",
-     *   operationId="domain_list",
+     * @SWG\Get(path="/sub_domain/{_id}",
+     *   tags={"Sub Domain"},
+     *   summary="Returns sub_domain flow data",
+     *   description="Returns sub domain data",
+     *   operationId="sub_domain_list",
      *   produces={"application/json"},
      *   @SWG\Parameter(
      *     name="_id",
      *     in="path",
-     *     description="ID of the domain that needs to be displayed",
+     *     description="ID of the sub domain that needs to be displayed",
      *     required=true,
      *     type="string"
      *   ),
@@ -64,28 +64,28 @@ class DomainController extends Controller {
      *   ),
      *  @SWG\Response(
      *     response=400,
-     *     description="Invalid domain id",
+     *     description="Invalid sub domain id",
      *   ),
      *   security={{
      *     "token":{}
      *   }}
      * )
      */
-    public function domain_list(Request $request) {
-        $domainModel = new DomainModel();
+    public function sub_domain_list(Request $request) {
+        $subDomainModel = new SubDomainModel();
 
         if (isset($request->_id) && $request->_id != "") {
 
-            $domain_id = $request->_id;
-            $domain_details = $domainModel->find_domain_details($domain_id);
-            if ($domain_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.domain_id_invalid')['error_code'],
-                        "ERR_MSG" => config('error_constants.domain_id_invalid')['error_message']));
+            $sub_domain_id = $request->_id;
+            $sub_domain_details = $subDomainModel->find_sub_domain_details($sub_domain_id);
+            if ($sub_domain_details == NULL) {
+                $error_messages = array(array("ERR_CODE" => config('error_constants.sub_domain_id_invalid')['error_code'],
+                        "ERR_MSG" => config('error_constants.sub_domain_id_invalid')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             } else {
-                $response_array = array("success" => TRUE, "data" => $domain_details, "errors" => array());
+                $response_array = array("success" => TRUE, "data" => $sub_domain_details, "errors" => array());
                 return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
@@ -107,26 +107,26 @@ class DomainController extends Controller {
                 'skip' => $skip
             );
 
-            $domain_details = $domainModel->domain_details($query_details);
-            $total_count = $domainModel->total_count($search_key);
+            $sub_domain_details = $subDomainModel->sub_domain_details($query_details);
+            $total_count = $subDomainModel->total_count($search_key);
         }
 
-        $response_array = array("success" => TRUE, "data" => $domain_details, "total_count" => $total_count, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $sub_domain_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
-     * @SWG\Post(path="/domain",
-     *   tags={"Domain"},
-     *   summary="Create a domain",
+     * @SWG\Post(path="/sub_domain",
+     *   tags={"Sub Domain"},
+     *   summary="Create a sub domain",
      *   description="",
-     *   operationId="add_or_update_domain",
+     *   operationId="add_or_update_sub_domain",
      *   consumes={"application/json"},
      *   produces={"application/json"},
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="Class json input",
+     *     description="Sub domain json input",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -142,17 +142,17 @@ class DomainController extends Controller {
      */
 
     /**
-     * @SWG\Put(path="/domain",
-     *   tags={"Domain"},
-     *   summary="Update domain details",
+     * @SWG\Put(path="/sub_domain",
+     *   tags={"Sub Domain"},
+     *   summary="Update sub domain details",
      *   description="",
-     *   operationId="add_or_update_domain",
+     *   operationId="add_or_update_sub_domain",
      *   consumes={"application/x-www-form-urlencoded"},
      *   produces={"application/json"},
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="Class json input",
+     *     description="Sub Domain json input",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -166,29 +166,29 @@ class DomainController extends Controller {
      *   }}
      * )
      */
-    public function add_or_update_domain(Request $request) {
+    public function add_or_update_sub_domain(Request $request) {
         $json_data = $request->getContent();
-        $domain_data_array = json_decode($json_data, true);
+        $sub_domain_data_array = json_decode($json_data, true);
 
-        if ($domain_data_array == null) {
+        if ($sub_domain_data_array == null) {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
-        $domain_id = "";
-        if (isset($domain_data_array['_id'])) {
-            $domain_id = $domain_data_array['_id'];
+        $sub_domain_id = "";
+        if (isset($sub_domain_data_array['_id'])) {
+            $sub_domain_id = $sub_domain_data_array['_id'];
         }
         $title = "";
-        if (isset($domain_data_array['title'])) {
-            $title = $domain_data_array['title'];
+        if (isset($sub_domain_data_array['title'])) {
+            $title = $sub_domain_data_array['title'];
         }
         $code = "";
-        if (isset($domain_data_array['code'])) {
-            $code = $domain_data_array['code'];
+        if (isset($sub_domain_data_array['code'])) {
+            $code = $sub_domain_data_array['code'];
         }
         
 
-        $domain_array = array(
-            '_id' => $domain_id,
+        $sub_domain_array = array(
+            '_id' => $sub_domain_id,
             'title' => $title,
             'code' => $code
         );
@@ -200,27 +200,27 @@ class DomainController extends Controller {
                 'code' => 'required'
             );
             $messages = [
-                'code.required' => config('error_constants.code_required'),
-                'title.required' => config('error_constants.domain_title_required'),
+                'code.required' => config('error_constants.sub_code_required'),
+                'title.required' => config('error_constants.sub_domain_title_required'),
             ];
         }
         if ($request->isMethod('put')) {
             $rules = array(
-                '_id' => 'required|exists:domain',
+                '_id' => 'required|exists:sub_domain',
                 'title' => 'required',
                 'code' => 'required',
             );
             $messages = [
-                '_id.required' => config('error_constants.domain_id_invalid'),
-                '_id.exists' => config('error_constants.domain_id_invalid'),
-                'code.required' => config('error_constants.code_required'),
-                'title.required' => config('error_constants.domain_title_required'),
+                '_id.required' => config('error_constants.sub_domain_id_invalid'),
+                '_id.exists' => config('error_constants.sub_domain_id_invalid'),
+                'code.required' => config('error_constants.sub_code_required'),
+                'title.required' => config('error_constants.sub_domain_title_required'),
             ];
         }
         
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
 
-        $validator = Validator::make($domain_array, $rules, $formulated_messages);
+        $validator = Validator::make($sub_domain_array, $rules, $formulated_messages);
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
@@ -228,28 +228,28 @@ class DomainController extends Controller {
         }
 
 
-        $domainModel = new DomainModel();
-        $domainModel->create_or_update_domain($domain_array, $domain_id);
-        if ($domain_id != "") {
-            $success_msg = 'Domain Updated Successfully';
+        $subDomainModel = new SubDomainModel();
+        $subDomainModel->create_or_update_sub_domain($sub_domain_array, $sub_domain_id);
+        if ($sub_domain_id != "") {
+            $success_msg = 'Sub Domain Updated Successfully';
         } else {
-            $success_msg = 'Domain Created Successfully';
+            $success_msg = 'Sub Domain Created Successfully';
         }
         $response_array = array("success" => TRUE, "data" => $success_msg, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
-     * @SWG\Delete(path="/domain",
-     *   tags={"Domain"},
-     *   summary="delete domain data",
-     *   description="Delete domain from system",
-     *   operationId="delete_domain",
+     * @SWG\Delete(path="/sub_domain",
+     *   tags={"Sub Domain"},
+     *   summary="delete sub domain data",
+     *   description="Delete sub domain from system",
+     *   operationId="delete_sub_domain",
      *   produces={"application/json"},
      *   @SWG\Parameter(
      *     name="_id",
      *     in="query",
-     *     description="ID of the domain that needs to be deleted",
+     *     description="ID of the sub domain that needs to be deleted",
      *     required=true,
      *     type="string"
      *   ),
@@ -263,17 +263,17 @@ class DomainController extends Controller {
      *   }}
      * )
      */
-    function delete_domain(Request $request) {
-        $domain_id = trim($request->_id);
-        $domainModel = new DomainModel();
-        $domain_data = $domainModel->find_domain_details($domain_id);
-        if ($domain_data == null) {
-            $error_messages = array(array("ERR_CODE" => config('error_constants.domain_id_invalid')['error_code'],
-                    "ERR_MSG" => config('error_constants.domain_id_invalid')['error_message']));
+    function delete_sub_domain(Request $request) {
+        $sub_domain_id = trim($request->_id);
+        $subDomainModel = new SubDomainModel();
+        $sub_domain_data = $subDomainModel->find_sub_domain_details($sub_domain_id);
+        if ($sub_domain_data == null) {
+            $error_messages = array(array("ERR_CODE" => config('error_constants.sub_domain_id_invalid')['error_code'],
+                    "ERR_MSG" => config('error_constants.sub_domain_id_invalid')['error_message']));
             $responseArray = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         }
-        DomainModel::destroy($domain_id);
+        SubDomainModel::destroy($sub_domain_id);
         $responseArray = array("success" => TRUE);
         return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
     }

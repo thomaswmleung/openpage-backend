@@ -27,6 +27,12 @@ class BookController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="organization_id",
+     *     in="query",
+     *     description="Search with organization id",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="skip",
      *     in="query",
      *     description="this is offset or skip the records",
@@ -95,6 +101,10 @@ class BookController extends Controller {
             if (isset($request->search_key)) {
                 $search_key = $request->search_key;
             }
+            $organization_id = "";
+            if (isset($request->organization_id)) {
+                $organization_id = $request->organization_id;
+            }
             $skip = 0;
             if (isset($request->skip)) {
                 $skip = (int) $request->skip;
@@ -105,12 +115,13 @@ class BookController extends Controller {
             }
             $query_details = array(
                 'search_key' => $search_key,
+                'organisation' => $organization_id,
                 'limit' => $limit,
                 'skip' => $skip
             );
 
             $book_details = $bookModel->book_details($query_details);
-            $total_count = $bookModel->total_count($search_key);
+            $total_count = $bookModel->total_count($query_details);
         }
 
         $response_array = array("success" => TRUE, "data" => $book_details, "total_count" => $total_count, "errors" => array());

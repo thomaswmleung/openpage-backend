@@ -95,6 +95,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   name="Domain",
  *   description="Domain related API's"
  * )
+ * @SWG\Tag(
+ *   name="Sub Domain",
+ *   description="Domain related API's"
+ * )
  * 
  */
 class Controller extends BaseController

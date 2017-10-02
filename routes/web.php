@@ -46,6 +46,7 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::get('organization', 'OrganizationController@organization');
     Route::get('organization/{_id}', 'OrganizationController@organization');
     Route::post('organization', 'OrganizationController@create_organization');
+    Route::put('organization', 'OrganizationController@create_organization');
     Route::delete('organization', 'OrganizationController@delete_organization');
 
     Route::get('book', 'BookController@book_list');
@@ -116,4 +117,10 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::put('domain', 'DomainController@add_or_update_domain');
     Route::delete('domain', 'DomainController@delete_domain');
     
+    Route::get('sub_domain', 'SubDomainController@sub_domain_list');
+    Route::get('sub_domain/{_id}', 'SubDomainController@sub_domain_list');
+    Route::post('sub_domain', 'SubDomainController@add_or_update_sub_domain');
+    Route::put('sub_domain', 'SubDomainController@add_or_update_sub_domain');
+    Route::delete('sub_domain', 'SubDomainController@delete_sub_domain');
+
 });

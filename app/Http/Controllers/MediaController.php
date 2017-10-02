@@ -208,7 +208,7 @@ class MediaController extends Controller {
         $rules = array(
             'type' => 'required',
             'extension' => 'required',
-            'media_file' => 'required|max:10240|mimetypes:image/jpeg,image/png,image/gif,image/bmp,video/mp4,video/x-flv,video/webm,video/avi,video/mpeg,video/quicktime,audio/mpga,audio/mpeg,application/octet-stream',
+            'media_file' => 'required|max:10240|mimetypes:image/jpeg,image/png,image/gif,image/bmp,video/mp4,video/x-flv,video/webm,video/avi,video/mpeg,video/quicktime,audio/mpga,audio/mpeg,application/octet-stream,application/pdf',
             'usage' => 'required',
             'created_by' => 'required|exists:users,_id',
         );
