@@ -63,7 +63,9 @@ class DomainModel extends Eloquent {
 
     public function total_count($search_key) {
         if ($search_key != "") {
-            $total_count = DomainModel::where('title', 'like', "%$search_key%")->count();
+            $total_count = DomainModel::where('title', 'like', "%$search_key%")
+                    ->orWhere('code', 'like', "%$search_key%")
+                    ->count();
         } else {
             $total_count = DomainModel::count();
         }

@@ -122,5 +122,11 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('sub_domain', 'SubDomainController@add_or_update_sub_domain');
     Route::put('sub_domain', 'SubDomainController@add_or_update_sub_domain');
     Route::delete('sub_domain', 'SubDomainController@delete_sub_domain');
+    
+    Route::get('knowledge_unit', 'KnowledgeUnitController@knowledge_unit_list');
+    Route::get('knowledge_unit/{_id}', 'KnowledgeUnitController@knowledge_unit_list');
+    Route::post('knowledge_unit', 'KnowledgeUnitController@add_or_update_knowledge_unit');
+    Route::put('knowledge_unit', 'KnowledgeUnitController@add_or_update_knowledge_unit');
+    Route::delete('knowledge_unit', 'KnowledgeUnitController@delete_knowledge_unit');
 
 });

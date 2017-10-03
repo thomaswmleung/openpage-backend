@@ -63,7 +63,9 @@ class SubDomainModel extends Eloquent {
 
     public function total_count($search_key) {
         if ($search_key != "") {
-            $total_count = SubDomainModel::where('title', 'like', "%$search_key%")->count();
+            $total_count = SubDomainModel::where('title', 'like', "%$search_key%")
+                    ->orWhere('code', 'like', "%$search_key%")
+                    ->count();
         } else {
             $total_count = SubDomainModel::count();
         }

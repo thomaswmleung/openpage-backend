@@ -97,7 +97,11 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  * )
  * @SWG\Tag(
  *   name="Sub Domain",
- *   description="Domain related API's"
+ *   description="Sub Domain related API's"
+ * )
+ * @SWG\Tag(
+ *   name="Knowledge Unit",
+ *   description="Knowledge Unit related API's"
  * )
  * 
  */

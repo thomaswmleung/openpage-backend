@@ -102,10 +102,14 @@ return [
     
     'domain_id_invalid' => array('error_code'=>'E2001','error_message' =>"Domain id is invalid"),
     'code_required' => array('error_code'=>'E2002','error_message' =>"Domain code is required"),
-    'domain_title_required' => array('error_code'=>'E2003','error_message' =>"Domain code is required"),
+    'domain_title_required' => array('error_code'=>'E2003','error_message' =>"Domain title is required"),
     
     'sub_domain_id_invalid' => array('error_code'=>'E2101','error_message' =>"Sub Domain id is invalid"),
     'sub_code_required' => array('error_code'=>'E2102','error_message' =>"Sub Domain code is required"),
-    'sub_domain_title_required' => array('error_code'=>'E2103','error_message' =>"Sub Domain code is required"),
+    'sub_domain_title_required' => array('error_code'=>'E2103','error_message' =>"Sub Domain title is required"),
+    
+    'knowledge_unit_id_invalid' => array('error_code'=>'E2201','error_message' =>"knowledge unit id is invalid"),
+    'knowledge_unit_code_required' => array('error_code'=>'E2202','error_message' =>"knowledge unit code is required"),
+    'knowledge_unit_title_required' => array('error_code'=>'E2203','error_message' =>"knowledge unit title is required"),
 
 ];
