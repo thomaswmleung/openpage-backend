@@ -3,6 +3,7 @@
 namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
+use App\PageModel;
 
 class PageGroupModel extends Eloquent {
 
@@ -77,6 +78,21 @@ class PageGroupModel extends Eloquent {
 
     public function find_page_group_details($page_group_id) {
         $page_group_info = PageGroupModel::find($page_group_id);
+
+        if ($page_group_info != null) {
+            $pagesArray = $page_group_info->page;
+//            \Illuminate\Support\Facades\Log::error(json_encode($pagesArray));
+            $page_detail_array = array();
+            foreach ($pagesArray as $page_id){
+                $page_detail = PageModel::get_page_details($page_id);
+                if($page_detail != NULL){
+                    array_push($page_detail_array, $page_detail);
+                }
+            }
+            $page_group_info->page = $page_detail_array;
+            
+        }
+
         return $page_group_info;
     }
 
