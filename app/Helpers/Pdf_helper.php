@@ -11,7 +11,7 @@ use Imagick;
 class Pdf_helper {
 
     public function generate_pdf_from_json($json_data) {
-
+        
         $page_data_array = json_decode($json_data, true);
         $isValidJson = TRUE;
 
@@ -25,7 +25,8 @@ class Pdf_helper {
 
             $pageCOunt = 0;
 
-            if (isset($responseArray['page_group']['import_url']) && $responseArray['page_group']['import_url'] != null) {
+            if (isset($responseArray['page_group']['import_url']) && 
+                    $responseArray['page_group']['import_url'] != null) {
 
                 $filename = basename($responseArray['page_group']['import_url']);
 
@@ -100,7 +101,7 @@ class Pdf_helper {
 //                var_dump(sizeof($page_data_array['page_group']['page']));
 //                exit();
             }
-
+            
             $responseArray['page_group']['page'] = array();
             $page_array = $page_data_array['page_group']['page'];
             $responseArray['page_group']['page'] = $page_array;

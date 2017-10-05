@@ -184,11 +184,10 @@ class PageGroupController extends Controller {
 
         $json_data = $request->getContent();
 
-
 //       return response(json_encode($json_data), 200);
         $page_data_array = json_decode($json_data, true);
 
-
+        
         if ($page_data_array == null) {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
@@ -222,11 +221,11 @@ class PageGroupController extends Controller {
 
         $response_array = array();
         $response_array['page_group_id'] = $page_group_id;
-        if (sizeof($page_data_array['page_group']['page']) > 0) {
+        if (isset($page_data_array['page_group']['page']) ) {
 
             $pdf_response_json = $pdf_helper->generate_pdf_from_json($req_json);
             $page_data_array = json_decode($pdf_response_json, true);
-
+            
             if (isset($page_data_array['page_group'])) {
 
                 $page_array = $page_data_array['page_group']['page'];
@@ -389,7 +388,7 @@ class PageGroupController extends Controller {
 
                     $page_id = $this->create_page($insert_page_data, $page_id);
                     // page keywords index logic
-                    if (count($page_keyword_array) > 0) {
+                    if (isset($page_keyword_array) AND count($page_keyword_array) > 0) {
                         foreach ($page_keyword_array as $keyword) {
                             // check keyword in DB
                             $result = KeywordHelper::indexKeyword($keyword, $page_id, config('collection_constants.PAGE'));
