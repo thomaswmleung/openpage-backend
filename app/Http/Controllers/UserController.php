@@ -237,8 +237,8 @@ class UserController extends Controller {
             $activation_url = url('activate') . "?username=" . $user_data['username'] . "&key=" . $user_data['activation_key'];
             $content = "Please click the link to activate your <a target='new' href='" . $activation_url . "'> account</a><br>$activation_url";
             $email_data = array(
-//                'to_email' => $user_data['username'],
-                'to_email' => 'surajde16@gmail.com',
+                'to_email' => $user_data['username'],
+//                'to_email' => 'surajde16@gmail.com',
                 'from_email' => 'info@openpage.com',
                 'username' => $user_data['first_name'] . ' ' . $user_data['last_name'],
                 'content' => $content,
@@ -371,8 +371,8 @@ class UserController extends Controller {
             $mail_data = array(
                 'first_name' => $first_name,
                 'last_name' => $last_name,
-//                'email'=>$user_info->email,
-                'email' => 'surajde16@gmail.com',
+                'email'=>$user_info->email,
+//                'email' => 'surajde16@gmail.com',
                 'reset_url' => $reset_url,
             );
 
