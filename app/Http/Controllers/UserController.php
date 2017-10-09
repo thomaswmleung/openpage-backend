@@ -187,7 +187,7 @@ class UserController extends Controller {
             'email' => 'min:3|required|email|unique:users,email'
         );
         if ($request->hasFile('profile_image')) {
-            $rules['profile_image']='mimes:jpeg,png,jpg,tiff,gif';
+            $rules['profile_image'] = 'mimes:jpeg,png,jpg,tiff,gif';
         }
         $messages = [
             'profile_image.mimes' => config('error_constants.profile_image_invalid_format'),
@@ -237,13 +237,14 @@ class UserController extends Controller {
             $activation_url = url('activate') . "?username=" . $user_data['username'] . "&key=" . $user_data['activation_key'];
             $content = "Please click the link to activate your <a target='new' href='" . $activation_url . "'> account</a><br>$activation_url";
             $email_data = array(
-                'to_email' => 'suraj@aalpha.net',
-                'from_email' => 'info@aalpha.net',
+//                'to_email' => $user_data['username'],
+                'to_email' => 'surajde16@gmail.com',
+                'from_email' => 'info@openpage.com',
                 'username' => $user_data['first_name'] . ' ' . $user_data['last_name'],
                 'content' => $content,
             );
             //Need SMTP credentials to send Email from instance
-//            EmailController::send_activation_mail($email_data);
+            EmailController::send_activation_mail($email_data);
             $responseArray = array("success" => TRUE, "data" => array("_id" => $data->_id), "message" => "User created successfully.");
             return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
@@ -315,6 +316,200 @@ class UserController extends Controller {
     function activate_user($data) {
         $usersModel = new UsersModel();
         return $usersModel->activate_user($data);
+    }
+
+    /**
+     * @SWG\Post(path="/forgot_password",
+     * tags={"User"},
+     *   summary="Forgot password",
+     *   description="Reset Password",
+     *   operationId="forgot_password",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="username",
+     *     in="query",
+     *     description="Registered username",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied")
+     * )
+     */
+    function forgot_password(Request $request) {
+        $username = $request->username;
+
+        $user_data = array(
+            'username' => $username
+        );
+        $rules = array(
+            'username' => 'required|exists:users,username'
+        );
+        $messages = [
+            'username.required' => config('error_constants.username_required'),
+            'username.exists' => config('error_constants.invalid_user_id'),
+        ];
+
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+        $validator = Validator::make($user_data, $rules, $formulated_messages);
+        if ($validator->fails()) {
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+        } else {
+            $usersModel = new UsersModel;
+            $user_info = $usersModel->user_details_by_username($username);
+
+            //set is_forgot_initiated to true and Send reset password link via mail
+            $reset_url = url('reset_password?username=' . $username);
+            $user_id = $user_info->_id;
+            $first_name = $user_info->first_name;
+            $last_name = $user_info->last_name;
+            $mail_data = array(
+                'first_name' => $first_name,
+                'last_name' => $last_name,
+//                'email'=>$user_info->email,
+                'email' => 'surajde16@gmail.com',
+                'reset_url' => $reset_url,
+            );
+
+            EmailController::forgot_password_mail($mail_data);
+
+            $user_update_data = array(
+                'is_forgot_initiated' => TRUE
+            );
+            $usersModel->update_user($user_id, $user_update_data);
+            $responseArray = array("success" => TRUE);
+            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * @SWG\Post(path="/reset_password",
+     * tags={"User"},
+     *   summary="Forgot password",
+     *   description="Reset Password",
+     *   operationId="reset_password",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="username",
+     *     in="query",
+     *     description="Registered username",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="password",
+     *     in="query",
+     *     description="New password",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data supplied")
+     * )
+     */
+    function reset_password(Request $request) {
+        $username = $request->username;
+        $password = $request->password;
+
+        $user_data = array(
+            'username' => $username,
+            'password' => $password,
+        );
+        $rules = array(
+            'username' => 'required|exists:users,username',
+            'password' => 'required',
+        );
+        $messages = [
+            'username.required' => config('error_constants.username_required'),
+            'username.exists' => config('error_constants.invalid_user_id'),
+            'password.required' => config('error_constants.password_required')
+        ];
+
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+        $validator = Validator::make($user_data, $rules, $formulated_messages);
+        if ($validator->fails()) {
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+        } else {
+            $usersModel = new UsersModel;
+            $user_info = $usersModel->user_details_by_username($username);
+            $user_id = $user_info->_id;
+            $user_update_data = array(
+                'is_forgot_initiated' => FALSE,
+                'password' => $password
+            );
+            $usersModel->update_user($user_id, $user_update_data);
+            $responseArray = array("success" => TRUE);
+            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
+        }
+    }
+
+    /**
+     * @SWG\Get(path="/reset_password/{uid}",
+     * tags={"User"},
+     *   summary="Check if user is initiated for reset of password",
+     *   description="Check if user is initiated for reset of password",
+     *   operationId="user",
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     name="uid",
+     *     in="path",
+     *     description="username of the user",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *  @SWG\Response(
+     *     response=400,
+     *     description="Invalid user id",
+     *   ),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function validate_reset_password(Request $request) {
+        $username = $request->uid;
+        $user_data = array(
+            'username' => $username
+        );
+        $rules = array(
+            'username' => 'required|exists:users,username'
+        );
+        $messages = [
+            'username.required' => config('error_constants.username_required'),
+            'username.exists' => config('error_constants.invalid_user_id')
+        ];
+
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+        $validator = Validator::make($user_data, $rules, $formulated_messages);
+        if ($validator->fails()) {
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+        } else {
+            $usersModel = new UsersModel;
+            $user_info = $usersModel->user_details_by_username($username);
+            $is_forgot_initiated = $user_info->is_forgot_initiated;
+            $link_expired = TRUE;
+            if (isset($is_forgot_initiated) AND $is_forgot_initiated == TRUE) {
+                $link_expired = FALSE;
+            }
+            $responseArray = array("is_link_expired" => $link_expired);
+            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
+        }
     }
 
 }

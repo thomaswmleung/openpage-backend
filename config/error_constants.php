@@ -86,6 +86,7 @@ return [
     'keyword_required' =>array('error_code'=>'E1607','error_message' =>"Keyword is Required"),
     'keyword_ID_required' =>array('error_code'=>'E1608','error_message' =>"Keyword ID is Required"),
     'invalid_keyword_id' => array('error_code'=>'E1609','error_message' =>"Invalid Keyword ID."),
+    'resource_category_required' => array('error_code'=>'E1610','error_message' =>"Resource category is required"),
     
     'class_name_required' => array('error_code'=>'E1701','error_message' =>"Class name is required"),
     'class_name_unique' => array('error_code'=>'E1702','error_message' =>"Class name already exists"),
@@ -111,5 +112,9 @@ return [
     'knowledge_unit_id_invalid' => array('error_code'=>'E2201','error_message' =>"knowledge unit id is invalid"),
     'knowledge_unit_code_required' => array('error_code'=>'E2202','error_message' =>"knowledge unit code is required"),
     'knowledge_unit_title_required' => array('error_code'=>'E2203','error_message' =>"knowledge unit title is required"),
+    
+    'particular_id_invalid' => array('error_code'=>'E2301','error_message' =>"particular unit id is invalid"),
+    'particular_detail_required' => array('error_code'=>'E2302','error_message' =>"particular detail is required"),
+    'particular_title_required' => array('error_code'=>'E2303','error_message' =>"particular title is required"),
 
 ];

@@ -7,7 +7,7 @@ use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 class BookModel extends Eloquent {
 
     protected $collection = 'book';
-    protected $fillable = array('page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation','preview_url', 'preview_images','created_by', 'updated_by');
+    protected $fillable = array('page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation', 'preview_url', 'preview_images', 'created_by', 'updated_by');
 
     public function create_book($insert_data, $main_id) {
         //$result = MainModel::create($insert_data);
@@ -46,7 +46,7 @@ class BookModel extends Eloquent {
         }
 
         if ($search_key != "" || $organisation != "") {
-             $book_data = BookModel::
+            $book_data = BookModel::
                     Where(function($organisationIdQuery)use ($organisation) {
                         if ($organisation != "") {
                             $organisationIdQuery->where('organisation', $organisation);
@@ -60,7 +60,6 @@ class BookModel extends Eloquent {
                     ->skip($skip)
                     ->take($limit)
                     ->get();
-       
         } else {
             $book_data = BookModel::skip($skip)->take($limit)->get();
         }

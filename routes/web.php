@@ -16,6 +16,9 @@ Route::get('log_out', 'LoginController@log_out');
 
 Route::post('register', 'UserController@register');
 Route::get('activate', 'UserController@activate');
+Route::post('forgot_password', 'UserController@forgot_password');
+Route::get('reset_password/{uid}', 'UserController@validate_reset_password');
+Route::post('reset_password', 'UserController@reset_password');
 
 Route::group(['middleware' => ['login_auth']], function () {
 
@@ -128,5 +131,11 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('knowledge_unit', 'KnowledgeUnitController@add_or_update_knowledge_unit');
     Route::put('knowledge_unit', 'KnowledgeUnitController@add_or_update_knowledge_unit');
     Route::delete('knowledge_unit', 'KnowledgeUnitController@delete_knowledge_unit');
+    
+    Route::get('particular', 'ParticularController@particular_list');
+    Route::get('particular/{_id}', 'ParticularController@particular_list');
+    Route::post('particular', 'ParticularController@add_or_update_particular');
+    Route::put('particular', 'ParticularController@add_or_update_particular');
+    Route::delete('particular', 'ParticularController@delete_particular');
 
 });

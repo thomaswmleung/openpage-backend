@@ -103,6 +103,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   name="Knowledge Unit",
  *   description="Knowledge Unit related API's"
  * )
+ * @SWG\Tag(
+ *   name="Particular",
+ *   description="Particular related API's"
+ * )
  * 
  */
 class Controller extends BaseController

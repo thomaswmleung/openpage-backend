@@ -144,6 +144,13 @@ class ResourceController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="category",
+     *     in="query",
+     *     description="Resource category",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="url",
      *     in="query",
      *     description="URL of resource",
@@ -213,6 +220,13 @@ class ResourceController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="category",
+     *     in="query",
+     *     description="Resource category",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="url",
      *     in="query",
      *     description="URL of resource",
@@ -252,6 +266,7 @@ class ResourceController extends Controller {
             'title' => $request->title,
             'description' => $request->description,
             'type' => $request->type,
+            'category' => $request->category,
             'url' => $request->url,
             'remark' => $request->remark,
             'tag' => $request->tag,
@@ -261,6 +276,7 @@ class ResourceController extends Controller {
             'title' => 'required',
             'description' => 'required',
             'type' => 'required',
+            'category' => 'required',
             'url' => 'required',
             'created_by' => 'required|exists:users,_id',
         );
@@ -274,6 +290,7 @@ class ResourceController extends Controller {
             'title.required' => config('error_constants.resource_title_required'),
             'description.required' => config('error_constants.resource_description_required'),
             'type.required' => config('error_constants.resource_type_required'),
+            'category.required' => config('error_constants.resource_category_required'),
             'url.required' => config('error_constants.resource_url_required'),
             'created_by.required' => config('error_constants.media_created_by_required'),
             'created_by.exists' => config('error_constants.invalid_media_created_by'),

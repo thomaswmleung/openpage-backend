@@ -88,12 +88,12 @@ class SubjectController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
-            }else{
+            } else {
                 $response_array = array("success" => TRUE, "data" => $subject_details, "errors" => array());
                 return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
-             $search_key = "";
+            $search_key = "";
             if (isset($request->search_key)) {
                 $search_key = $request->search_key;
             }
@@ -179,14 +179,30 @@ class SubjectController extends Controller {
         $subject_data_array = json_decode($json_data, true);
 
         if ($subject_data_array == null) {
-            return response(json_encode(array("success"=>FALSE,"error" => "Invalid Json")))->header('Content-Type', 'application/json');
+            return response(json_encode(array("success" => FALSE, "error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
+        $subject_id = "";
+        if (isset($subject_data_array['_id'])) {
+            $subject_id = $subject_data_array['_id'];
+        }
+        $subject_code = "";
+        if (isset($subject_data_array['code'])) {
+            $subject_code = $subject_data_array['code'];
+        }
+        $subject_title = "";
+        if (isset($subject_data_array['title'])) {
+            $subject_title = $subject_data_array['title'];
+        }
+        $subject_domain = "";
+        if (isset($subject_data_array['domain'])) {
+            $subject_domain = $subject_data_array['domain'];
+        }
         $subject_array = array(
-            '_id' => $subject_data_array['_id'],
-            'code' => $subject_data_array['code'],
-            'title' => $subject_data_array['title'],
-            'domain' => $subject_data_array['domain']
+            '_id' => $subject_id,
+            'code' => $subject_code,
+            'title' => $subject_title,
+            'domain' => $subject_domain
         );
         $rules = array(
             'code' => 'required',
@@ -219,7 +235,7 @@ class SubjectController extends Controller {
 
 
 
-            $subject_id = $subject_data_array['_id'];
+
 
 //        if (isset($subject_data_array['_id']) && $subject_data_array['_id'] == "") {
 //            $subject_id = $subject_model->create_subject();
@@ -375,7 +391,9 @@ class SubjectController extends Controller {
 
             if (count($result)) {
                 $response_array['success'] = TRUE;
-                return response('Subject ' . ($subject_id == "" ? " Created " : " Updated ") . ' Successfully', 200)->header('Content-Type', 'application/json');
+                $message = 'Subject ' . ($subject_id == "" ? " Created " : " Updated ") . ' Successfully';
+                $response_array = array("success" => TRUE, "data" => $message);
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         }
     }

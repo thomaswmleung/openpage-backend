@@ -17,5 +17,16 @@ class EmailController extends Controller {
 
         return 1;
     }
+    
+    static public function forgot_password_mail($mail_data) {
+        
+        Mail::send('emails.forgot_password', $mail_data, function ($message) use ($mail_data) {
+            $message->subject("Openpage : Forgot password link");
+            $message->from('info@openpage.com', 'Openpage');
+            $message->to($mail_data['email']);
+        });
+
+        return 1;
+    }
 
 }

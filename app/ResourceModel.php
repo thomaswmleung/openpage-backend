@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class ResourceModel extends Eloquent {
 
     protected $collection = 'resource';
-    protected $fillable = array('title', 'description', 'type', 'url', 'remark', 'tag', 'created_by', 'updated_by');
+    protected $fillable = array('title', 'description', 'type','category', 'url', 'remark', 'tag', 'created_by', 'updated_by');
 
     public function resource_details($query_details = NULL) {
         if ($query_details == NULL) {
