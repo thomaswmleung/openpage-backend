@@ -59,14 +59,17 @@ class PageModel extends Eloquent {
                 $search_key = "";
             }
         }
+        $sort_by = $query_details['sort_by'];
+        $order_by = $query_details['order_by'];
 
         if ($search_key != "") {
             $page_data = PageModel::where('remark', 'like', "%$search_key%")
                     ->skip($skip)
                     ->take($limit)
+                    ->orderBy($sort_by, $order_by)
                     ->get();
         } else {
-            $page_data = PageModel::skip($skip)->take($limit)->get();
+            $page_data = PageModel::skip($skip)->take($limit)->orderBy($sort_by, $order_by)->get();
         }
         return $page_data;
     }

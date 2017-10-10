@@ -38,6 +38,9 @@ class MediaModel extends Eloquent {
             }
         }
 
+        $sort_by = $query_details['sort_by'];
+        $order_by = $query_details['order_by'];
+
         if ($search_key != "" || $user_id != "") {
             $media_data = MediaModel::
                     Where(function($userIdQuery)use ($user_id) {
@@ -55,9 +58,10 @@ class MediaModel extends Eloquent {
                     })
                     ->skip($skip)
                     ->take($limit)
+                    ->orderBy($sort_by, $order_by)
                     ->get();
         } else {
-            $media_data = MediaModel::skip($skip)->take($limit)->get();
+            $media_data = MediaModel::skip($skip)->take($limit)->orderBy($sort_by, $order_by)->get();
         }
         return $media_data;
     }

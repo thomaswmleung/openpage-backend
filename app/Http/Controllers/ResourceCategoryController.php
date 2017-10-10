@@ -11,24 +11,18 @@ use App\Helpers\Token_helper;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\ErrorMessageHelper;
 
-class MediaController extends Controller {
+class ResourceCategoryController extends Controller {
     /**
-     * @SWG\Get(path="/media",
-     *   tags={"Media"},
-     *   summary="Returns list of media",
-     *   description="Returns media data",
-     *   operationId="media",
+     * @SWG\Get(path="/resource_category",
+     *   tags={"Resource Category"},
+     *   summary="Returns list of resource categories",
+     *   description="Returns resource category data",
+     *   operationId="resource_category",
      *   produces={"application/json"},
      *   @SWG\Parameter(
      *     name="search_key",
      *     in="query",
-     *     description="Search based on remark and tags",
-     *     type="string"
-     *   ),
-     *   @SWG\Parameter(
-     *     name="user_id",
-     *     in="query",
-     *     description="Search based on user id",
+     *     description="Search based on key",
      *     type="string"
      *   ),
      *   @SWG\Parameter(
@@ -50,7 +44,7 @@ class MediaController extends Controller {
      *         type="array",
      *         @SWG\Items(
      *             type="string",
-     *             enum={"created_at", "type", "extension"},
+     *             enum={"created_at"},
      *             default="created_at"
      *         ),
      *         collectionFormat="multi"
@@ -78,14 +72,14 @@ class MediaController extends Controller {
      */
 
     /**
-     * @SWG\Get(path="/media/{mid}",
-     *   tags={"Media"},
-     *   summary="Returns media data",
-     *   description="Returns media data",
-     *   operationId="media",
+     * @SWG\Get(path="/resource_category/{resource_category_id}",
+     *   tags={"Resource Category"},
+     *   summary="Returns resource category data",
+     *   description="Returns resource category data",
+     *   operationId="resource_category",
      *   produces={"application/json"},
      *   @SWG\Parameter(
-     *     name="mid",
+     *     name="resource_category_id",
      *     in="path",
      *     description="ID of the media that needs to be displayed",
      *     required=true,

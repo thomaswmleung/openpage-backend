@@ -45,6 +45,9 @@ class BookModel extends Eloquent {
             }
         }
 
+        $sort_by = $query_details['sort_by'];
+        $order_by = $query_details['order_by'];
+        
         if ($search_key != "" || $organisation != "") {
             $book_data = BookModel::
                     Where(function($organisationIdQuery)use ($organisation) {
@@ -59,9 +62,10 @@ class BookModel extends Eloquent {
                     })
                     ->skip($skip)
                     ->take($limit)
+                    ->orderBy($sort_by, $order_by)
                     ->get();
         } else {
-            $book_data = BookModel::skip($skip)->take($limit)->get();
+            $book_data = BookModel::skip($skip)->take($limit)->orderBy($sort_by, $order_by)->get();
         }
         return $book_data;
     }

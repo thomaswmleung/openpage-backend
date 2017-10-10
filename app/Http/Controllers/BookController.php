@@ -44,6 +44,30 @@ class BookController extends Controller {
      *     description="Number of records to be retrieved ",
      *     type="integer"
      *   ),
+     *   @SWG\Parameter(
+     *         name="sort_by",
+     *         in="query",
+     *         description="Sort by value",
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string",
+     *             enum={"created_at"},
+     *             default="created_at"
+     *         ),
+     *         collectionFormat="multi"
+     *   ),
+     *   @SWG\Parameter(
+     *         name="order_by",
+     *         in="query",
+     *         description="Order by Ascending or descending",
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string",
+     *             enum={"ASC", "DESC"},
+     *             default="DESC"
+     *         ),
+     *         collectionFormat="multi"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -113,11 +137,21 @@ class BookController extends Controller {
             if (isset($request->limit)) {
                 $limit = (int) $request->limit;
             }
+            $sort_by = 'created_at';
+            if (isset($request->sort_by)) {
+                $sort_by = $request->sort_by;
+            }
+            $order_by = 'DESC';
+            if (isset($request->order_by)) {
+                $order_by = $request->order_by;
+            }
             $query_details = array(
                 'search_key' => $search_key,
                 'organisation' => $organization_id,
                 'limit' => $limit,
-                'skip' => $skip
+                'skip' => $skip,
+                'sort_by' => $sort_by,
+                'order_by' => $order_by
             );
 
             $book_details = $bookModel->book_details($query_details);

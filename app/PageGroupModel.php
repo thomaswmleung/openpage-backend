@@ -51,15 +51,19 @@ class PageGroupModel extends Eloquent {
             }
         }
 
+        $sort_by = $query_details['sort_by'];
+        $order_by = $query_details['order_by'];
+
         if ($search_key != "") {
             $page_group_data = PageGroupModel::where('preview_url', 'like', "%$search_key%")
                     ->orWhere('title', 'like', "%$search_key%")
                     ->orWhere('sub_title', 'like', "%$search_key%")
                     ->skip($skip)
                     ->take($limit)
+                    ->orderBy($sort_by, $order_by)
                     ->get();
         } else {
-            $page_group_data = PageGroupModel::skip($skip)->take($limit)->get();
+            $page_group_data = PageGroupModel::skip($skip)->take($limit)->orderBy($sort_by, $order_by)->get();
         }
         return $page_group_data;
     }
@@ -83,14 +87,13 @@ class PageGroupModel extends Eloquent {
             $pagesArray = $page_group_info->page;
 //            \Illuminate\Support\Facades\Log::error(json_encode($pagesArray));
             $page_detail_array = array();
-            foreach ($pagesArray as $page_id){
+            foreach ($pagesArray as $page_id) {
                 $page_detail = PageModel::get_page_details($page_id);
-                if($page_detail != NULL){
+                if ($page_detail != NULL) {
                     array_push($page_detail_array, $page_detail);
                 }
             }
             $page_group_info->page = $page_detail_array;
-            
         }
 
         return $page_group_info;
