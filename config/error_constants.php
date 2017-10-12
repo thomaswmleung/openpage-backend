@@ -117,5 +117,9 @@ return [
     'particular_id_invalid' => array('error_code'=>'E2301','error_message' =>"particular unit id is invalid"),
     'particular_detail_required' => array('error_code'=>'E2302','error_message' =>"particular detail is required"),
     'particular_title_required' => array('error_code'=>'E2303','error_message' =>"particular title is required"),
+    
+    'resource_category_name_required' => array('error_code'=>'E2401','error_message' =>"Resource Category name is required"),
+    'resource_category_name_unique' => array('error_code'=>'E2402','error_message' =>"Resource Category name already exists"),
+    'resource_category_id_invalid' => array('error_code'=>'E2403','error_message' =>"Resource Category id is invalid"),
 
 ];

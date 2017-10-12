@@ -137,5 +137,11 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('particular', 'ParticularController@add_or_update_particular');
     Route::put('particular', 'ParticularController@add_or_update_particular');
     Route::delete('particular', 'ParticularController@delete_particular');
+    
+    Route::get('resource_category', 'ResourceCategoryController@resource_category_list');
+    Route::get('resource_category/{_id}', 'ResourceCategoryController@resource_category_list');
+    Route::post('resource_category', 'ResourceCategoryController@add_or_update_resource_category');
+    Route::put('resource_category', 'ResourceCategoryController@add_or_update_resource_category');
+    Route::delete('resource_category', 'ResourceCategoryController@delete_resource_category');
 
 });
