@@ -232,6 +232,7 @@ class UserController extends Controller {
             $user_data['username'] = strtolower(trim($request->email));
             // generate activation code
             $user_data['activation_key'] = rand(123456789, 987456321);
+            $user_data['is_verified'] = FALSE;
             $data = UsersModel::create($user_data);
             // Send an email
             $activation_url = url('activate') . "?username=" . $user_data['username'] . "&key=" . $user_data['activation_key'];
@@ -286,7 +287,7 @@ class UserController extends Controller {
         }
         $user_data = array(
             'username' => $username,
-            'activation_key' => $activation_key
+            'activation_key' => $activation_key,
         );
         $rules = array(
             'username' => 'required|exists:users,username',
@@ -454,15 +455,15 @@ class UserController extends Controller {
     }
 
     /**
-     * @SWG\Get(path="/reset_password/{uid}",
+     * @SWG\Get(path="/reset_password",
      * tags={"User"},
      *   summary="Check if user is initiated for reset of password",
      *   description="Check if user is initiated for reset of password",
      *   operationId="user",
      *   produces={"application/json"},
      *   @SWG\Parameter(
-     *     name="uid",
-     *     in="path",
+     *     name="username",
+     *     in="query",
      *     description="username of the user",
      *     required=true,
      *     type="string"
@@ -474,14 +475,11 @@ class UserController extends Controller {
      *  @SWG\Response(
      *     response=400,
      *     description="Invalid user id",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
+     *   )
      * )
      */
     public function validate_reset_password(Request $request) {
-        $username = $request->uid;
+        $username = $request->username;
         $user_data = array(
             'username' => $username
         );
@@ -504,10 +502,12 @@ class UserController extends Controller {
             $user_info = $usersModel->user_details_by_username($username);
             $is_forgot_initiated = $user_info->is_forgot_initiated;
             $link_expired = TRUE;
+            $result = FALSE;
             if (isset($is_forgot_initiated) AND $is_forgot_initiated == TRUE) {
                 $link_expired = FALSE;
+                $result = TRUE;
             }
-            $responseArray = array("is_link_expired" => $link_expired);
+            $responseArray = array("success"=>$result,"is_link_expired" => $link_expired);
             return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
     }

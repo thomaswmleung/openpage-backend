@@ -17,7 +17,7 @@ Route::get('log_out', 'LoginController@log_out');
 Route::post('register', 'UserController@register');
 Route::get('activate', 'UserController@activate');
 Route::post('forgot_password', 'UserController@forgot_password');
-Route::get('reset_password/{uid}', 'UserController@validate_reset_password');
+Route::get('reset_password', 'UserController@validate_reset_password');
 Route::post('reset_password', 'UserController@reset_password');
 
 Route::group(['middleware' => ['login_auth']], function () {

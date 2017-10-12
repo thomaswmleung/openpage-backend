@@ -21,6 +21,7 @@ return [
     'activation_key_required' => array('error_code'=>'E112','error_message' =>"Activation key is required."),
     'activation_key_exists' => array('error_code'=>'E113','error_message' =>"Activation key is invalid."),
     'profile_image_invalid_format' => array('error_code'=>'E114','error_message' =>"Invalid profile image format."),
+    'username_verification_required' => array('error_code'=>'E115','error_message' =>"User email verification required"),
     
     'media_type_required' => array('error_code'=>'E301','error_message' =>"Media type is missing."),
     'media_extension_required' => array('error_code'=>'E302','error_message' =>"Media extension is required."),
