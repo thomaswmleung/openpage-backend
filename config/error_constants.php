@@ -87,7 +87,8 @@ return [
     'keyword_required' =>array('error_code'=>'E1607','error_message' =>"Keyword is Required"),
     'keyword_ID_required' =>array('error_code'=>'E1608','error_message' =>"Keyword ID is Required"),
     'invalid_keyword_id' => array('error_code'=>'E1609','error_message' =>"Invalid Keyword ID."),
-    'resource_category_required' => array('error_code'=>'E1610','error_message' =>"Resource category is required"),
+    'resource_category_required' => array('error_code'=>'E1610','error_message' =>"Resource category id is required"),
+    'resource_category_exists' => array('error_code'=>'E1610','error_message' =>"Resource category id is invalid"),
     
     'class_name_required' => array('error_code'=>'E1701','error_message' =>"Class name is required"),
     'class_name_unique' => array('error_code'=>'E1702','error_message' =>"Class name already exists"),

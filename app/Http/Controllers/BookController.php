@@ -173,7 +173,7 @@ class BookController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="book json input",
+     *     description="book json input <br> Sample JSON to create book http://jsoneditoronline.org/?id=bcddc70528339bf6e057c113c68f1ee5",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -199,7 +199,7 @@ class BookController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="book json input",
+     *     description="book json input <br> Sample JSON to update book http://jsoneditoronline.org/?id=c1e3c692d29b2b221ec0a59e6c1a1430",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -225,13 +225,18 @@ class BookController extends Controller {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
+        $year="";
+        if(isset($book_data_array['year'])){
+            $year = $book_data_array['year'];
+        }
         $book_array = array(
             'page' => $book_data_array['page'],
             'toc' => $book_data_array['toc'],
             'cover' => $book_data_array['cover'],
             'syllabus' => $book_data_array['syllabus'],
             'keyword' => $book_data_array['keyword'],
-            'organisation' => $book_data_array['organisation']
+            'organisation' => $book_data_array['organisation'],
+            'year'=>$year
         );
 
         $rules = array(
@@ -366,6 +371,7 @@ class BookController extends Controller {
                 'syllabus' => $book_data_array['syllabus'],
                 'keyword' => $book_data_array['keyword'],
                 'organisation' => $book_data_array['organisation'],
+                'year' => $year,
                 'preview_url' => $book_data_array['preview_image_array'],
                 'preview_images' => $book_data_array['preview_url'],
                 'updated_by' => $user_id
