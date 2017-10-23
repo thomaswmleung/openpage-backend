@@ -27,9 +27,55 @@ class BookController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="title",
+     *     in="query",
+     *     description="Filter by title",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="subtitle",
+     *     in="query",
+     *     description="Filter by sub title",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="school_name",
+     *     in="query",
+     *     description="Filter by school name",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="level",
+     *     in="query",
+     *     description="Filter by level",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="version",
+     *     in="query",
+     *     description="Filter by version",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="subject",
+     *     in="query",
+     *     description="Filter by subject",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="keywords[]",
+     *     in="query",
+     *     description="Filter by book keywords",
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
+     *   ),
+     *   @SWG\Parameter(
      *     name="organization_id",
      *     in="query",
-     *     description="Search with organization id",
+     *     description="Filter by organization id",
      *     type="string"
      *   ),
      *   @SWG\Parameter(
@@ -51,7 +97,7 @@ class BookController extends Controller {
      *         type="array",
      *         @SWG\Items(
      *             type="string",
-     *             enum={"created_at"},
+     *             enum={"created_at","school_name","level","title","year"},
      *             default="created_at"
      *         ),
      *         collectionFormat="multi"
@@ -129,6 +175,34 @@ class BookController extends Controller {
             if (isset($request->organization_id)) {
                 $organization_id = $request->organization_id;
             }
+            $title = "";
+            if (isset($request->title)) {
+                $title = $request->title;
+            }
+            $subtitle = "";
+            if (isset($request->subtitle)) {
+                $subtitle = $request->subtitle;
+            }
+            $school_name = "";
+            if (isset($request->school_name)) {
+                $school_name = $request->school_name;
+            }
+            $level = "";
+            if (isset($request->level)) {
+                $level = $request->level;
+            }
+            $version = "";
+            if (isset($request->version)) {
+                $version = $request->version;
+            }
+            $subject = "";
+            if (isset($request->subject)) {
+                $subject = $request->subject;
+            }
+            $keywords = array();
+            if (isset($request->keywords)) {
+                $keywords = $request->keywords;
+            }
             $skip = 0;
             if (isset($request->skip)) {
                 $skip = (int) $request->skip;
@@ -148,6 +222,13 @@ class BookController extends Controller {
             $query_details = array(
                 'search_key' => $search_key,
                 'organisation' => $organization_id,
+                'school_name' => $school_name,
+                'title' => $title,
+                'subtitle' => $subtitle,
+                'level' => $level,
+                'version' => $version,
+                'subject' => $subject,
+                'keywords' => $keywords,
                 'limit' => $limit,
                 'skip' => $skip,
                 'sort_by' => $sort_by,
@@ -225,10 +306,7 @@ class BookController extends Controller {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
-        $year="";
-        if(isset($book_data_array['year'])){
-            $year = $book_data_array['year'];
-        }
+        
         $book_array = array(
             'page' => $book_data_array['page'],
             'toc' => $book_data_array['toc'],
@@ -236,7 +314,6 @@ class BookController extends Controller {
             'syllabus' => $book_data_array['syllabus'],
             'keyword' => $book_data_array['keyword'],
             'organisation' => $book_data_array['organisation'],
-            'year'=>$year
         );
 
         $rules = array(
@@ -371,7 +448,6 @@ class BookController extends Controller {
                 'syllabus' => $book_data_array['syllabus'],
                 'keyword' => $book_data_array['keyword'],
                 'organisation' => $book_data_array['organisation'],
-                'year' => $year,
                 'preview_url' => $book_data_array['preview_image_array'],
                 'preview_images' => $book_data_array['preview_url'],
                 'updated_by' => $user_id
@@ -427,7 +503,7 @@ class BookController extends Controller {
     function delete_book(Request $request) {
         $book_id = trim($request->_id);
         $bookModel = new BookModel();
-        $book_data = $bookModel->book_details(array('_id' => $book_id));
+        $book_data = $bookModel->find_book_details($book_id);
         if ($book_data == null) {
             $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_book_id')['error_code'],
                     "ERR_MSG" => config('error_constants.invalid_book_id')['error_message']));

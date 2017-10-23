@@ -7,7 +7,7 @@ use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 class BookModel extends Eloquent {
 
     protected $collection = 'book';
-    protected $fillable = array('page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation','year', 'preview_url', 'preview_images', 'created_by', 'updated_by');
+    protected $fillable = array('page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation', 'preview_url', 'preview_images', 'created_by', 'updated_by');
 
     public function create_book($insert_data, $main_id) {
         //$result = MainModel::create($insert_data);
@@ -18,41 +18,77 @@ class BookModel extends Eloquent {
     }
 
     public function book_details($query_details = NULL) {
-        if ($query_details == NULL) {
-            $skip = 0;
-            $limit = config('constants.default_query_limit');
-            $search_key = "";
-        } else {
-            if (isset($query_details['skip'])) {
-                $skip = $query_details['skip'];
-            } else {
-                $skip = 0;
-            }
-            if (isset($query_details['limit'])) {
-                $limit = $query_details['limit'];
-            } else {
-                $limit = config('constants.default_query_limit');
-            }
-            if (isset($query_details['search_key'])) {
-                $search_key = $query_details['search_key'];
-            } else {
-                $search_key = "";
-            }
-            if (isset($query_details['organisation'])) {
-                $organisation = $query_details['organisation'];
-            } else {
-                $organisation = "";
-            }
+        $skip = 0;
+        if (isset($query_details['skip'])) {
+            $skip = $query_details['skip'];
         }
+        $limit = config('constants.default_query_limit');
+        if (isset($query_details['limit'])) {
+            $limit = $query_details['limit'];
+        }
+        $search_key = "";
+        if (isset($query_details['search_key'])) {
+            $search_key = $query_details['search_key'];
+        }
+        $organisation = "";
+        if (isset($query_details['organisation'])) {
+            $organisation = $query_details['organisation'];
+        }
+        $school_name = "";
+        if (isset($query_details['school_name'])) {
+            $school_name = $query_details['school_name'];
+        }
+        $title = $query_details['title'];
+        $subtitle = $query_details['subtitle'];
+        $level = $query_details['level'];
+        $version = $query_details['version'];
+        $subject = $query_details['subject'];
+        $keywords_array = $query_details['keywords'];
+        
 
         $sort_by = $query_details['sort_by'];
+        if ($sort_by == "school_name") {
+            $sort_by = "cover.school_name";
+        }
+        if ($sort_by == "level") {
+            $sort_by = "cover.level";
+        }
+        if ($sort_by == "title") {
+            $sort_by = "cover.title";
+        }
+        if ($sort_by == "year") {
+            $sort_by = "cover.year";
+        }
         $order_by = $query_details['order_by'];
-        
-        if ($search_key != "" || $organisation != "") {
+
+        if ($search_key != "" || $organisation != "" || $school_name != "" || $title != "" || $subtitle != "" || $level != "" || $version != "" || $subject != "" || count($keywords_array)>0) {
             $book_data = BookModel::
-                    Where(function($organisationIdQuery)use ($organisation) {
-                        if ($organisation != "") {
-                            $organisationIdQuery->where('organisation', $organisation);
+                    Where(function($filterByQuery)use ($query_details) {
+                        if ($query_details['organisation'] != "") {
+                            $filterByQuery->where('organisation', 'like', $query_details['organisation']);
+                        }
+                        if ($query_details['school_name'] != "") {
+                            $filterByQuery->where('cover.school_name', 'like', $query_details['school_name']);
+                        }
+                        if ($query_details['title'] != "") {
+                            $filterByQuery->where('cover.title', 'like', $query_details['title']);
+                        }
+                        if ($query_details['subtitle'] != "") {
+                            $filterByQuery->where('cover.subtitle', 'like', $query_details['subtitle']);
+                        }
+                        if ($query_details['level'] != "") {
+                            $filterByQuery->where('cover.level', 'like', $query_details['level']);
+                        }
+                        if ($query_details['version'] != "") {
+                            $filterByQuery->where('cover.version', 'like', $query_details['version']);
+                        }
+                        if ($query_details['subject'] != "") {
+                            $filterByQuery->where('syllabus.subject', 'like', $query_details['subject']);
+                        }
+                        if (count($query_details['keywords'])>0) {
+                            // use foreach for tags array to use like query for case insensitive search using orWhere
+                            $filterByQuery->where('keyword','all',$query_details['keywords']);
+                            
                         }
                     })
                     ->Where(function($filterSeaarchQuery)use ($search_key) {
@@ -71,13 +107,54 @@ class BookModel extends Eloquent {
     }
 
     public function total_count($query_details) {
-        $search_key = $query_details['search_key'];
-        $organisation = $query_details['organisation'];
-        if ($search_key != "" || $organisation != "") {
+        if (isset($query_details['search_key'])) {
+            $search_key = $query_details['search_key'];
+        } else {
+            $search_key = "";
+        }
+        if (isset($query_details['organisation'])) {
+            $organisation = $query_details['organisation'];
+        } else {
+            $organisation = "";
+        }
+        if (isset($query_details['school_name'])) {
+            $school_name = $query_details['school_name'];
+        } else {
+            $school_name = "";
+        }
+        $title = $query_details['title'];
+        $subtitle = $query_details['subtitle'];
+        $level = $query_details['level'];
+        $version = $query_details['version'];
+        $subject = $query_details['subject'];
+        $keywords_array = $query_details['keywords'];
+        if ($search_key != "" || $organisation != "" || $school_name != "" || $title != "" || $subtitle != "" || $level != "" || $version != "" || $subject != "" || count($keywords_array)>0) {
             $total_count = BookModel::
-                    Where(function($organisationIdQuery)use ($organisation) {
-                        if ($organisation != "") {
-                            $organisationIdQuery->where('organisation', $organisation);
+                    Where(function($filterByQuery)use ($query_details) {
+                        if ($query_details['organisation'] != "") {
+                            $filterByQuery->where('organisation',$query_details['organisation']);
+                        }
+                        if ($query_details['school_name'] != "") {
+                            $filterByQuery->where('cover.school_name','like', $query_details['school_name']);
+                        }
+                        if ($query_details['title'] != "") {
+                            $filterByQuery->where('cover.title', 'like', $query_details['title']);
+                        }
+                        if ($query_details['subtitle'] != "") {
+                            $filterByQuery->where('cover.subtitle', 'like', $query_details['subtitle']);
+                        }
+                        if ($query_details['level'] != "") {
+                            $filterByQuery->where('cover.level', 'like', $query_details['level']);
+                        }
+                        if ($query_details['version'] != "") {
+                            $filterByQuery->where('cover.version', 'like', $query_details['version']);
+                        }
+                        if ($query_details['subject'] != "") {
+                            $filterByQuery->where('syllabus.subject', 'like', $query_details['subject']);
+                        }
+                        if (count($query_details['keywords'])>0) {
+                            // use foreach for tags array to use like query for case insensitive search using orWhere
+                            $filterByQuery->where('keyword','all',$query_details['keywords']);
                         }
                     })
                     ->Where(function($filterSeaarchQuery)use ($search_key) {

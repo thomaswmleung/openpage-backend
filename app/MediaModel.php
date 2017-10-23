@@ -51,34 +51,32 @@ class MediaModel extends Eloquent {
             } else {
                 $extension = "";
             }
-            if (isset($query_details['tag'])) {
-                $tag = $query_details['tag'];
-            } else {
-                $tag = "";
-            }
+            
         }
+        $tag_array = $query_details['tag'];
         $from_date = $query_details['from_date'];
         $to_date = $query_details['to_date'];
         $sort_by = $query_details['sort_by'];
         $order_by = $query_details['order_by'];
 
-        if ($search_key != "" || $user_id != "" || $type != "" || $remark != "" || $extension != "" || $tag != "" || $from_date != "") {
+        if ($search_key != "" || $user_id != "" || $type != "" || $remark != "" || $extension != "" || $from_date != "" || count($tag_array)>0) {
             $media_data = MediaModel::
                     Where(function($userIdQuery)use ($query_details) {
                         if ($query_details['user_id'] != "") {
-                            $userIdQuery->where('created_by', $query_details['user_id']);
+                            $userIdQuery->where('created_by', 'like',$query_details['user_id']);
                         }
                         if ($query_details['type'] != "") {
-                            $userIdQuery->where('type', $query_details['type']);
+                            $userIdQuery->where('type', 'like',$query_details['type']);
                         }
                         if ($query_details['remark'] != "") {
-                            $userIdQuery->where('remark', $query_details['remark']);
+                            $userIdQuery->where('remark', 'like',$query_details['remark']);
                         }
                         if ($query_details['extension'] != "") {
-                            $userIdQuery->where('extension', $query_details['extension']);
+                            $userIdQuery->where('extension','like', $query_details['extension']);
                         }
-                        if ($query_details['tag'] != "") {
-                            $userIdQuery->where('tag', $query_details['tag']);
+                        if (count($query_details['tag'])>0) {
+                            // use foreach for tags array to use like query for case insensitive search using orWhere
+                            $userIdQuery->where('tag','all',$query_details['tag']);
                         }
                         if ($query_details['from_date'] != "") {
                             $start = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));
@@ -93,6 +91,7 @@ class MediaModel extends Eloquent {
                             ->orWhere('type', 'like', "%$search_key%")
                             ->orWhere('extension', 'like', "%$search_key%");
                         }
+                        
                     })
                     ->skip($skip)
                     ->take($limit)
@@ -130,30 +129,27 @@ class MediaModel extends Eloquent {
         } else {
             $extension = "";
         }
-        if (isset($query_details['tag'])) {
-            $tag = $query_details['tag'];
-        } else {
-            $tag = "";
-        }
+      
+        $tag_array = $query_details['tag'];
         $from_date = $query_details['from_date'];
         $to_date = $query_details['to_date'];
-        if ($search_key != "" || $user_id != "" || $type != "" || $remark != "" || $extension != "" || $tag != "" || $from_date != "") {
+        if ($search_key != "" || $user_id != "" || $type != "" || $remark != "" || $extension != "" || $from_date != "" || count($tag_array)>0) {
             $total_count = MediaModel::
                     Where(function($userIdQuery)use ($query_details) {
                         if ($query_details['user_id'] != "") {
-                            $userIdQuery->where('created_by', $query_details['user_id']);
+                            $userIdQuery->where('created_by','like', $query_details['user_id']);
                         }
                         if ($query_details['type'] != "") {
-                            $userIdQuery->where('type', $query_details['type']);
+                            $userIdQuery->where('type','like', $query_details['type']);
                         }
                         if ($query_details['remark'] != "") {
-                            $userIdQuery->where('remark', $query_details['remark']);
+                            $userIdQuery->where('remark','like', $query_details['remark']);
                         }
                         if ($query_details['extension'] != "") {
-                            $userIdQuery->where('extension', $query_details['extension']);
+                            $userIdQuery->where('extension','like', $query_details['extension']);
                         }
-                        if ($query_details['tag'] != "") {
-                            $userIdQuery->where('tag', $query_details['tag']);
+                        if (count($query_details['tag'])>0) {
+                            $userIdQuery->where('tag','all', $query_details['tag']);
                         }
                         if ($query_details['from_date'] != "") {
                             $start = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));

@@ -44,10 +44,14 @@ class MediaController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
-     *     name="tag",
+     *     name="tag[]",
      *     in="query",
      *     description="Filter by media tag",
-     *     type="string"
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
      *   ),
      *   @SWG\Parameter(
      *     name="extension",
@@ -172,7 +176,7 @@ class MediaController extends Controller {
             if (isset($request->extension)) {
                 $extension = $request->extension;
             }
-            $tag = "";
+            $tag = array();
             if (isset($request->tag)) {
                 $tag = $request->tag;
             }
@@ -182,12 +186,13 @@ class MediaController extends Controller {
             }
             $from_date = "";
             if (isset($request->from_date)) {
-                $from_date = $request->from_date;
+                $from_date = date("Y-m-d H:i:s", strtotime($request->from_date. "00:00:00"));
             }
             $to_date = "";
             if (isset($request->to_date)) {
-                $to_date = $request->to_date;
+                $to_date = date("Y-m-d H:i:s", strtotime($request->to_date. " 23:59:59"));
             }
+           
             if($from_date=="" || $to_date ==""){
                 $from_date="";
                 $to_date="";
@@ -223,7 +228,7 @@ class MediaController extends Controller {
                 'sort_by' => $sort_by,
                 'order_by' => $order_by,
             );
-
+            
             $media_details = $mediaModel->media_details($query_details);
             $total_count = $mediaModel->total_count($query_details);
         }

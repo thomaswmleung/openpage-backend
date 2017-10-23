@@ -15,6 +15,7 @@ use App\Helpers\Pdf_helper;
 use Illuminate\Support\Facades\Log;
 use App\KeywordModel;
 use App\Helpers\KeywordHelper;
+use App\Helpers\Token_helper;
 
 /*
  *  Class Name : PageGroupController
@@ -38,6 +39,36 @@ class PageGroupController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="title",
+     *     in="query",
+     *     description="Filter by title",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="sub_title",
+     *     in="query",
+     *     description="Filter by sub title",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="created_by",
+     *     in="query",
+     *     description="Filter created by user id",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="from_date",
+     *     in="query",
+     *     description="Created at start date(YYYY-mm-dd) ",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="to_date",
+     *     in="query",
+     *     description="Created at end date(YYYY-mm-dd) ",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="skip",
      *     in="query",
      *     description="this is offset or skip the records",
@@ -56,7 +87,7 @@ class PageGroupController extends Controller {
      *         type="array",
      *         @SWG\Items(
      *             type="string",
-     *             enum={"created_at", "page","title", "sub_title"},
+     *             enum={"created_at","title", "sub_title"},
      *             default="created_at"
      *         ),
      *         collectionFormat="multi"
@@ -131,6 +162,32 @@ class PageGroupController extends Controller {
             if (isset($request->search_key)) {
                 $search_key = $request->search_key;
             }
+            $title = "";
+            if (isset($request->title)) {
+                $title = $request->title;
+            }
+            $sub_title = "";
+            if (isset($request->sub_title)) {
+                $sub_title = $request->sub_title;
+            }
+            $created_by = "";
+            if (isset($request->created_by)) {
+                $created_by = $request->created_by;
+            }
+            $from_date = "";
+            if (isset($request->from_date)) {
+                $from_date = date("Y-m-d H:i:s", strtotime($request->from_date. "00:00:00"));
+            }
+            $to_date = "";
+            if (isset($request->to_date)) {
+                $to_date = date("Y-m-d H:i:s", strtotime($request->to_date. " 23:59:59"));
+            }
+           
+            if($from_date=="" || $to_date ==""){
+                $from_date="";
+                $to_date="";
+            }
+            
             $skip = 0;
             if (isset($request->skip)) {
                 $skip = (int) $request->skip;
@@ -149,6 +206,11 @@ class PageGroupController extends Controller {
             }
             $query_details = array(
                 'search_key' => $search_key,
+                'title' => $title,
+                'sub_title' => $sub_title,
+                'created_by' => $created_by,
+                'from_date' => $from_date,
+                'to_date' => $to_date,
                 'limit' => $limit,
                 'skip' => $skip,
                 'sort_by' => $sort_by,
@@ -156,7 +218,7 @@ class PageGroupController extends Controller {
             );
 
             $page_group_details = $pageGroupModel->page_group_details($query_details);
-            $total_count = $pageGroupModel->total_count($search_key);
+            $total_count = $pageGroupModel->total_count($query_details);
         }
 
         $response_array = array("success" => TRUE, "data" => $page_group_details, "total_count" => $total_count, "errors" => array());
@@ -174,7 +236,7 @@ class PageGroupController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="page group json input",
+     *     description="page group json input <br> Sample JSON to create page group http://jsoneditoronline.org/?id=f63e8d7425c66d5b8abf4bcf71eebb46",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -200,7 +262,7 @@ class PageGroupController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="page group json input",
+     *     description="page group json input <br> Sample JSON to update page group http://jsoneditoronline.org/?id=006e448f74cf6f8673d10d8513b2a247",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -447,7 +509,13 @@ class PageGroupController extends Controller {
                     'sub_title' => $page_group_sub_title,
                     'preview_url' => $page_data_array['preview_url'],
                     'preview_image_array' => $page_data_array['preview_image_array'],
+                    'layout' => $page_data_array['layout'],
+                    'syllabus' => $page_data_array['syllabus']
                 );
+                
+                if ($request->isMethod('post')) {
+                    $page_group_insert_data['created_by']= Token_helper::fetch_user_id_from_token($request->header('token'));;
+                }
 
                 $pageGroup_result = $page_group_model->update_page_group($page_group_insert_data, $page_group_id);
             } else {

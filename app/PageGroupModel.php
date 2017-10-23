@@ -4,11 +4,11 @@ namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use App\PageModel;
-
+use DateTime;
 class PageGroupModel extends Eloquent {
 
     protected $collection = 'page_group';
-    protected $fillable = array('page', 'title', 'sub_title', 'preview_url', 'preview_image_array');
+    protected $fillable = array('page', 'title', 'sub_title', 'preview_url', 'preview_image_array', 'created_by', 'layout', 'syllabus');
 
     public function add_page_group($insert_data) {
         $result = PageGroupModel::create($insert_data);
@@ -49,15 +49,53 @@ class PageGroupModel extends Eloquent {
             } else {
                 $search_key = "";
             }
+            if (isset($query_details['title'])) {
+                $title = $query_details['title'];
+            } else {
+                $title = "";
+            }
+            if (isset($query_details['sub_title'])) {
+                $sub_title = $query_details['sub_title'];
+            } else {
+                $sub_title = "";
+            }
+            if (isset($query_details['created_by'])) {
+                $created_by = $query_details['created_by'];
+            } else {
+                $created_by = "";
+            }
         }
-
+        $from_date = $query_details['from_date'];
+        $to_date = $query_details['to_date'];
         $sort_by = $query_details['sort_by'];
         $order_by = $query_details['order_by'];
 
-        if ($search_key != "") {
-            $page_group_data = PageGroupModel::where('preview_url', 'like', "%$search_key%")
-                    ->orWhere('title', 'like', "%$search_key%")
-                    ->orWhere('sub_title', 'like', "%$search_key%")
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "") {
+            $page_group_data = PageGroupModel::
+                    Where(function($filterByQuery)use ($query_details) {
+                        if ($query_details['title'] != "") {
+                            $filterByQuery->where('title', 'like', $query_details['title']);
+                        }
+                        if ($query_details['sub_title'] != "") {
+                            $filterByQuery->where('sub_title', 'like', $query_details['sub_title']);
+                        }
+                        if ($query_details['created_by'] != "") {
+                            $filterByQuery->where('created_by', 'like', $query_details['created_by']);
+                        }
+
+                        if ($query_details['from_date'] != "") {
+                            $start_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));
+                            $stop_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['to_date']));
+                            $filterByQuery->whereBetween('created_at', array($start_date, $stop_date));
+                        }
+                    })
+                    ->Where(function($searchQuery)use ($search_key) {
+                        if ($search_key != "") {
+                            $searchQuery->where('preview_url', 'like', "%$search_key%")
+                            ->orWhere('title', 'like', "%$search_key%")
+                            ->orWhere('sub_title', 'like', "%$search_key%");
+                        }
+                    })
                     ->skip($skip)
                     ->take($limit)
                     ->orderBy($sort_by, $order_by)
@@ -68,11 +106,59 @@ class PageGroupModel extends Eloquent {
         return $page_group_data;
     }
 
-    public function total_count($search_key) {
-        if ($search_key != "") {
-            $total_count = PageGroupModel::where('preview_url', 'like', "%$search_key%")
-                    ->orWhere('title', 'like', "%$search_key%")
-                    ->orWhere('sub_title', 'like', "%$search_key%")
+    public function total_count($query_details) {
+
+        $search_key = "";
+        if (isset($query_details['search_key'])) {
+            $search_key = $query_details['search_key'];
+        }
+        $title = "";
+        if (isset($query_details['title'])) {
+            $title = $query_details['title'];
+        }
+        $sub_title = "";
+        if (isset($query_details['sub_title'])) {
+            $sub_title = $query_details['sub_title'];
+        }
+        $from_date = "";
+        if (isset($query_details['from_date'])) {
+            $from_date = $query_details['from_date'];
+        }
+        $to_date = "";
+        if (isset($query_details['to_date'])) {
+            $to_date = $query_details['to_date'];
+        }
+        $created_by = "";
+        if (isset($query_details['created_by'])) {
+            $created_by = $query_details['created_by'];
+        }
+
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "") {
+            $total_count = PageGroupModel::
+                    Where(function($filterByQuery)use ($query_details) {
+                        if ($query_details['title'] != "") {
+                            $filterByQuery->where('title', 'like', $query_details['title']);
+                        }
+                        if ($query_details['sub_title'] != "") {
+                            $filterByQuery->where('sub_title', 'like', $query_details['sub_title']);
+                        }
+                        if ($query_details['created_by'] != "") {
+                            $filterByQuery->where('created_by', 'like', $query_details['created_by']);
+                        }
+
+                        if ($query_details['from_date'] != "") {
+                            $start_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));
+                            $stop_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['to_date']));
+                            $filterByQuery->whereBetween('created_at', array($start_date, $stop_date));
+                        }
+                    })
+                    ->Where(function($searchQuery)use ($search_key) {
+                        if ($search_key != "") {
+                            $searchQuery->where('preview_url', 'like', "%$search_key%")
+                            ->orWhere('title', 'like', "%$search_key%")
+                            ->orWhere('sub_title', 'like', "%$search_key%");
+                        }
+                    })
                     ->count();
         } else {
             $total_count = PageGroupModel::count();
