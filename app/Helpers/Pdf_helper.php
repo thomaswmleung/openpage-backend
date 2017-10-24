@@ -10,8 +10,8 @@ use Imagick;
 
 class Pdf_helper {
 
-    public function generate_pdf_from_json($json_data) {
-        
+    public function generate_pdf_from_json($json_data,$isTeacherCopy = FALSE) {
+
         $page_data_array = json_decode($json_data, true);
         $isValidJson = TRUE;
 
@@ -25,7 +25,7 @@ class Pdf_helper {
 
             $pageCOunt = 0;
 
-            if (isset($responseArray['page_group']['import_url']) && 
+            if (isset($responseArray['page_group']['import_url']) &&
                     $responseArray['page_group']['import_url'] != null) {
 
                 $filename = basename($responseArray['page_group']['import_url']);
@@ -101,7 +101,7 @@ class Pdf_helper {
 //                var_dump(sizeof($page_data_array['page_group']['page']));
 //                exit();
             }
-            
+
             $responseArray['page_group']['page'] = array();
             $page_array = $page_data_array['page_group']['page'];
             $responseArray['page_group']['page'] = $page_array;
@@ -142,6 +142,8 @@ class Pdf_helper {
                 }
 
                 if (isset($page['main'])) {
+
+                    $fpdf->SetXY(10, 10);
                     $main_data_array = $page['main'];
                     $page_header_text = $page['main']['header_text'];
                     // define pdf header here
@@ -156,10 +158,25 @@ class Pdf_helper {
 
                     foreach ($page_section_array as $section) {
 
-                        $section_instruction_text = $section['instruction_text'];
-                        // display section instruction
-                        $fpdf->SetXY(10, $fpdf->GetY() + 5);
-                        $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
+                        // Handling of different question types
+                        if (isset($section['instruction']['text'])) {
+
+                            $fpdf->SetXY(10, $fpdf->GetY());
+                            $fpdf->MultiCell(200, 5, $section['instruction']['text'], 0, 'L');
+                        }
+//                        var_dump($section['paraBox']);
+//                        exit();
+                        if (isset($section['paraBox']['text'])) {
+                            $fpdf->SetXY(10, $fpdf->GetY() + 5);
+                            $fpdf->MultiCell(190, 10, str_replace('\r', "\n", $section['paraBox']['text']), 1, 'L');
+                        }
+
+                        if (isset($section['instruction_text'])) {
+                            $section_instruction_text = $section['instruction_text'];
+                            // display section instruction
+                            $fpdf->SetXY(10, $fpdf->GetY() + 5);
+                            $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
+                        }
                         $section_question_array = $section['question'];
 
 //                    if (sizeof($section_question_array) == 0) {
@@ -169,17 +186,206 @@ class Pdf_helper {
                         $currentY = $fpdf->GetY() + 5;
 
                         $questionsRespoonseArray = array();
+                        $questionCount = 1;
+
+//                        $isTeacherCopy = true;
+
 
                         foreach ($section_question_array as $question) {
+
+                            $isQuestionCountDisplayed = FALSE;
+
+                            if (isset($question['optBox']['option'])) {
+
+                                $optionBoxString = implode("    ", $question['optBox']['option']);
+
+                                $fpdf->SetXY(10, $currentY);
+                                if (!$isQuestionCountDisplayed) {
+
+                                    $fpdf->MultiCell(10, 7, $questionCount . " ) ", 0, 'L');
+                                }
+                                $fpdf->SetXY(20, $currentY);
+                                $fpdf->MultiCell($fpdf->GetStringWidth($optionBoxString) + 5, 7, $optionBoxString, 1, 'L');
+                                $isQuestionCountDisplayed = TRUE;
+
+                                $currentY = $fpdf->GetY() + 5;
+                            }
+
+                            if (isset($question['text'])) {
+
+
+                                if (!$isTeacherCopy) {
+                                    $questionText = $question['text'];
+                                    $blankIndexStart = strpos($questionText, "{{");
+                                    $blankIndexEnd = strpos($questionText, "}}") - $blankIndexStart + 2;
+                                    $questionText = substr_replace($questionText, "_________", $blankIndexStart, $blankIndexEnd);
+
+                                    $questionY = $fpdf->GetY() + 5;
+                                    $fpdf->SetXY(10, $questionY);
+
+
+                                    if (!$isQuestionCountDisplayed) {
+
+                                        $fpdf->MultiCell(10, 7, $questionCount . " ) ", 0, 'L');
+                                    }
+                                    $fpdf->SetXY(20, $questionY);
+                                    $fpdf->MultiCell(200, 7, $questionText, 0, 'L');
+                                    $currentY = $fpdf->GetY() + 5;
+                                } else {
+
+
+
+
+                                    $questionText = $question['text'];
+//                                    $questionText = "This is the {{blank}} test ";
+//                                    $questionText = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. "
+//                                            . "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, "
+//                                            . "when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+//                                            . " It has survived not only five centuries, but also the leap into electronic typesetting, "
+//                                            . "remaining essentially unchanged. "
+//                                            . "It was popularised in the 1960s with the release of Letraset sheets containing"
+//                                            . " Lorem Ipsum passages, and more recently with {{desktop}} "
+//                                            . "publishing software like Aldus PageMaker including versions of Lorem Ipsum.";
+                                    if (strpos($questionText, "{{") !== FALSE) {
+                                        $blankIndexStart = strpos($questionText, "{{");
+                                        $blankIndexEnd = strpos($questionText, "}}");
+
+                                        $questionInitialString = substr($questionText, 0, $blankIndexStart);
+                                        $questionLastString = substr($questionText, $blankIndexEnd + 2);
+
+                                        $questionY = $fpdf->GetY() + 5;
+                                        $fpdf->SetXY(10, $questionY);
+//                                    $fpdf->MultiCell(170, 7,$questionText , 0, 'L');
+//                                    $fpdf->Ellipse(100, 50, 30, 20,'F');
+                                        if (!$isQuestionCountDisplayed) {
+                                            $fpdf->MultiCell(10, 7, $questionCount . " ) ", 0, 'L');
+                                        }
+//                                    $fpdf->MultiCell(170, 7, $fpdf->GetStringWidth($questionText) . " ) ", 0, 'L');
+                                        $fpdf->SetXY(20, $questionY);
+
+//                                    $fpdf->newFlowingBlock( 170, 7, 0, 'L' );
+//                                    $fpdf->MultiCell(170, 7, $questionInitialString, 0, 'L');
+
+                                        $tempW = $fpdf->w;
+                                        $tempLMargin = $fpdf->lMargin;
+                                        $tempRMargin = $fpdf->rMargin;
+
+
+
+                                        $fpdf->lMargin = $fpdf->x;
+                                        $fpdf->rMargin = $fpdf->w - ($fpdf->x + 170);
+
+
+
+                                        $fpdf->Write(7, $questionInitialString);
+
+//                                        $fpdf->SetFont('msjh', 'U', 14);
+                                        $answerString = substr($questionText, $blankIndexStart + 2, $blankIndexEnd - $blankIndexStart - 2);
+//                                    $fpdf->MultiCell(170, 7,$answerString , 0, 'L');
+//                                        $fpdf->SetFillColor(224,235,255);
+//                                        $fpdf->Write(7, "__".$answerString."__");
+                                        $answerString = "  " . $answerString . "  ";
+                                        $fpdf->MultiCell($fpdf->GetStringWidth($answerString) + 5, 7, $answerString, 'B', 'L');
+                                        $fpdf->SetFont('msjh', '', 14);
+                                        $fpdf->Write(7, $questionLastString);
+
+//                                    $this->w = $tempW;
+                                        $fpdf->lMargin = $tempLMargin;
+                                        $fpdf->rMargin = $tempRMargin;
+                                    } else {
+                                        $fpdf->SetXY(10, $currentY);
+//                                    $fpdf->MultiCell(170, 7,$questionText , 0, 'L');
+//                                    $fpdf->Ellipse(100, 50, 30, 20,'F');
+                                        $fpdf->MultiCell(10, 7, $questionCount . " ) ", 0, 'L');
+//                                    $fpdf->MultiCell(170, 7, $fpdf->GetStringWidth($questionText) . " ) ", 0, 'L');
+                                        $fpdf->SetXY(20, $currentY);
+                                        $fpdf->MultiCell(170, 7, $questionText, 0, 'L');
+                                    }
+//                                    $fpdf->finishFlowingBlock();
+//                                    $initialStringLength = $fpdf->GetStringWidth($questionInitialString);
+//                                    
+//                                    $fpdf->SetXY($fpdf->GetX(), $questionY + 56);
+//                                    $fpdf->MultiCell(170, 7, $fpdf->GetX(), 0, 'L');
+////                                    if($initialStringLength > 170){
+////                                        
+////                                        $initialStringLength/170;
+////                                    }
+//                                    
+//                                    
+//                                    $fpdf->SetXY(20+ $initialStringLength, $questionY);
+//                                    $fpdf->SetFont('', 'U');
+//                                    $answerString = substr($questionText,$blankIndexStart+2,$blankIndexEnd-$blankIndexStart-2);
+//                                    $fpdf->MultiCell(170, 7,$answerString , 0, 'L');
+//                                    $answerStringLength = $fpdf->GetStringWidth($answerString);
+//                                    
+//                                    $fpdf->SetFont('msjh', '', 14);
+//                                    
+//                                     
+//                                    $fpdf->SetXY(20+$initialStringLength+$answerStringLength,$questionY);
+//                                    
+//                                    $laterString = substr($questionText,$blankIndexEnd+2);
+//                                     $fpdf->MultiCell(170, 7,$questionLastString , 0, 'L');
+                                    $currentY = $fpdf->GetY() + 5;
+                                }
+                            }
+
+                            //In case of multiple choice question type
+                            if (isset($question['mc'])) {
+
+                                $columns = 1;
+                                if (isset($question['mc']['num']) AND is_numeric($question['mc']['num'])) {
+                                    $columns = $question['mc']['num'];
+                                }
+
+                                $optionWidth = round(150 / ($columns));
+
+                                if (isset($question['mc']['option']) AND is_array($question['mc']['option'])) {
+                                    $optionsArray = $question['mc']['option'];
+
+                                    $optionsX = 20;
+
+                                    for ($optionIndex = 0; $optionIndex < sizeof($optionsArray); $optionIndex++) {
+
+                                        $columnNumber = ($optionIndex % $columns) + 1;
+
+                                        $optionsX += (($columnNumber - 1) * $optionWidth) + 5;
+
+                                        $fpdf->SetXY($optionsX, $currentY);
+                                        $bulletStyle = "D";
+                           
+                                        if (strpos($optionsArray[$optionIndex], "{{") !== FALSE AND $isTeacherCopy) {
+                                            $bulletStyle = "F";
+                                        }
+                                        $optionsArray[$optionIndex] = str_replace("{{", "", $optionsArray[$optionIndex]);
+                                        $optionsArray[$optionIndex] = str_replace("}}", "", $optionsArray[$optionIndex]);
+                                        $fpdf->Circle($optionsX - 2, $currentY + 3.5, 1, $bulletStyle);
+                                        $fpdf->MultiCell($optionWidth, 7, $optionsArray[$optionIndex], 0, 'L');
+
+                                        if ($columnNumber % $columns == 0) {
+                                            $optionsX = 20;
+                                            $currentY += 7;
+                                        }
+                                    }
+                                }
+                            }
+
+
                             $estimatedHeight = 0;
 //                            $estimatedHeight = $fpdf->getStringHeight (200, $question['question_text']);
-                            $estimatedHeight = $this->getStringHeight($fpdf, 200, 5, $question['question_text']);
-
-                            $question_image_url = $question['image'];
-                            if (!filter_var($question_image_url, FILTER_VALIDATE_URL)) {
+                            if (isset($question['question_text'])) {
+                                $estimatedHeight = $this->getStringHeight($fpdf, 200, 5, $question['question_text']);
+                            }
+                            $question_image_url = "";
+                            if (isset($question['image'])) {
+                                $question_image_url = $question['image'];
+                            }
+                            if (isset($question_image_url) AND $question_image_url != "" AND ! filter_var($question_image_url, FILTER_VALIDATE_URL)) {
                                 return response(json_encode(array("error" => "Invalid question image")))->header('Content-Type', 'application/json');
                             }
-                            $answer_array = $question['answer'];
+                            $answer_array = array();
+                            if (isset($question['answer'])) {
+                                $answer_array = $question['answer'];
+                            }
                             if ($question_image_url != "") {
                                 $imgAttrArray = getimagesize($question_image_url);
 
@@ -211,27 +417,38 @@ class Pdf_helper {
                             $fpdf->SetXY(10, $currentY);
                             $question['x'] = 10;
                             $question['y'] = $currentY;
-                            $question_number = $question['question_no'];
-                            $question_text = $question['question_text'];
+                            $question_number = "";
+                            if (isset($question['question_no'])) {
+                                $question_number = $question['question_no'];
+                            }
+                            $question_text = "";
+                            if (isset($question['question_text'])) {
+                                $question_text = $question['question_text'];
+                            }
 //                        $question_type = $questions['question_type'];
 
+                            if ($question_number != "") {
+                                $question_number . ") ";
+                            }
+                            if ($question_text != "") {
+                                $fpdf->MultiCell(200, 5, $question_number . $question_text, 0, 'L');
+                                $currentY = $fpdf->GetY() + 5;
+                            }
 
-                            $fpdf->MultiCell(200, 5, $question_number . ") " . $question_text, 0, 'L');
-                            $currentY = $fpdf->GetY() + 5;
 
-
-
-
+                            $imageHeightResized = 0;
                             if (isset($question_image_url)
                                     AND $question_image_url != ""
                                     AND $question_image_url != NULL) {
                                 $fpdf->Image($question_image_url, 10, $currentY, $imageWidthResized, $imageHeightResized);
                             }
                             $currentY += $imageHeightResized;
-                            $fpdf->SetXY(10, $currentY);
-                            $fpdf->MultiCell(200, 5, "Answers: ", 0, 'L');
-                            $currentY = $fpdf->GetY() + 3;
 
+                            if (sizeof($answer_array)) {
+                                $fpdf->SetXY(10, $currentY);
+                                $fpdf->MultiCell(200, 5, "Answers: ", 0, 'L');
+                                $currentY = $fpdf->GetY() + 3;
+                            }
 
 //                        if (sizeof($answer_array) == 0) {
 //                            $isValidJson = FALSE;
@@ -256,6 +473,7 @@ class Pdf_helper {
 
 
                             $questionsRespoonseArray[] = $question;
+                            $questionCount++;
                         }
                         $responseArray['page_group']['page'][$pageCOunt]['main']['section'][$sectionCount]['question'] = $questionsRespoonseArray;
 
@@ -326,9 +544,11 @@ class Pdf_helper {
         if (!file_exists(public_path('pdfs'))) {
             mkdir(public_path('pdfs'), 0777, true);
         }
+//        $pdf_path = public_path('test' . DIRECTORY_SEPARATOR . $pdf_name);
         $pdf_path = public_path('pdfs' . DIRECTORY_SEPARATOR . $pdf_name);
         $fpdf->Output($pdf_path, 'F');
-
+//        echo $pdf_name;
+//        exit();
         // upload to GCS
         $gcs_result = GCS_helper::upload_to_gcs('pdfs/' . $pdf_name);
         if (!$gcs_result) {

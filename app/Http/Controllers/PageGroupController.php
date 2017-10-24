@@ -217,11 +217,9 @@ class PageGroupController extends Controller {
     public function create_page_group(Request $request) {
 
         $json_data = $request->getContent();
-
 //       return response(json_encode($json_data), 200);
         $page_data_array = json_decode($json_data, true);
 
-        
         if ($page_data_array == null) {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
@@ -255,11 +253,11 @@ class PageGroupController extends Controller {
 
         $response_array = array();
         $response_array['page_group_id'] = $page_group_id;
-        if (isset($page_data_array['page_group']['page']) ) {
+        if (isset($page_data_array['page_group']['page'])) {
 
             $pdf_response_json = $pdf_helper->generate_pdf_from_json($req_json);
             $page_data_array = json_decode($pdf_response_json, true);
-            
+
             if (isset($page_data_array['page_group'])) {
 
                 $page_array = $page_data_array['page_group']['page'];
@@ -284,17 +282,53 @@ class PageGroupController extends Controller {
 
                             foreach ($section_question_array as $question) {
 
-                                $question_number = $question['question_no'];
-                                $question_text = $question['question_text'];
-
-                                $question_type = $question['question_type'];
-                                $answer_col = $question['answer_cols'];
-
-                                $question_image_url = $question['image'];
-                                $answer_array = $question['answer'];
-
-
-
+                                if(isset($question['question_no'])){
+                                    $question_number = $question['question_no'];
+                                }else{
+                                    $question_number = "";
+                                }
+                                if(isset( $question['question_text'])){
+                                    $question_text =  $question['question_text'];
+                                }else{
+                                    $question_text = "";
+                                }
+                                
+                                if(isset( $question['question_type'])){
+                                    $question_type =  $question['question_type'];
+                                }else{
+                                    $question_type = "";
+                                }
+                                
+                                if(isset( $question['answer_cols'])){
+                                    $answer_col =  $question['answer_cols'];
+                                }else{
+                                    $answer_col = "";
+                                }
+                                
+                                if(isset( $question['image'])){
+                                    $question_image_url =  $question['image'];
+                                }else{
+                                    $question_image_url = "";
+                                }
+                                
+                                if(isset( $question['answer'])){
+                                    $answer_array =  $question['answer'];
+                                }else{
+                                    $answer_array = "";
+                                }
+                                
+                                if(isset($question['mc'])){
+                                    $mc_data = $question['mc'];
+                                }else{
+                                    $mc_data = array();
+                                }
+                                
+                                if(isset($question['optBox'])){
+                                    $opt_box_data = $question['optBox'];
+                                }else{
+                                    $opt_box_data = array();
+                                }
+                                
                                 $insert_data = array(
                                     'question_no' => $question_number,
                                     'answer_cols' => $answer_col,
@@ -303,7 +337,9 @@ class PageGroupController extends Controller {
                                     'answer' => $answer_array,
                                     'question_type' => $question_type,
                                     'x' => $question['x'],
-                                    'y' => $question['y']
+                                    'y' => $question['y'],
+                                    'mc' => $mc_data,
+                                    'optBox' => $opt_box_data
                                 );
 
                                 $question_id = "";
@@ -330,13 +366,50 @@ class PageGroupController extends Controller {
                             }
 
 
-
-                            $section_instruction_text = $section['instruction_text'];
-                            $section_type = $section['section_type'];
-                            $section_start_question_no = $section['start_question_no'];
-                            $section_with_sample_question = $section['with_sample_question'];
-                            $section_answer_cols = $section['answer_cols'];
-                            $section_suggestion_box = $section['suggestion_box'];
+                            if(isset($section['instruction_text'])){
+                                $section_instruction_text = $section['instruction_text'];
+                            }elseif(isset($section['instruction']['text'])){
+                                $section_instruction_text = $section['instruction']['text'];
+                            }else{
+                                $section_instruction_text = "";
+                            }
+                            if(isset($section['section_type'])){
+                                $section_type = $section['section_type'];
+                            }else{
+                                $section_type = "";
+                            }
+                            if(isset($section['start_question_no'])){
+                                $section_start_question_no = $section['start_question_no'];
+                            }else{
+                                $section_start_question_no = "";
+                            }
+                            
+                            if(isset($section['with_sample_question'])){
+                                $section_with_sample_question = $section['with_sample_question'];
+                            }else{
+                                $section_with_sample_question = "";
+                            }
+                            
+                            if(isset($section['answer_cols'])){
+                                $section_answer_cols = $section['answer_cols'];
+                            }else{
+                                $section_answer_cols = "";
+                            }
+                            
+                            if(isset($section['suggestion_box'])){
+                                $section_suggestion_box = $section['suggestion_box'];
+                            }else{
+                                $section_suggestion_box = "";
+                            }
+                            
+                            if(isset($section['paraBox'])){
+                                $section_parabox_data = $section['paraBox'];
+                            }else{
+                                $section_parabox_data = array();
+                            }
+                            
+                            
+                            
                             $section_question = $questions_ids;
 
                             $insert_data = array(
@@ -346,6 +419,7 @@ class PageGroupController extends Controller {
                                 'with_sample_question' => $section_with_sample_question,
                                 'answer_cols' => $section_answer_cols,
                                 'suggestion_box' => $section_suggestion_box,
+                                'paraBox' => $section_parabox_data,
                                 'question' => $section_question
                             );
 
@@ -441,12 +515,17 @@ class PageGroupController extends Controller {
                     $page_group_sub_title = $page_data_array['page_group']['sub_title'];
                 }
 
+                $teachersCopyResponse = $pdf_helper->generate_pdf_from_json($req_json, TRUE);
+                $teachersCopyArray = json_decode($teachersCopyResponse, true);
+                
                 $page_group_insert_data = array(
                     'page' => $page_ids,
                     'title' => $page_group_title,
                     'sub_title' => $page_group_sub_title,
-                    'preview_url' => $page_data_array['preview_url'],
-                    'preview_image_array' => $page_data_array['preview_image_array'],
+                    'student_copy_preview_url' => $page_data_array['preview_url'],
+                    'student_preview_image_array' => $page_data_array['preview_image_array'],
+                    'teacher_copy_preview_url' => $teachersCopyArray['preview_url'],
+                    'teacher_preview_image_array' => $teachersCopyArray['preview_image_array'],
                 );
 
                 $pageGroup_result = $page_group_model->update_page_group($page_group_insert_data, $page_group_id);
@@ -465,9 +544,19 @@ class PageGroupController extends Controller {
                     $result = KeywordHelper::indexKeyword($keyword, $page_group_id, config('collection_constants.PAGE_GROUP'));
                 }
             }
-            $response_array['preview_url'] = $page_data_array['preview_url'];
-            $response_array['preview_image_array'] = $page_data_array['preview_image_array'];
 
+            if (isset($page_data_array['preview_url'])) {
+                $response_array['student_copy_preview_url'] = $page_data_array['preview_url'];
+            }
+            if (isset($page_data_array['preview_image_array'])) {
+                $response_array['student_preview_image_array'] = $page_data_array['preview_image_array'];
+            }
+            if (isset($page_data_array['preview_image_array'])) {
+                $response_array['teacher_copy_preview_url'] = $teachersCopyArray['preview_url'];
+            }
+            if (isset($page_data_array['preview_image_array'])) {
+                $response_array['teacher_preview_image_array'] = $teachersCopyArray['preview_image_array'];
+            }
             $response_array['success'] = TRUE;
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
