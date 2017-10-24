@@ -587,7 +587,7 @@ class PageGroupController extends Controller {
                     'preview_url' => $page_data_array['preview_url'],
                     'preview_image_array' => $page_data_array['preview_image_array'],
                     'layout' => $page_data_array['layout'],
-                    'syllabus' => $page_data_array['syllabus']
+                    'syllabus' => $page_data_array['syllabus'],
                     'student_copy_preview_url' => $page_data_array['preview_url'],
                     'student_preview_image_array' => $page_data_array['preview_image_array'],
                     'teacher_copy_preview_url' => $teachersCopyArray['preview_url'],
