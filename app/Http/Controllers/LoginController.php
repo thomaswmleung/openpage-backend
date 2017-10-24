@@ -8,6 +8,7 @@ use App\Helpers\Token_helper;
 use App\UsersModel;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\ErrorMessageHelper;
+
 class LoginController extends Controller {
 
     /**
@@ -39,22 +40,21 @@ class LoginController extends Controller {
      * )
      */
     public function login(Request $request) {
-       
+
         $rules = array(
             'username' => 'required',
             'password' => 'required'
         );
-        
-        $messages=[
+
+        $messages = [
             'username.required' => config('error_constants.login_user_name_required'),
             'password.required' => config('error_constants.login_password_required')
-            
         ];
-        
+
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
 //        var_dump($formulated_messages);
 //        exit();
-        $validator = Validator::make($request->all(), $rules,$formulated_messages);
+        $validator = Validator::make($request->all(), $rules, $formulated_messages);
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
@@ -66,31 +66,42 @@ class LoginController extends Controller {
                 'username' => $username,
                 'password' => $password,
             );
-            
+
             $user_model = new UsersModel();
             $user_data = $user_model->aunthenticate($data_array);
+
             $is_valid_user = TRUE;
             if (count($user_data) != 0) {
-                $result['_id'] = $user_data->_id;
+                $is_verified_user = $user_model->is_verified_user($username);
+                if ($is_verified_user == 0) {
+                    // un verified user
+                    $is_valid_user = FALSE;
+                    $error_messages = array(array("ERR_CODE" => config('error_constants.username_verification_required')['error_code'],
+                            "ERR_MSG" => config('error_constants.username_verification_required')['error_message']));
+                    $responseArray = array("success" => FALSE, "errors" => $error_messages);
+                    return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+                } elseif ($is_verified_user == 1) {
+                    $result['_id'] = $user_data->_id;
+                } else {
+                    // something went wrong (more than one user with same username error)
+                    $is_valid_user = FALSE;
+                    dd("SOMETHING WENT WRONG");
+                }
             } else {
                 $is_valid_user = FALSE;
                 $error_messages = array(array("ERR_CODE" => config('error_constants.login_invalid')['error_code'],
-                                        "ERR_MSG"=> config('error_constants.login_invalid')['error_message'])) ;       
-                
-                
+                        "ERR_MSG" => config('error_constants.login_invalid')['error_message']));
                 $responseArray = array("success" => FALSE, "errors" => $error_messages);
-                
-                
                 return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
             }
 
             if ($is_valid_user) {
                 $token_helper = new Token_helper();
-              //  $token = $token_helper->generate_token();
+                //  $token = $token_helper->generate_token();
                 $token = $token_helper->generate_user_token($user_data->_id);
                 $result['token'] = $token;
                 $responseArray = array("success" => TRUE, "data" => $result);
-                return response(json_encode($responseArray),200)->header('Content-Type', 'application/json');
+                return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
             }
         }
     }

@@ -21,6 +21,7 @@ return [
     'activation_key_required' => array('error_code'=>'E112','error_message' =>"Activation key is required."),
     'activation_key_exists' => array('error_code'=>'E113','error_message' =>"Activation key is invalid."),
     'profile_image_invalid_format' => array('error_code'=>'E114','error_message' =>"Invalid profile image format."),
+    'username_verification_required' => array('error_code'=>'E115','error_message' =>"User email verification required"),
     
     'media_type_required' => array('error_code'=>'E301','error_message' =>"Media type is missing."),
     'media_extension_required' => array('error_code'=>'E302','error_message' =>"Media extension is required."),
@@ -86,7 +87,8 @@ return [
     'keyword_required' =>array('error_code'=>'E1607','error_message' =>"Keyword is Required"),
     'keyword_ID_required' =>array('error_code'=>'E1608','error_message' =>"Keyword ID is Required"),
     'invalid_keyword_id' => array('error_code'=>'E1609','error_message' =>"Invalid Keyword ID."),
-    'resource_category_required' => array('error_code'=>'E1610','error_message' =>"Resource category is required"),
+    'resource_category_required' => array('error_code'=>'E1610','error_message' =>"Resource category id is required"),
+    'resource_category_exists' => array('error_code'=>'E1610','error_message' =>"Resource category id is invalid"),
     
     'class_name_required' => array('error_code'=>'E1701','error_message' =>"Class name is required"),
     'class_name_unique' => array('error_code'=>'E1702','error_message' =>"Class name already exists"),
@@ -116,5 +118,9 @@ return [
     'particular_id_invalid' => array('error_code'=>'E2301','error_message' =>"particular unit id is invalid"),
     'particular_detail_required' => array('error_code'=>'E2302','error_message' =>"particular detail is required"),
     'particular_title_required' => array('error_code'=>'E2303','error_message' =>"particular title is required"),
+    
+    'resource_category_name_required' => array('error_code'=>'E2401','error_message' =>"Resource Category name is required"),
+    'resource_category_name_unique' => array('error_code'=>'E2402','error_message' =>"Resource Category name already exists"),
+    'resource_category_id_invalid' => array('error_code'=>'E2403','error_message' =>"Resource Category id is invalid"),
 
 ];

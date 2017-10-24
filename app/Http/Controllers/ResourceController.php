@@ -144,9 +144,9 @@ class ResourceController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
-     *     name="category",
+     *     name="resource_category_id",
      *     in="query",
-     *     description="Resource category",
+     *     description="Resource category ID",
      *     required=true,
      *     type="string"
      *   ),
@@ -220,9 +220,9 @@ class ResourceController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
-     *     name="category",
+     *     name="resource_category_id",
      *     in="query",
-     *     description="Resource category",
+     *     description="Resource category ID",
      *     required=true,
      *     type="string"
      *   ),
@@ -266,7 +266,7 @@ class ResourceController extends Controller {
             'title' => $request->title,
             'description' => $request->description,
             'type' => $request->type,
-            'category' => $request->category,
+            'resource_category_id' => $request->resource_category_id,
             'url' => $request->url,
             'remark' => $request->remark,
             'tag' => $request->tag,
@@ -276,7 +276,7 @@ class ResourceController extends Controller {
             'title' => 'required',
             'description' => 'required',
             'type' => 'required',
-            'category' => 'required',
+            'resource_category_id' => 'required|exists:resource_category,_id',
             'url' => 'required',
             'created_by' => 'required|exists:users,_id',
         );
@@ -290,7 +290,8 @@ class ResourceController extends Controller {
             'title.required' => config('error_constants.resource_title_required'),
             'description.required' => config('error_constants.resource_description_required'),
             'type.required' => config('error_constants.resource_type_required'),
-            'category.required' => config('error_constants.resource_category_required'),
+            'resource_category_id.required' => config('error_constants.resource_category_required'),
+            'resource_category_id.exists' => config('error_constants.resource_category_exists'),
             'url.required' => config('error_constants.resource_url_required'),
             'created_by.required' => config('error_constants.media_created_by_required'),
             'created_by.exists' => config('error_constants.invalid_media_created_by'),

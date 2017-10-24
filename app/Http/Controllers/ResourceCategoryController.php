@@ -3,26 +3,23 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
-use App\MediaModel;
-use App\Helpers\GCS_helper;
-use Illuminate\Support\Facades\Config;
-use App\Helpers\Token_helper;
-use Illuminate\Support\Facades\Log;
 use App\Helpers\ErrorMessageHelper;
+use Illuminate\Support\Facades\Validator;
+use App\ResourceCategoryModel;
 
 class ResourceCategoryController extends Controller {
     /**
      * @SWG\Get(path="/resource_category",
      *   tags={"Resource Category"},
-     *   summary="Returns list of resource categories",
+     *   summary="Returns list of resource category",
      *   description="Returns resource category data",
-     *   operationId="resource_category",
+     *   operationId="resource_category_list",
      *   produces={"application/json"},
+     *   parameters={},
      *   @SWG\Parameter(
      *     name="search_key",
      *     in="query",
-     *     description="Search based on key",
+     *     description="Search parameter or key word to search",
      *     type="string"
      *   ),
      *   @SWG\Parameter(
@@ -37,30 +34,6 @@ class ResourceCategoryController extends Controller {
      *     description="Number of records to be retrieved ",
      *     type="integer"
      *   ),
-     *   @SWG\Parameter(
-     *         name="sort_by",
-     *         in="query",
-     *         description="Sort by value",
-     *         type="array",
-     *         @SWG\Items(
-     *             type="string",
-     *             enum={"created_at"},
-     *             default="created_at"
-     *         ),
-     *         collectionFormat="multi"
-     *   ),
-     *   @SWG\Parameter(
-     *         name="order_by",
-     *         in="query",
-     *         description="Order by Ascending or descending",
-     *         type="array",
-     *         @SWG\Items(
-     *             type="string",
-     *             enum={"ASC", "DESC"},
-     *             default="DESC"
-     *         ),
-     *         collectionFormat="multi"
-     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -72,16 +45,16 @@ class ResourceCategoryController extends Controller {
      */
 
     /**
-     * @SWG\Get(path="/resource_category/{resource_category_id}",
+     * @SWG\Get(path="/resource_category/{_id}",
      *   tags={"Resource Category"},
-     *   summary="Returns resource category data",
-     *   description="Returns resource category data",
-     *   operationId="resource_category",
+     *   summary="Returns resource_category data",
+     *   description="Returns resource_category data",
+     *   operationId="resource_category_list",
      *   produces={"application/json"},
      *   @SWG\Parameter(
-     *     name="resource_category_id",
+     *     name="_id",
      *     in="path",
-     *     description="ID of the media that needs to be displayed",
+     *     description="ID of the resource_category that needs to be displayed",
      *     required=true,
      *     type="string"
      *   ),
@@ -91,36 +64,34 @@ class ResourceCategoryController extends Controller {
      *   ),
      *  @SWG\Response(
      *     response=400,
-     *     description="Invalid media id",
+     *     description="Invalid resource_category id",
      *   ),
      *   security={{
      *     "token":{}
      *   }}
      * )
      */
-    public function media(Request $request) {
-        $mediaModel = new MediaModel();
-        if (isset($request->mid) && $request->mid != "") {
-            $media_id = $request->mid;
-            $media_details = $mediaModel->find_media_details($media_id);
-            if ($media_details == NULL) {
-                $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id')['error_code'],
-                        "ERR_MSG" => config('error_constants.invalid_media_id')['error_message']));
+    public function resource_category_list(Request $request) {
+        $resourceCategoryModel = new ResourceCategoryModel();
+
+        if (isset($request->_id) && $request->_id != "") {
+
+            $resource_category_id = $request->_id;
+            $resource_category_details = $resourceCategoryModel->find_resource_category_details($resource_category_id);
+            if ($resource_category_details == NULL) {
+                $error_messages = array(array("ERR_CODE" => config('error_constants.resource_category_id_invalid')['error_code'],
+                        "ERR_MSG" => config('error_constants.resource_category_id_invalid')['error_message']));
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
             } else {
-                $response_array = array("success" => TRUE, "data" => $media_details, "errors" => array());
+                $response_array = array("success" => TRUE, "data" => $resource_category_details, "errors" => array());
                 return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
         } else {
             $search_key = "";
             if (isset($request->search_key)) {
                 $search_key = $request->search_key;
-            }
-            $user_id = "";
-            if (isset($request->user_id)) {
-                $user_id = $request->user_id;
             }
             $skip = 0;
             if (isset($request->skip)) {
@@ -130,297 +101,146 @@ class ResourceCategoryController extends Controller {
             if (isset($request->limit)) {
                 $limit = (int) $request->limit;
             }
-            
-            $sort_by = 'created_at';
-            if (isset($request->sort_by)) {
-                $sort_by = $request->sort_by;
-            }
-            $order_by = 'DESC';
-            if (isset($request->order_by)) {
-                $order_by = $request->order_by;
-            }
             $query_details = array(
                 'search_key' => $search_key,
-                'user_id' => $user_id,
                 'limit' => $limit,
-                'skip' => $skip,
-                'sort_by' => $sort_by,
-                'order_by' => $order_by,
+                'skip' => $skip
             );
 
-            $media_details = $mediaModel->media_details($query_details);
-            $total_count = $mediaModel->total_count($query_details);
+            $resource_category_details = $resourceCategoryModel->resource_category_details($query_details);
+            $total_count = $resourceCategoryModel->total_count($search_key);
         }
 
-        $response_array = array("success" => TRUE, "data" => $media_details, "total_count" => $total_count, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $resource_category_details, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
-     * @SWG\Post(path="/media",
-     *   tags={"Media"},
-     *   consumes={"multipart/form-data"},
-     *   summary="Creating/Storing new media file",
-     *   description="Stores media file in the system",
-     *   operationId="create_media",
+     * @SWG\Post(path="/resource_category",
+     *   tags={"Resource Category"},
+     *   summary="Create a resource_category",
+     *   description="",
+     *   operationId="add_or_update_resource_category",
      *   produces={"application/json"},
      *   @SWG\Parameter(
-     *     name="type",
      *     in="query",
-     *     description="Type of media file to be uploaded",
+     *     name="resource_category",
+     *     description="Resource category  input",
      *     required=true,
      *     type="string"
-     *   ),
-     *   @SWG\Parameter(
-     *     name="extension",
-     *     in="query",
-     *     description="Extension of media file",
-     *     required=true,
-     *     type="string"
-     *   ),
-     *     @SWG\Parameter(
-     *         description="file to upload",
-     *         in="formData",
-     *         name="media_file",
-     *         required=true,
-     *         type="file"
-     *     ),
-     *   @SWG\Parameter(
-     *     name="usage[]",
-     *     in="query",
-     *     description="The page ids array field.",
-     *     required=true,
-     *     type="array",
-     *      @SWG\Items(
-     *             type="string"
-     *         ),
-     *      collectionFormat="multi",
-     *   ),
-     *   @SWG\Parameter(
-     *     name="remark",
-     *     in="query",
-     *     description="Remark of the media",
-     *     type="string"
-     *   ),
-     *   @SWG\Parameter(
-     *     name="tag[]",
-     *     in="query",
-     *     description="tags for the media.",
-     *     type="array",
-     *      @SWG\Items(
-     *             type="string"
-     *         ),
-     *      collectionFormat="multi",
      *   ),
      *   @SWG\Response(
      *     response=200,
-     *     description="successful operation",
+     *     description="successful operation"
      *   ),
-     *   @SWG\Response(response=400, description="Invalid data supplied"),
+     *   @SWG\Response(response=400, description="Invalid data"),
      *   security={{
      *     "token":{}
      *   }}
      * )
      */
-    public function create_media(Request $request) {
-        $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
 
-        $media_array = array(
-            'type' => $request->type,
-            'extension' => $request->extension,
-            'media_file' => $request->file('media_file'),
-            'usage' => $request->usage,
-            'remark' => $request->remark,
-            'tag' => $request->tag,
-            'created_by' => $user_id,
-        );
-        $rules = array(
-            'type' => 'required',
-            'extension' => 'required',
-            'media_file' => 'required|max:10240|mimetypes:image/jpeg,image/png,image/gif,image/bmp,video/mp4,video/x-flv,video/webm,video/avi,video/mpeg,video/quicktime,audio/mpga,audio/mpeg,application/octet-stream,application/pdf',
-            'usage' => 'required',
-            'created_by' => 'required|exists:users,_id',
+    /**
+     * @SWG\Put(path="/resource_category",
+     *   tags={"Resource Category"},
+     *   summary="Update resource category details",
+     *   description="",
+     *   operationId="add_or_update_resource_category",
+     *   consumes={"application/x-www-form-urlencoded"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="query",
+     *     name="resource_category_id",
+     *     description="Resource category id",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="query",
+     *     name="resource_category",
+     *     description="Resource category name",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function add_or_update_resource_category(Request $request) {
+
+        $resource_category_id = "";
+        if (isset($request->resource_category_id)) {
+            $resource_category_id = $request->resource_category_id;
+        }
+        $resource_category_name = "";
+        if (isset($request->resource_category)) {
+            $resource_category_name = $request->resource_category;
+        }
+
+        $resource_category_array = array(
+            '_id' => $resource_category_id,
+            'resource_category' => $resource_category_name,
         );
 
+        if ($request->isMethod('post')) {
+            $rules = array(
+                'resource_category' => 'required|unique:resource_category,resource_category'
+            );
+        }
+        if ($request->isMethod('put')) {
+            $rules = array(
+                '_id' => 'required|exists:resource_category',
+                'resource_category' => 'required|unique:resource_category,resource_category,'.$resource_category_id.',_id'
+            );
+        }
         $messages = [
-            'type.required' => config('error_constants.media_type_required'),
-            'extension.required' => config('error_constants.media_extension_required'),
-            'media_file.required' => config('error_constants.media_file_required'),
-            'media_file.max' => config('error_constants.file_limit_exceeded'),
-            'media_file.mimetypes' => config('error_constants.invalid_media_file_mime'),
-            'usage.required' => config('error_constants.media_usage_required'),
-            'created_by.required' => config('error_constants.media_created_by_required'),
-            'created_by.exists' => config('error_constants.invalid_media_created_by')
+            '_id.required' => config('error_constants.resource_category_id_invalid'),
+            'resource_category.required' => config('error_constants.resource_category_name_required'),
+            'resource_category.unique' => config('error_constants.resource_category_name_unique'),
         ];
-
+        
         $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
 
-        $validator = Validator::make($media_array, $rules, $formulated_messages);
+        $validator = Validator::make($resource_category_array, $rules, $formulated_messages);
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
-        } else {
-
-            if ($request->hasFile('media_file')) {
-                $image = $request->file('media_file');
-                $input['media_file'] = time() . uniqid() . '.' . $image->getClientOriginalExtension();
-                $destinationPath = public_path('images');
-                $media_name = $input['media_file'];
-                $image->move($destinationPath, $media_name);
-
-                //upload to GCS
-
-                $gcs_result = GCS_helper::upload_to_gcs('images/' . $media_name);
-                if (!$gcs_result) {
-                    $error['error'] = array("success" => FALSE, "error" => "Error in upload of GCS");
-                    return response(json_encode($error), 400)->header('Content-Type', 'application/json');
-                }
-                // delete your local pdf file here
-                unlink($destinationPath . "/" . $media_name);
-
-                $media_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $media_name;
-                $media_array['url'] = $media_url;
-            } else {
-                $response_array = array("success" => FALSE, "errors" => "Something went wrong");
-                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
-            }
-            //insert media
-
-            $media_data = MediaModel::create($media_array);
-            $response_array = array("success" => TRUE, "data" => $media_data, "errors" => array());
-            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
-    }
 
-    /**
-     * @SWG\Put(path="/media",
-     *   tags={"Media"},
-     *   summary="Update media file data",
-     *   description="Update media file in the system",
-     *   operationId="update_media",
-     *   produces={"application/json"},
-     *   @SWG\Parameter(
-     *     name="mid",
-     *     in="query",
-     *     description="ID of the media that needs to be updated",
-     *     required=true,
-     *     type="string"
-     *   ),
-     *   @SWG\Parameter(
-     *     name="usage[]",
-     *     in="query",
-     *     description="The page ids array field.",
-     *     required=true,
-     *     type="array",
-     *      @SWG\Items(
-     *             type="string"
-     *         ),
-     *      collectionFormat="multi",
-     *   ),
-     *   @SWG\Parameter(
-     *     name="remark",
-     *     in="query",
-     *     description="Remark of the media",
-     *     type="string"
-     *   ),
-     *   @SWG\Parameter(
-     *     name="tag[]",
-     *     in="query",
-     *     description="tags for the media.",
-     *     type="array",
-     *      @SWG\Items(
-     *             type="string"
-     *         ),
-     *      collectionFormat="multi",
-     *   ),
-     *   @SWG\Response(
-     *     response=200,
-     *     description="successful operation",
-     *   ),
-     *   @SWG\Response(response=400, description="Invalid data supplied"),
-     *   security={{
-     *     "token":{}
-     *   }}
-     * )
-     */
-    public function update_media(Request $request) {
 
-//        $media_json = $request->getContent();
-//        $media_array = json_decode($media_json, TRUE);
-//        dd($request->json()->all());
-//
-        $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
-
-        $rules = array(
-            '_id' => 'required|exists:media,_id',
-                // 'updated_by' => 'required|exists:users,_id',
+        $resourceCategoryModel = new ResourceCategoryModel();
+        $category_resource_id = $resourceCategoryModel->create_or_update_resource_category($resource_category_array, $resource_category_id);
+        if ($resource_category_id != "") {
+            $success_msg = 'Resource Category Updated Successfully';
+        } else {
+            $success_msg = 'Resource Category Created Successfully';
+        }
+        $result_data = array(
+            'id'=>$category_resource_id,
+            'message'=>$success_msg
         );
-
-
-        $media_array = array();
-
-        $media_array['_id'] = $request->mid;
-
-        if (isset($request->usage) && $request->usage != "") {
-            $media_array['usage'] = $request->usage;
-        }
-        if (isset($request->remark) && $request->remark != "") {
-            $media_array['remark'] = $request->remark;
-        }
-        if (isset($request->tag) && $request->tag != "") {
-            $media_array['tag'] = $request->tag;
-        }
-
-
-        $media_array['updated_by'] = $user_id;
-        $messages = [
-            'type.required' => config('error_constants.media_type_required'),
-            'extension.required' => config('error_constants.media_extension_required'),
-            'media_file.required' => config('error_constants.media_file_required'),
-            'media_file.mimes' => config('error_constants.invalid_media_file_mime'),
-            'usage.required' => config('error_constants.media_usage_required'),
-            'created_by.required' => config('error_constants.media_created_by_required'),
-            'created_by.exists' => config('error_constants.invalid_media_created_by')
-        ];
-
-        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
-
-        $validator = Validator::make($media_array, $rules, $formulated_messages);
-        if ($validator->fails()) {
-            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
-            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
-        } else {
-            //$media_array = $request->all();
-
-            $result = $this->update_media_data($media_array);
-            if ($result) {
-                $responseArray = array("success" => TRUE, "data" => "Media updated successfully");
-                return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
-            } else {
-                $responseArray = array("success" => FALSE, "error" => "Something went wrong");
-                return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
-            }
-        }
-    }
-
-    public function update_media_data($data) {
-        $mediaModel = new MediaModel();
-        return $mediaModel->update_media($data);
+        $response_array = array("success" => TRUE, "data" => $result_data, "errors" => array());
+        return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
     /**
-     * @SWG\Delete(path="/media",
-     *   tags={"Media"},
-     *   summary="delete media file data",
-     *   description="Delete media file in the system",
-     *   operationId="delete_media",
+     * @SWG\Delete(path="/resource_category",
+     *   tags={"Resource Category"},
+     *   summary="delete resource category data",
+     *   description="Delete resource category from system",
+     *   operationId="delete_resource_category",
      *   produces={"application/json"},
      *   @SWG\Parameter(
-     *     name="mid",
+     *     name="_id",
      *     in="query",
-     *     description="ID of the media that needs to be deleted",
+     *     description="ID of the resource category that needs to be deleted",
      *     required=true,
      *     type="string"
      *   ),
@@ -434,31 +254,19 @@ class ResourceCategoryController extends Controller {
      *   }}
      * )
      */
-    public function delete_media(Request $request) {
-
-        $media_id = trim($request->mid);
-
-        $mediaModel = new MediaModel();
-        $media_data = $mediaModel->find_media_details($media_id);
-        if ($media_data == null) {
-            $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_media_id')['error_code'],
-                    "ERR_MSG" => config('error_constants.invalid_media_id')['error_message']));
-
-            $response_array = array("success" => FALSE, "errors" => $error_messages);
-            return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
-        }
-        $data = explode("/", $media_data['url']); // fetching file name from URL
-        $objectName = end($data);
-        $gcs_result = GCS_helper::delete_from_gcs($objectName);
-        if ($gcs_result) {
-            MediaModel::destroy($media_id);
-            $response_array = array("success" => TRUE);
-            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
-        } else {
-            $responseArray = array("success" => FALSE, "errors" => array(array('ERROR_CODE' => "GLOBAL_ERROR",
-                        'ERR_MSG' => 'Something went wrong.')));
+    function delete_resource_category(Request $request) {
+        $resource_category_id = trim($request->_id);
+        $resourceCategoryModel = new ResourceCategoryModel();
+        $resource_category_data = $resourceCategoryModel->find_resource_category_details($resource_category_id);
+        if ($resource_category_data == null) {
+            $error_messages = array(array("ERR_CODE" => config('error_constants.resource_category_id_invalid')['error_code'],
+                    "ERR_MSG" => config('error_constants.resource_category_id_invalid')['error_message']));
+            $responseArray = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         }
+        ResourceCategoryModel::destroy($resource_category_id);
+        $responseArray = array("success" => TRUE);
+        return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
     }
 
 }

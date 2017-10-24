@@ -48,7 +48,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   description="Question Type related API's"
  * )
  * @SWG\Tag(
- *   name="organization",
+ *   name="Organization",
  *   description="Organization related API's"
  * )
  * @SWG\Tag(
@@ -106,6 +106,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  * @SWG\Tag(
  *   name="Particular",
  *   description="Particular related API's"
+ * )
+ * @SWG\Tag(
+ *   name="Resource Category",
+ *   description="Resource Category related API's"
  * )
  * 
  */

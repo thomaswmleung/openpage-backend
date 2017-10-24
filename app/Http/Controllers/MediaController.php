@@ -22,13 +22,53 @@ class MediaController extends Controller {
      *   @SWG\Parameter(
      *     name="search_key",
      *     in="query",
-     *     description="Search based on remark and tags",
+     *     description="Search based on remark, type, extension and tags",
      *     type="string"
      *   ),
      *   @SWG\Parameter(
      *     name="user_id",
      *     in="query",
-     *     description="Search based on user id",
+     *     description="Filter by user id",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="type",
+     *     in="query",
+     *     description="Filter by media type",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="remark",
+     *     in="query",
+     *     description="Filter by media remark",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="tag[]",
+     *     in="query",
+     *     description="Filter by media tag",
+     *     type="array",
+     *      @SWG\Items(
+     *             type="string"
+     *         ),
+     *      collectionFormat="multi",
+     *   ),
+     *   @SWG\Parameter(
+     *     name="extension",
+     *     in="query",
+     *     description="Filter by media extension",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="from_date",
+     *     in="query",
+     *     description="Create at start date(YYYY-mm-dd) ",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="to_date",
+     *     in="query",
+     *     description="Create at end date(YYYY-mm-dd) ",
      *     type="string"
      *   ),
      *   @SWG\Parameter(
@@ -128,6 +168,35 @@ class MediaController extends Controller {
             if (isset($request->user_id)) {
                 $user_id = $request->user_id;
             }
+            $type = "";
+            if (isset($request->type)) {
+                $type = $request->type;
+            }
+            $extension = "";
+            if (isset($request->extension)) {
+                $extension = $request->extension;
+            }
+            $tag = array();
+            if (isset($request->tag)) {
+                $tag = $request->tag;
+            }
+            $remark = "";
+            if (isset($request->remark)) {
+                $remark = $request->remark;
+            }
+            $from_date = "";
+            if (isset($request->from_date)) {
+                $from_date = date("Y-m-d H:i:s", strtotime($request->from_date. "00:00:00"));
+            }
+            $to_date = "";
+            if (isset($request->to_date)) {
+                $to_date = date("Y-m-d H:i:s", strtotime($request->to_date. " 23:59:59"));
+            }
+           
+            if($from_date=="" || $to_date ==""){
+                $from_date="";
+                $to_date="";
+            }
             $skip = 0;
             if (isset($request->skip)) {
                 $skip = (int) $request->skip;
@@ -148,12 +217,18 @@ class MediaController extends Controller {
             $query_details = array(
                 'search_key' => $search_key,
                 'user_id' => $user_id,
+                'type' => $type,
+                'extension' => $extension,
+                'tag' => $tag,
+                'remark' => $remark,
+                'from_date' => $from_date,
+                'to_date' => $to_date,
                 'limit' => $limit,
                 'skip' => $skip,
                 'sort_by' => $sort_by,
                 'order_by' => $order_by,
             );
-
+            
             $media_details = $mediaModel->media_details($query_details);
             $total_count = $mediaModel->total_count($query_details);
         }

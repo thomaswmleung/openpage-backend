@@ -9,7 +9,8 @@ class UsersModel extends Eloquent {
 
 //    protected $connection = 'mongodb';
     protected $collection = 'users';
-    protected $fillable = array('username', 'first_name', 'last_name', 'password', 'email','activation_key','is_active','profile_image','is_forgot_initiated');
+    protected $fillable = array('username', 'first_name', 'last_name', 'password', 'email',
+        'activation_key', 'is_active', 'profile_image', 'is_forgot_initiated', 'is_verified');
 
     use SoftDeletes;
 
@@ -57,7 +58,7 @@ class UsersModel extends Eloquent {
         }
         return $user_data;
     }
-    
+
     public function total_count($search_key) {
         if ($search_key != "") {
             $total_count = UsersModel::where('username', 'like', "%$search_key%")
@@ -70,35 +71,38 @@ class UsersModel extends Eloquent {
         }
         return $total_count;
     }
-    
+
     public function activate_user($user_data) {
         $user_info = UsersModel::where($user_data)->first();
         $_id = $user_info['_id'];
-        UsersModel::find($_id)->update(['is_active' => true]);
+        UsersModel::find($_id)->update(['is_active' => true,'is_verified' => true]);
         return 1;
     }
-    
-    
-    public function get_random_user(){
-       $user_data = UsersModel::all()->first();
-       return $user_data;
+
+    public function get_random_user() {
+        $user_data = UsersModel::all()->first();
+        return $user_data;
     }
-    
+
     public function find_user_details($user_id) {
         $user_info = UsersModel::find($user_id);
         return $user_info;
     }
-    
+
     public function user_details_by_username($username) {
-        $user_info = UsersModel::where('username',$username)->first();
+        $user_info = UsersModel::where('username', $username)->first();
         return $user_info;
     }
-    
-    public function update_user($user_id,$user_data) {
-        $user_info = UsersModel::where('_id',$user_id)
+
+    public function update_user($user_id, $user_data) {
+        $user_info = UsersModel::where('_id', $user_id)
                 ->update($user_data);
         return $user_info;
     }
-    
-    
+
+    public function is_verified_user($username) {
+        $user_count = UsersModel::where(['username' => $username, 'is_verified' => TRUE])->count();
+        return $user_count;
+    }
+
 }
