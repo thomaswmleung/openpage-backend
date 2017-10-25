@@ -7,6 +7,8 @@ use App\PageModel;
 use App\MainModel;
 use App\SectionModel;
 use App\QuestionsModel;
+use App\Helpers\Pdf_helper;
+use App\Helpers\Token_helper;
 
 class PageController extends Controller {
     /**
@@ -20,6 +22,54 @@ class PageController extends Controller {
      *     name="search_key",
      *     in="query",
      *     description="Search parameter or key word to search",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="title",
+     *     in="query",
+     *     description="Filter by title",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="sub_title",
+     *     in="query",
+     *     description="Filter by sub title",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="subject",
+     *     in="query",
+     *     description="Filter by subject",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="domain",
+     *     in="query",
+     *     description="Filter by domain",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="subdomain",
+     *     in="query",
+     *     description="Filter by subdomain",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="created_by",
+     *     in="query",
+     *     description="Filter created by user id",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="from_date",
+     *     in="query",
+     *     description="Created at start date(YYYY-mm-dd) ",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="to_date",
+     *     in="query",
+     *     description="Created at end date(YYYY-mm-dd) ",
      *     type="string"
      *   ),
      *   @SWG\Parameter(
@@ -41,7 +91,7 @@ class PageController extends Controller {
      *         type="array",
      *         @SWG\Items(
      *             type="string",
-     *             enum={"created_at", "remark"},
+     *             enum={"created_at","title", "sub_title"},
      *             default="created_at"
      *         ),
      *         collectionFormat="multi"
@@ -99,7 +149,7 @@ class PageController extends Controller {
         $pageModel = new PageModel();
         if (isset($request->page_id) && $request->page_id != "") {
             $page_id = $request->page_id;
-            
+
             $page_data = $pageModel->find_page_details($page_id);
             if ($page_data == NULL) {
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_id')['error_code'],
@@ -107,14 +157,51 @@ class PageController extends Controller {
 
                 $response_array = array("success" => FALSE, "errors" => $error_messages);
                 return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
-            }else{
+            } else {
                 $response_array = array("success" => TRUE, "data" => $page_data, "errors" => array());
                 return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
             }
-        }else{
+        } else {
             $search_key = "";
             if (isset($request->search_key)) {
                 $search_key = $request->search_key;
+            }
+            $title = "";
+            if (isset($request->title)) {
+                $title = $request->title;
+            }
+            $sub_title = "";
+            if (isset($request->sub_title)) {
+                $sub_title = $request->sub_title;
+            }
+            $subject = "";
+            if (isset($request->subject)) {
+                $subject = $request->subject;
+            }
+            $domain = "";
+            if (isset($request->domain)) {
+                $domain = $request->domain;
+            }
+            $subdomain = "";
+            if (isset($request->subdomain)) {
+                $subdomain = $request->subdomain;
+            }
+            $created_by = "";
+            if (isset($request->created_by)) {
+                $created_by = $request->created_by;
+            }
+            $from_date = "";
+            if (isset($request->from_date)) {
+                $from_date = date("Y-m-d H:i:s", strtotime($request->from_date . "00:00:00"));
+            }
+            $to_date = "";
+            if (isset($request->to_date)) {
+                $to_date = date("Y-m-d H:i:s", strtotime($request->to_date . " 23:59:59"));
+            }
+
+            if ($from_date == "" || $to_date == "") {
+                $from_date = "";
+                $to_date = "";
             }
             $skip = 0;
             if (isset($request->skip)) {
@@ -134,6 +221,14 @@ class PageController extends Controller {
             }
             $query_details = array(
                 'search_key' => $search_key,
+                'title' => $title,
+                'sub_title' => $sub_title,
+                'subject' => $subject,
+                'domain' => $domain,
+                'subdomain' => $subdomain,
+                'created_by' => $created_by,
+                'from_date' => $from_date,
+                'to_date' => $to_date,
                 'limit' => $limit,
                 'skip' => $skip,
                 'sort_by' => $sort_by,
@@ -141,10 +236,10 @@ class PageController extends Controller {
             );
 
             $page_data = $pageModel->page_list($query_details);
-            $total_count = $pageModel->total_count($search_key);
+            $total_count = $pageModel->total_count($query_details);
         }
 
-        $response_array = array("success" => TRUE, "data" => $page_data,"total_count" => $total_count, "errors" => array());
+        $response_array = array("success" => TRUE, "data" => $page_data, "total_count" => $total_count, "errors" => array());
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
     }
 
@@ -159,7 +254,7 @@ class PageController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="page json input",
+     *     description="page json input <br> Sample JSON to create page http://jsoneditoronline.org/?id=02ce8308e8e7e964122bf007036b6621",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -185,7 +280,7 @@ class PageController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="page json input",
+     *     description="page json input <br> Sample JSON to update page http://jsoneditoronline.org/?id=5303c1ff44a7820b2838612686f1ab5a",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -205,9 +300,21 @@ class PageController extends Controller {
         if ($page == null) {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
+        if ($request->isMethod('put')) {
+            if (isset($page['page_id']) AND $page['page_id'] != "") {
+                $page_id = $page['page_id'];
+                $count = PageModel::where("_id", $page_id)->count();
+                if ($count == 0) {
+                    return response(json_encode(array("error" => "Invalid page id")))->header('Content-Type', 'application/json');
+                }
+            } else {
+                return response(json_encode(array("error" => "Page id is required")))->header('Content-Type', 'application/json');
+            }
+        }
 
-//        $pdf_helper = new Pdf_helper();
-//        $pdf_page_response_json = $pdf_helper->generate_page_pdf_from_json($json_data);
+        $pdf_helper = new Pdf_helper();
+        $page_json = $pdf_helper->generate_page_pdf_from_json($json_data);
+        $page = json_decode($page_json, true);
 
         $main = $page['main'];
         $section_ids = array();
@@ -315,13 +422,52 @@ class PageController extends Controller {
 
         $page_remark = $page['remark'];
 
+        $page_title = "";
+        if (isset($page['title'])) {
+            $page_title = $page['title'];
+        }
+        $page_sub_title = "";
+        if (isset($page['sub_title'])) {
+            $page_sub_title = $page['sub_title'];
+        }
+        $subject = "";
+        if (isset($page['subject'])) {
+            $subject = $page['subject'];
+        }
+        $domain = "";
+        if (isset($page['domain'])) {
+            $domain = $page['domain'];
+        }
+        $subdomain = "";
+        if (isset($page['subdomain'])) {
+            $subdomain = $page['subdomain'];
+        }
+        $preview_url = "";
+        if (isset($page['preview_url'])) {
+            $preview_url = $page['preview_url'];
+        }
+        $preview_images = array();
+        if (isset($page['preview_image_array'])) {
+            $preview_images = $page['preview_image_array'];
+        }
         $insert_page_data = array(
             'overlay' => $ovelay_data,
             'main_id' => $main_id,
             'background' => $back_ground_data,
-            'remark' => $page_remark
+            'remark' => $page_remark,
+            'title' => $page_title,
+            'sub_title' => $page_sub_title,
+            'subject' => $subject,
+            'domain' => $domain,
+            'subdomain' => $subdomain,
+            'preview_url' => $preview_url,
+            'preview_images' => $preview_images,
         );
 
+        if ($request->isMethod('post')) {
+            $insert_page_data['created_by'] = Token_helper::fetch_user_id_from_token($request->header('token'));
+        }
+        
         $page_id = "";
         if (isset($page['page_id']) && $page['page_id'] != "") {
 
