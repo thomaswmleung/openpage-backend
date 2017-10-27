@@ -122,5 +122,13 @@ return [
     'resource_category_name_required' => array('error_code'=>'E2401','error_message' =>"Resource Category name is required"),
     'resource_category_name_unique' => array('error_code'=>'E2402','error_message' =>"Resource Category name already exists"),
     'resource_category_id_invalid' => array('error_code'=>'E2403','error_message' =>"Resource Category id is invalid"),
+    
+    'codex_name_required' => array('error_code'=>'E2501','error_message' =>"Codex name is required"),
+    'codex_file_required' => array('error_code'=>'E2502','error_message' =>"Codex file is required."),
+    'codex_file_limit_exceeded' => array('error_code'=>'E2503','error_message' =>"Codex file size is limited to 10 MB."),
+    'invalid_codex_file_mime' => array('error_code'=>'E2504','error_message' =>"Invalid codex image file type."),
+    'codex_created_by_required' => array('error_code'=>'E2507','error_message' =>"Created by is required."),
+    'invalid_codex_created_by' => array('error_code'=>'E2508','error_message' =>"Created by has invalid id."),
+    'invalid_codex_id' =>array('error_code'=>'E2509','error_message' =>"Invalid codex id.") ,
 
 ];

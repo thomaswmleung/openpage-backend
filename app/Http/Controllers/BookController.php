@@ -117,10 +117,7 @@ class BookController extends Controller {
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
+     *   )
      * )
      */
 
@@ -145,10 +142,7 @@ class BookController extends Controller {
      *  @SWG\Response(
      *     response=400,
      *     description="Invalid book id",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
+     *   )
      * )
      */
     public function book_list(Request $request) {

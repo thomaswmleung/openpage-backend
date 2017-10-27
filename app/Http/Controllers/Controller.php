@@ -111,6 +111,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   name="Resource Category",
  *   description="Resource Category related API's"
  * )
+ * @SWG\Tag(
+ *   name="Codex",
+ *   description="Codex related API's"
+ * )
  * 
  */
 class Controller extends BaseController
