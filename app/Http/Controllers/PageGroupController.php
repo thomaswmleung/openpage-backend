@@ -318,8 +318,8 @@ class PageGroupController extends Controller {
         if (isset($page_data_array['page_group']['page'])) {
 
             $pdf_response_json = $pdf_helper->generate_pdf_from_json($req_json);
+            
             $page_data_array = json_decode($pdf_response_json, true);
-
             if (isset($page_data_array['page_group'])) {
 
                 $page_array = $page_data_array['page_group']['page'];

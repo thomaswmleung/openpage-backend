@@ -143,5 +143,8 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('resource_category', 'ResourceCategoryController@add_or_update_resource_category');
     Route::put('resource_category', 'ResourceCategoryController@add_or_update_resource_category');
     Route::delete('resource_category', 'ResourceCategoryController@delete_resource_category');
+    
+    
+    Route::get('bulk_upload','BulkPageGroupUploadController@bulk_upload');
 
 });
