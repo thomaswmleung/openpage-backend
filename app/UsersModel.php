@@ -10,7 +10,7 @@ class UsersModel extends Eloquent {
 //    protected $connection = 'mongodb';
     protected $collection = 'users';
     protected $fillable = array('username', 'first_name', 'last_name', 'password', 'email',
-        'activation_key', 'is_active', 'profile_image', 'is_forgot_initiated', 'is_verified');
+        'activation_key', 'is_active', 'profile_image', 'is_forgot_initiated', 'is_verified','organization_id');
 
     use SoftDeletes;
 

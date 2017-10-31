@@ -88,10 +88,7 @@ class CodexController extends Controller {
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
+     *   )
      * )
      */
 
@@ -116,10 +113,7 @@ class CodexController extends Controller {
      *  @SWG\Response(
      *     response=400,
      *     description="Invalid codex id",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
+     *   )
      * )
      */
     public function codex(Request $request) {

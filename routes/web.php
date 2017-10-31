@@ -23,6 +23,9 @@ Route::post('reset_password', 'UserController@reset_password');
 Route::get('book', 'BookController@book_list');
 Route::get('book/{_id}', 'BookController@book_list');
 
+Route::get('codex', 'CodexController@codex');
+Route::get('codex/{cid}', 'CodexController@codex');
+    
 Route::group(['middleware' => ['login_auth']], function () {
 
     Route::get('user', 'UserController@user');
@@ -146,8 +149,6 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::put('resource_category', 'ResourceCategoryController@add_or_update_resource_category');
     Route::delete('resource_category', 'ResourceCategoryController@delete_resource_category');
     
-    Route::get('codex', 'CodexController@codex');
-    Route::get('codex/{cid}', 'CodexController@codex');
     Route::post('codex', 'CodexController@create_codex');
     Route::put('codex', 'CodexController@update_codex');
     Route::delete('codex', 'CodexController@delete_codex');

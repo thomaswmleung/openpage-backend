@@ -817,10 +817,10 @@ class Pdf_helper {
         //setting book title
 
         $fpdf->SetXY(5, 5);
-        $book_title = $book_data_array['cover']['title'];
+        $book_title = $book_data_array['title'];
         $fpdf->MultiCell(200, 10, $book_title, 0, 'C');
         $fpdf->SetXY(5, $fpdf->GetY());
-        $sub_title = $book_data_array['cover']['subtitle'];
+        $sub_title = $book_data_array['subtitle'];
         $fpdf->SetFont('msjh', '', 12);
         $fpdf->MultiCell(200, 5, $sub_title, 0, 'C');
 
@@ -909,9 +909,8 @@ class Pdf_helper {
         }
 
         $page_array = $book_data_array['page'];
-
+        $pageIndex = 0;
         foreach ($page_array AS $page_details) {
-            $pageIndex = 0;
             $actualPageIndexArray = array();
             array_push($actualPageIndexArray, $actualPDFPageIndex);
             $fpdf->AddPage();
