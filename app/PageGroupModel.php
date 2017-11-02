@@ -5,12 +5,13 @@ namespace App;
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use App\PageModel;
 use DateTime;
+
 class PageGroupModel extends Eloquent {
 
     protected $collection = 'page_group';
-    protected $fillable = array('page', 'title', 'sub_title', 'preview_url', 'teacher_copy_preview_url',
-                                                'student_copy_preview_url','teacher_preview_image_array',
-                                                'student_preview_image_array','preview_image_array', 'created_by', 'layout', 'syllabus');
+    protected $fillable = array('page', 'title', 'sub_title', 'subject', 'domain', 'subdomain', 'preview_url', 'teacher_copy_preview_url',
+        'student_copy_preview_url', 'teacher_preview_image_array',
+        'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus');
 
     public function add_page_group($insert_data) {
         $result = PageGroupModel::create($insert_data);
@@ -61,6 +62,18 @@ class PageGroupModel extends Eloquent {
             } else {
                 $sub_title = "";
             }
+            $subject = "";
+            if (isset($query_details['subject'])) {
+                $subject = $query_details['subject'];
+            }
+            $domain = "";
+            if (isset($query_details['domain'])) {
+                $domain = $query_details['domain'];
+            }
+            $subdomain = "";
+            if (isset($query_details['subdomain'])) {
+                $subdomain = $query_details['subdomain'];
+            }
             if (isset($query_details['created_by'])) {
                 $created_by = $query_details['created_by'];
             } else {
@@ -72,7 +85,7 @@ class PageGroupModel extends Eloquent {
         $sort_by = $query_details['sort_by'];
         $order_by = $query_details['order_by'];
 
-        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "") {
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "") {
             $page_group_data = PageGroupModel::
                     Where(function($filterByQuery)use ($query_details) {
                         if ($query_details['title'] != "") {
@@ -80,6 +93,15 @@ class PageGroupModel extends Eloquent {
                         }
                         if ($query_details['sub_title'] != "") {
                             $filterByQuery->where('sub_title', 'like', $query_details['sub_title']);
+                        }
+                        if ($query_details['subject'] != "") {
+                            $filterByQuery->where('subject', 'like', $query_details['subject']);
+                        }
+                        if ($query_details['domain'] != "") {
+                            $filterByQuery->where('domain', 'like', $query_details['domain']);
+                        }
+                        if ($query_details['subdomain'] != "") {
+                            $filterByQuery->where('subdomain', 'like', $query_details['subdomain']);
                         }
                         if ($query_details['created_by'] != "") {
                             $filterByQuery->where('created_by', 'like', $query_details['created_by']);
@@ -93,9 +115,11 @@ class PageGroupModel extends Eloquent {
                     })
                     ->Where(function($searchQuery)use ($search_key) {
                         if ($search_key != "") {
-                            $searchQuery->where('preview_url', 'like', "%$search_key%")
-                            ->orWhere('title', 'like', "%$search_key%")
-                            ->orWhere('sub_title', 'like', "%$search_key%");
+                            $searchQuery->where('title', 'like', "%$search_key%")
+                            ->orWhere('sub_title', 'like', "%$search_key%")
+                            ->orWhere('subject', 'like', "%$search_key%")
+                            ->orWhere('domain', 'like', "%$search_key%")
+                            ->orWhere('subdomain', 'like', "%$search_key%");
                         }
                     })
                     ->skip($skip)
@@ -122,6 +146,18 @@ class PageGroupModel extends Eloquent {
         if (isset($query_details['sub_title'])) {
             $sub_title = $query_details['sub_title'];
         }
+        $subject = "";
+        if (isset($query_details['subject'])) {
+            $subject = $query_details['subject'];
+        }
+        $domain = "";
+        if (isset($query_details['domain'])) {
+            $domain = $query_details['domain'];
+        }
+        $subdomain = "";
+        if (isset($query_details['subdomain'])) {
+            $subdomain = $query_details['subdomain'];
+        }
         $from_date = "";
         if (isset($query_details['from_date'])) {
             $from_date = $query_details['from_date'];
@@ -135,7 +171,7 @@ class PageGroupModel extends Eloquent {
             $created_by = $query_details['created_by'];
         }
 
-        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "") {
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "") {
             $total_count = PageGroupModel::
                     Where(function($filterByQuery)use ($query_details) {
                         if ($query_details['title'] != "") {
@@ -147,7 +183,15 @@ class PageGroupModel extends Eloquent {
                         if ($query_details['created_by'] != "") {
                             $filterByQuery->where('created_by', 'like', $query_details['created_by']);
                         }
-
+                         if ($query_details['subject'] != "") {
+                            $filterByQuery->where('subject', 'like', $query_details['subject']);
+                        }
+                        if ($query_details['domain'] != "") {
+                            $filterByQuery->where('domain', 'like', $query_details['domain']);
+                        }
+                        if ($query_details['subdomain'] != "") {
+                            $filterByQuery->where('subdomain', 'like', $query_details['subdomain']);
+                        }
                         if ($query_details['from_date'] != "") {
                             $start_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));
                             $stop_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['to_date']));
@@ -156,9 +200,11 @@ class PageGroupModel extends Eloquent {
                     })
                     ->Where(function($searchQuery)use ($search_key) {
                         if ($search_key != "") {
-                            $searchQuery->where('preview_url', 'like', "%$search_key%")
-                            ->orWhere('title', 'like', "%$search_key%")
-                            ->orWhere('sub_title', 'like', "%$search_key%");
+                            $searchQuery->where('title', 'like', "%$search_key%")
+                            ->orWhere('sub_title', 'like', "%$search_key%")
+                            ->orWhere('subject', 'like', "%$search_key%")
+                            ->orWhere('domain', 'like', "%$search_key%")
+                            ->orWhere('subdomain', 'like', "%$search_key%");
                         }
                     })
                     ->count();

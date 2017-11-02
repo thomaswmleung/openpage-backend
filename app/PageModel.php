@@ -4,11 +4,13 @@ namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use App\MainModel;
+use DateTime;
 
 class PageModel extends Eloquent {
 
     protected $collection = 'page';
-    protected $fillable = array('overlay', 'main_id', 'background', 'remark', 'is_imported', 'preview_images');
+    protected $fillable = array('overlay', 'main_id', 'background', 'remark', 'is_imported', 'preview_images',
+        'title', 'sub_title', 'subject', 'domain', 'subdomain', 'preview_url', 'created_by');
 
     public function add_or_update_page($insert_data, $page_id = "") {
         if (!isset($insert_data['is_imported'])
@@ -58,12 +60,76 @@ class PageModel extends Eloquent {
             } else {
                 $search_key = "";
             }
+            if (isset($query_details['title'])) {
+                $title = $query_details['title'];
+            } else {
+                $title = "";
+            }
+            if (isset($query_details['sub_title'])) {
+                $sub_title = $query_details['sub_title'];
+            } else {
+                $sub_title = "";
+            }
+            $subject = "";
+            if (isset($query_details['subject'])) {
+                $subject = $query_details['subject'];
+            }
+            $domain = "";
+            if (isset($query_details['domain'])) {
+                $domain = $query_details['domain'];
+            }
+            $subdomain = "";
+            if (isset($query_details['subdomain'])) {
+                $subdomain = $query_details['subdomain'];
+            }
+            if (isset($query_details['created_by'])) {
+                $created_by = $query_details['created_by'];
+            } else {
+                $created_by = "";
+            }
         }
+        $from_date = $query_details['from_date'];
+        $to_date = $query_details['to_date'];
         $sort_by = $query_details['sort_by'];
         $order_by = $query_details['order_by'];
 
-        if ($search_key != "") {
-            $page_data = PageModel::where('remark', 'like', "%$search_key%")
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "") {
+            $page_data = PageModel::
+                    Where(function($filterByQuery)use ($query_details) {
+                        if ($query_details['title'] != "") {
+                            $filterByQuery->where('title', 'like', $query_details['title']);
+                        }
+                        if ($query_details['sub_title'] != "") {
+                            $filterByQuery->where('sub_title', 'like', $query_details['sub_title']);
+                        }
+                        if ($query_details['subject'] != "") {
+                            $filterByQuery->where('subject', 'like', $query_details['subject']);
+                        }
+                        if ($query_details['domain'] != "") {
+                            $filterByQuery->where('domain', 'like', $query_details['domain']);
+                        }
+                        if ($query_details['subdomain'] != "") {
+                            $filterByQuery->where('subdomain', 'like', $query_details['subdomain']);
+                        }
+                        if ($query_details['created_by'] != "") {
+                            $filterByQuery->where('created_by', 'like', $query_details['created_by']);
+                        }
+
+                        if ($query_details['from_date'] != "") {
+                            $start_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));
+                            $stop_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['to_date']));
+                            $filterByQuery->whereBetween('created_at', array($start_date, $stop_date));
+                        }
+                    })
+                    ->Where(function($searchQuery)use ($search_key) {
+                        if ($search_key != "") {
+                            $searchQuery->where('title', 'like', "%$search_key%")
+                            ->orWhere('sub_title', 'like', "%$search_key%")
+                            ->orWhere('subject', 'like', "%$search_key%")
+                            ->orWhere('domain', 'like', "%$search_key%")
+                            ->orWhere('subdomain', 'like', "%$search_key%");
+                        }
+                    })
                     ->skip($skip)
                     ->take($limit)
                     ->orderBy($sort_by, $order_by)
@@ -101,9 +167,81 @@ class PageModel extends Eloquent {
         return $page_query->get();
     }
 
-    public function total_count($search_key) {
-        if ($search_key != "") {
-            $total_count = PageModel::where('remark', 'like', "%$search_key%")
+    public function total_count($query_details) {
+        $search_key = "";
+        if (isset($query_details['search_key'])) {
+            $search_key = $query_details['search_key'];
+        }
+        $title = "";
+        if (isset($query_details['title'])) {
+            $title = $query_details['title'];
+        }
+        $sub_title = "";
+        if (isset($query_details['sub_title'])) {
+            $sub_title = $query_details['sub_title'];
+        }
+        $subject = "";
+        if (isset($query_details['subject'])) {
+            $subject = $query_details['subject'];
+        }
+        $domain = "";
+        if (isset($query_details['domain'])) {
+            $domain = $query_details['domain'];
+        }
+        $subdomain = "";
+        if (isset($query_details['subdomain'])) {
+            $subdomain = $query_details['subdomain'];
+        }
+        $from_date = "";
+        if (isset($query_details['from_date'])) {
+            $from_date = $query_details['from_date'];
+        }
+        $to_date = "";
+        if (isset($query_details['to_date'])) {
+            $to_date = $query_details['to_date'];
+        }
+        $created_by = "";
+        if (isset($query_details['created_by'])) {
+            $created_by = $query_details['created_by'];
+        }
+
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "") {
+            $total_count = PageModel::
+                    Where(function($filterByQuery)use ($query_details) {
+                        if ($query_details['title'] != "") {
+                            $filterByQuery->where('title', 'like', $query_details['title']);
+                        }
+                        if ($query_details['sub_title'] != "") {
+                            $filterByQuery->where('sub_title', 'like', $query_details['sub_title']);
+                        }
+                        if ($query_details['created_by'] != "") {
+                            $filterByQuery->where('created_by', 'like', $query_details['created_by']);
+                        }
+                         if ($query_details['subject'] != "") {
+                            $filterByQuery->where('subject', 'like', $query_details['subject']);
+                        }
+                        if ($query_details['domain'] != "") {
+                            $filterByQuery->where('domain', 'like', $query_details['domain']);
+                        }
+                        if ($query_details['subdomain'] != "") {
+                            $filterByQuery->where('subdomain', 'like', $query_details['subdomain']);
+                        }
+                        if ($query_details['from_date'] != "") {
+                            
+                            $start_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));
+                            $stop_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['to_date']));
+                            $filterByQuery->whereBetween('created_at', array($start_date, $stop_date));
+                        }
+                    })
+                    ->Where(function($searchQuery)use ($search_key) {
+                        if ($search_key != "") {
+                            $searchQuery->where('title', 'like', "%$search_key%")
+                            ->orWhere('sub_title', 'like', "%$search_key%")
+                            ->orWhere('subject', 'like', "%$search_key%")
+                            ->orWhere('domain', 'like', "%$search_key%")
+                            ->orWhere('subdomain', 'like', "%$search_key%");
+                        }
+                    })
                     ->count();
         } else {
             $total_count = PageModel::count();

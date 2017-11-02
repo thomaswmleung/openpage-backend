@@ -51,6 +51,24 @@ class PageGroupController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="subject",
+     *     in="query",
+     *     description="Filter by subject",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="domain",
+     *     in="query",
+     *     description="Filter by domain",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="subdomain",
+     *     in="query",
+     *     description="Filter by subdomain",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="created_by",
      *     in="query",
      *     description="Filter created by user id",
@@ -170,6 +188,18 @@ class PageGroupController extends Controller {
             if (isset($request->sub_title)) {
                 $sub_title = $request->sub_title;
             }
+            $subject = "";
+            if (isset($request->subject)) {
+                $subject = $request->subject;
+            }
+            $domain = "";
+            if (isset($request->domain)) {
+                $domain = $request->domain;
+            }
+            $subdomain = "";
+            if (isset($request->subdomain)) {
+                $subdomain = $request->subdomain;
+            }
             $created_by = "";
             if (isset($request->created_by)) {
                 $created_by = $request->created_by;
@@ -208,6 +238,9 @@ class PageGroupController extends Controller {
                 'search_key' => $search_key,
                 'title' => $title,
                 'sub_title' => $sub_title,
+                'subject' => $subject,
+                'domain' => $domain,
+                'subdomain' => $subdomain,
                 'created_by' => $created_by,
                 'from_date' => $from_date,
                 'to_date' => $to_date,
@@ -580,10 +613,25 @@ class PageGroupController extends Controller {
                 $teachersCopyResponse = $pdf_helper->generate_pdf_from_json($req_json, TRUE);
                 $teachersCopyArray = json_decode($teachersCopyResponse, true);
                 
+                $subject = "";
+                if(isset($page_data_array['page_group']['subject'])){
+                    $subject = $page_data_array['page_group']['subject'];
+                }
+                $domain = "";
+                if(isset($page_data_array['page_group']['domain'])){
+                    $domain = $page_data_array['page_group']['domain'];
+                }
+                $subdomain = "";
+                if(isset($page_data_array['page_group']['subdomain'])){
+                    $subdomain = $page_data_array['page_group']['subdomain'];
+                }
                 $page_group_insert_data = array(
                     'page' => $page_ids,
                     'title' => $page_group_title,
                     'sub_title' => $page_group_sub_title,
+                    'subject' => $subject,
+                    'domain' => $domain,
+                    'subdomain' => $subdomain,
                     'preview_url' => $page_data_array['preview_url'],
                     'preview_image_array' => $page_data_array['preview_image_array'],
                     'layout' => $page_data_array['layout'],

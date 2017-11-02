@@ -112,6 +112,8 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   description="Resource Category related API's"
  * )
  * @SWG\Tag(
+ *   name="Codex",
+ *   description="Codex related API's"
  *   name="Bulk Upload Page Group",
  *   description="Bulk upload api for creating page groups"
  * )
