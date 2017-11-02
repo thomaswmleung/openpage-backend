@@ -232,5 +232,8 @@ class PageGroupModel extends Eloquent {
 
         return $page_group_info;
     }
+    
+    
+    
 
 }

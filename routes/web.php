@@ -19,10 +19,14 @@ Route::get('activate', 'UserController@activate');
 Route::post('forgot_password', 'UserController@forgot_password');
 Route::get('reset_password', 'UserController@validate_reset_password');
 Route::post('reset_password', 'UserController@reset_password');
+Route::get('create_page_group_from_queue_cron_job', 'BulkPageGroupUploadController@create_page_group_cron');
+Route::get('get_bulk_upload_request_list', 'BulkPageGroupUploadController@get_bulk_upload_request_list');
+Route::get('get_bulk_upload_details/{req_id}', 'BulkPageGroupUploadController@get_bulk_upload_details');
 
 Route::get('book', 'BookController@book_list');
 Route::get('book/{_id}', 'BookController@book_list');
 
+Route::get('variants','BulkPageGroupUploadController@test');
 Route::group(['middleware' => ['login_auth']], function () {
 
     Route::get('user', 'UserController@user');
@@ -152,6 +156,6 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::put('codex', 'CodexController@update_codex');
     Route::delete('codex', 'CodexController@delete_codex');
     
-    Route::get('bulk_upload','BulkPageGroupUploadController@bulk_upload');
+    Route::post('bulk_upload','BulkPageGroupUploadController@bulk_upload');
 
 });

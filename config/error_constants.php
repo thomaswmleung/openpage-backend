@@ -35,6 +35,10 @@ return [
     'file_limit_exceeded' => array('error_code'=>'E310','error_message' =>"Media file size is limited to 10 MB"),
     
     'invalid_page_group_id' => array('error_code'=>'E401','error_message' =>"Invalid Page Group id."),
+    'invalid_archive_file' => array('error_code'=>'E402','error_message' =>"Invalid Archive file"),
+    'invalid_meta_data_file' => array('error_code'=>'E403','error_message' =>"Invalid Meta data file"),
+    'archive_file_required' => array('error_code'=>'E404','error_message' =>"Archive file is required"),
+    'meta_data_file_required' => array('error_code'=>'E405','error_message' =>"Meta data file is required"),
     
     'invalid_page_id' =>  array('error_code'=>'E501','error_message' =>"Invalid Page id."),
     'page_id_required' =>  array('error_code'=>'E502','error_message' =>"Page id is required"),

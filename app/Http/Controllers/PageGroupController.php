@@ -314,7 +314,8 @@ class PageGroupController extends Controller {
         $json_data = $request->getContent();
 //       return response(json_encode($json_data), 200);
         $page_data_array = json_decode($json_data, true);
-
+//        Log::error(json_encode($page_data_array));
+//        exit();
         if ($page_data_array == null) {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
@@ -351,8 +352,9 @@ class PageGroupController extends Controller {
         if (isset($page_data_array['page_group']['page'])) {
 
             $pdf_response_json = $pdf_helper->generate_pdf_from_json($req_json);
-            
+           
             $page_data_array = json_decode($pdf_response_json, true);
+            
             if (isset($page_data_array['page_group'])) {
 
                 $page_array = $page_data_array['page_group']['page'];
@@ -625,6 +627,23 @@ class PageGroupController extends Controller {
                 if(isset($page_data_array['page_group']['subdomain'])){
                     $subdomain = $page_data_array['page_group']['subdomain'];
                 }
+                
+                
+                if(!isset($page_data_array['layout'])){
+                    
+                    $page_data_array['layout'] = "";
+                    
+                }
+                
+                if(!isset($page_data_array['syllabus'])){
+                    
+                    $page_data_array['syllabus'] = "";
+                    
+                }
+                
+                
+                
+                
                 $page_group_insert_data = array(
                     'page' => $page_ids,
                     'title' => $page_group_title,
@@ -643,7 +662,7 @@ class PageGroupController extends Controller {
                 );
                 
                 if ($request->isMethod('post')) {
-                    $page_group_insert_data['created_by']= Token_helper::fetch_user_id_from_token($request->header('token'));;
+                    $page_group_insert_data['created_by']= Token_helper::fetch_user_id_from_token($request->header('token'));
                 }
 
                 $pageGroup_result = $page_group_model->update_page_group($page_group_insert_data, $page_group_id);
@@ -676,6 +695,8 @@ class PageGroupController extends Controller {
                 $response_array['teacher_preview_image_array'] = $teachersCopyArray['preview_image_array'];
             }
             $response_array['success'] = TRUE;
+            
+            Log::error(json_encode($response_array));
             return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
     }
