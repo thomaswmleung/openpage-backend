@@ -25,6 +25,58 @@
                         "type": "string"
                     },
                     {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Filter by title",
+                        "type": "string"
+                    },
+                    {
+                        "name": "subtitle",
+                        "in": "query",
+                        "description": "Filter by sub title",
+                        "type": "string"
+                    },
+                    {
+                        "name": "school_name",
+                        "in": "query",
+                        "description": "Filter by school name",
+                        "type": "string"
+                    },
+                    {
+                        "name": "level",
+                        "in": "query",
+                        "description": "Filter by level",
+                        "type": "string"
+                    },
+                    {
+                        "name": "version",
+                        "in": "query",
+                        "description": "Filter by version",
+                        "type": "string"
+                    },
+                    {
+                        "name": "subject",
+                        "in": "query",
+                        "description": "Filter by subject",
+                        "type": "string"
+                    },
+                    {
+                        "name": "keywords[]",
+                        "in": "query",
+                        "description": "Filter by book keywords",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "organization_id",
+                        "in": "query",
+                        "description": "Filter by organization id",
+                        "type": "string"
+                    },
+                    {
                         "name": "skip",
                         "in": "query",
                         "description": "this is offset or skip the records",
@@ -35,18 +87,46 @@
                         "in": "query",
                         "description": "Number of records to be retrieved ",
                         "type": "integer"
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "description": "Sort by value",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "created_at",
+                            "enum": [
+                                "created_at",
+                                "school_name",
+                                "level",
+                                "title",
+                                "year"
+                            ]
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "Order by Ascending or descending",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "DESC",
+                            "enum": [
+                                "ASC",
+                                "DESC"
+                            ]
+                        },
+                        "collectionFormat": "multi"
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "successful operation"
                     }
-                },
-                "security": [
-                    {
-                        "token": []
-                    }
-                ]
+                }
             },
             "put": {
                 "tags": [
@@ -65,7 +145,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "book json input",
+                        "description": "book json input <br> Sample JSON to update book http://jsoneditoronline.org/?id=c1e3c692d29b2b221ec0a59e6c1a1430",
                         "required": true,
                         "schema": {}
                     }
@@ -101,7 +181,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "book json input",
+                        "description": "book json input <br> Sample JSON to create book http://jsoneditoronline.org/?id=bcddc70528339bf6e057c113c68f1ee5",
                         "required": true,
                         "schema": {}
                     }
@@ -181,6 +261,107 @@
                     "400": {
                         "description": "Invalid book id"
                     }
+                }
+            }
+        },
+        "/bulk_upload": {
+            "post": {
+                "tags": [
+                    "Bulk Upload Page Group"
+                ],
+                "summary": "Bulk upload api for creating page groups",
+                "description": "Bulk upload api for creating page groups",
+                "operationId": "bulk_upload",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "archive_file",
+                        "in": "formData",
+                        "description": "Archive file to upload(.zip)",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "meta_data_csv_file",
+                        "in": "formData",
+                        "description": "Meta data file to upload(.xlsx)",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/get_bulk_upload_request_list": {
+            "get": {
+                "tags": [
+                    "Bulk Upload Page Group"
+                ],
+                "summary": "Returns bulk upload data",
+                "description": "Returns bulk upload  data",
+                "operationId": "get_bulk_upload_request_list",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/get_bulk_upload_details/{req_id}": {
+            "get": {
+                "tags": [
+                    "Bulk Upload Page Group"
+                ],
+                "summary": "Returns Bulk Upload details",
+                "description": "Returns Bulk Upload details",
+                "operationId": "get_bulk_upload_details",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "req_id",
+                        "in": "path",
+                        "description": "ID of the bulk upload to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid id"
+                    }
                 },
                 "security": [
                     {
@@ -248,7 +429,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "Subject json input",
+                        "description": "class json input",
                         "required": true,
                         "schema": {}
                     }
@@ -284,7 +465,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "subject json input",
+                        "description": "class json input",
                         "required": true,
                         "schema": {}
                     }
@@ -431,7 +612,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "Subject json input",
+                        "description": "Class json input",
                         "required": true,
                         "schema": {}
                     }
@@ -467,7 +648,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "subject json input",
+                        "description": "Class json input",
                         "required": true,
                         "schema": {}
                     }
@@ -546,6 +727,829 @@
                     },
                     "400": {
                         "description": "Invalid class flow id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/codex": {
+            "get": {
+                "tags": [
+                    "Codex"
+                ],
+                "summary": "Returns list of codex",
+                "description": "Returns codex data",
+                "operationId": "codex",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search based on name, description, label",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Filter by user id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "label",
+                        "in": "query",
+                        "description": "Filter by label ",
+                        "type": "string"
+                    },
+                    {
+                        "name": "from_date",
+                        "in": "query",
+                        "description": "Create at start date(YYYY-mm-dd) ",
+                        "type": "string"
+                    },
+                    {
+                        "name": "to_date",
+                        "in": "query",
+                        "description": "Create at end date(YYYY-mm-dd) ",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "description": "Sort by value",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "created_at",
+                            "enum": [
+                                "created_at",
+                                "name",
+                                "description",
+                                "label"
+                            ]
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "Order by Ascending or descending",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "DESC",
+                            "enum": [
+                                "ASC",
+                                "DESC"
+                            ]
+                        },
+                        "collectionFormat": "multi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Codex"
+                ],
+                "summary": "Update codex  data",
+                "description": "Update codex  in the system",
+                "operationId": "update_codex",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "query",
+                        "description": "ID of the codex that needs to be updated",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Name of the codex",
+                        "type": "string"
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "description of the codex",
+                        "type": "string"
+                    },
+                    {
+                        "name": "label",
+                        "in": "query",
+                        "description": "label of the codex",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Codex"
+                ],
+                "summary": "Creating/Storing new codex",
+                "description": "Stores codex in the system",
+                "operationId": "create_codex",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Name of the codex",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "description",
+                        "in": "query",
+                        "description": "description of the codex",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "codex_image",
+                        "in": "formData",
+                        "description": "code image to upload",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "label",
+                        "in": "query",
+                        "description": "label of the codex",
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Codex"
+                ],
+                "summary": "delete codex  data",
+                "description": "Delete codex file in the system",
+                "operationId": "delete_codex",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "query",
+                        "description": "ID of the codex that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/codex/{cid}": {
+            "get": {
+                "tags": [
+                    "Codex"
+                ],
+                "summary": "Returns codex data",
+                "description": "Returns codex data",
+                "operationId": "codex",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "cid",
+                        "in": "path",
+                        "description": "ID of the codex that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid codex id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/domain": {
+            "get": {
+                "tags": [
+                    "Domain"
+                ],
+                "summary": "Returns list of domain",
+                "description": "Returns domain data",
+                "operationId": "domain_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Domain"
+                ],
+                "summary": "Update domain details",
+                "description": "",
+                "operationId": "add_or_update_domain",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Class json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Domain"
+                ],
+                "summary": "Create a domain",
+                "description": "",
+                "operationId": "add_or_update_domain",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Class json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Domain"
+                ],
+                "summary": "delete domain data",
+                "description": "Delete domain from system",
+                "operationId": "delete_domain",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the domain that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/domain/{_id}": {
+            "get": {
+                "tags": [
+                    "Domain"
+                ],
+                "summary": "Returns domain flow data",
+                "description": "Returns domain data",
+                "operationId": "domain_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the domain that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid domain id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/keyword": {
+            "get": {
+                "tags": [
+                    "Keyword"
+                ],
+                "summary": "Returns list of keywords",
+                "description": "Returns keywords data",
+                "operationId": "keyword_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Keyword"
+                ],
+                "summary": "Update keyword details",
+                "description": "",
+                "operationId": "create_or_update_keyword",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "keyword json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Keyword"
+                ],
+                "summary": "Create a keyword",
+                "description": "Create a keyword",
+                "operationId": "create_or_update_keyword",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Keyword json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Keyword"
+                ],
+                "summary": "delete keyword data",
+                "description": "Delete keyword from system",
+                "operationId": "delete_keyword",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the keyword that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/keyword/{_id}": {
+            "get": {
+                "tags": [
+                    "Keyword"
+                ],
+                "summary": "Returns keyword data",
+                "description": "Returns keyword data",
+                "operationId": "keyword_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the keyword that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid keyword id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/knowledge_unit": {
+            "get": {
+                "tags": [
+                    "Knowledge Unit"
+                ],
+                "summary": "Returns list of knowledge unit",
+                "description": "Returns knowledge unit data",
+                "operationId": "knowledge_unit_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Knowledge Unit"
+                ],
+                "summary": "Update knowledge_unit details",
+                "description": "",
+                "operationId": "add_or_update_knowledge_unit",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Knowledge Unit json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Knowledge Unit"
+                ],
+                "summary": "Create a knowledge_unit",
+                "description": "",
+                "operationId": "add_or_update_knowledge_unit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Knowledge Unit json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Knowledge Unit"
+                ],
+                "summary": "delete knowledge_unit data",
+                "description": "Delete knowledge unit from system",
+                "operationId": "delete_knowledge_unit",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the knowledge_unit that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/knowledge_unit/{_id}": {
+            "get": {
+                "tags": [
+                    "Knowledge Unit"
+                ],
+                "summary": "Returns knowledge unit flow data",
+                "description": "Returns knowledge unit data",
+                "operationId": "knowledge_unit_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the knowledge unit that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid knowledge unit id"
                     }
                 },
                 "security": [
@@ -790,7 +1794,53 @@
                     {
                         "name": "search_key",
                         "in": "query",
-                        "description": "Search based on remark and tags",
+                        "description": "Search based on remark, type, extension and tags",
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id",
+                        "in": "query",
+                        "description": "Filter by user id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by media type",
+                        "type": "string"
+                    },
+                    {
+                        "name": "remark",
+                        "in": "query",
+                        "description": "Filter by media remark",
+                        "type": "string"
+                    },
+                    {
+                        "name": "tag[]",
+                        "in": "query",
+                        "description": "Filter by media tag",
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "extension",
+                        "in": "query",
+                        "description": "Filter by media extension",
+                        "type": "string"
+                    },
+                    {
+                        "name": "from_date",
+                        "in": "query",
+                        "description": "Create at start date(YYYY-mm-dd) ",
+                        "type": "string"
+                    },
+                    {
+                        "name": "to_date",
+                        "in": "query",
+                        "description": "Create at end date(YYYY-mm-dd) ",
                         "type": "string"
                     },
                     {
@@ -804,6 +1854,37 @@
                         "in": "query",
                         "description": "Number of records to be retrieved ",
                         "type": "integer"
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "description": "Sort by value",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "created_at",
+                            "enum": [
+                                "created_at",
+                                "type",
+                                "extension"
+                            ]
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "Order by Ascending or descending",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "DESC",
+                            "enum": [
+                                "ASC",
+                                "DESC"
+                            ]
+                        },
+                        "collectionFormat": "multi"
                     }
                 ],
                 "responses": {
@@ -1065,6 +2146,118 @@
                     }
                 ]
             },
+            "put": {
+                "tags": [
+                    "organization"
+                ],
+                "summary": "Updating organization information",
+                "description": "Updation of organization",
+                "operationId": "create_organization",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of organization",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Name of the organization",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "address",
+                        "in": "query",
+                        "description": "address of the organization",
+                        "type": "string"
+                    },
+                    {
+                        "name": "email",
+                        "in": "query",
+                        "description": "email of the organization",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "contact_person",
+                        "in": "query",
+                        "description": "contact person of the organization",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Type of the organization",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "user_id[]",
+                        "in": "query",
+                        "description": "The user ids of organization",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "logo",
+                        "in": "query",
+                        "description": "logo of the organization",
+                        "type": "string"
+                    },
+                    {
+                        "name": "remark",
+                        "in": "query",
+                        "description": "remark of the organization",
+                        "type": "string"
+                    },
+                    {
+                        "name": "consultant[]",
+                        "in": "query",
+                        "description": "The consultants of organization",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "role[]",
+                        "in": "query",
+                        "description": "The roles of organization",
+                        "required": true,
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "organization"
@@ -1079,7 +2272,7 @@
                     {
                         "name": "name",
                         "in": "query",
-                        "description": "name of the question",
+                        "description": "Name of the organization",
                         "required": true,
                         "type": "string"
                     },
@@ -1258,6 +2451,54 @@
                         "type": "string"
                     },
                     {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Filter by title",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sub_title",
+                        "in": "query",
+                        "description": "Filter by sub title",
+                        "type": "string"
+                    },
+                    {
+                        "name": "subject",
+                        "in": "query",
+                        "description": "Filter by subject",
+                        "type": "string"
+                    },
+                    {
+                        "name": "domain",
+                        "in": "query",
+                        "description": "Filter by domain",
+                        "type": "string"
+                    },
+                    {
+                        "name": "subdomain",
+                        "in": "query",
+                        "description": "Filter by subdomain",
+                        "type": "string"
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "Filter created by user id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "from_date",
+                        "in": "query",
+                        "description": "Created at start date(YYYY-mm-dd) ",
+                        "type": "string"
+                    },
+                    {
+                        "name": "to_date",
+                        "in": "query",
+                        "description": "Created at end date(YYYY-mm-dd) ",
+                        "type": "string"
+                    },
+                    {
                         "name": "skip",
                         "in": "query",
                         "description": "this is offset or skip the records",
@@ -1268,6 +2509,37 @@
                         "in": "query",
                         "description": "Number of records to be retrieved ",
                         "type": "integer"
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "description": "Sort by value",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "created_at",
+                            "enum": [
+                                "created_at",
+                                "title",
+                                "sub_title"
+                            ]
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "Order by Ascending or descending",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "DESC",
+                            "enum": [
+                                "ASC",
+                                "DESC"
+                            ]
+                        },
+                        "collectionFormat": "multi"
                     }
                 ],
                 "responses": {
@@ -1298,7 +2570,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "page json input",
+                        "description": "page json input <br> Sample JSON to update page http://jsoneditoronline.org/?id=5303c1ff44a7820b2838612686f1ab5a",
                         "required": true,
                         "schema": {}
                     }
@@ -1334,7 +2606,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "page json input",
+                        "description": "page json input <br> Sample JSON to create page http://jsoneditoronline.org/?id=02ce8308e8e7e964122bf007036b6621",
                         "required": true,
                         "schema": {}
                     }
@@ -1435,6 +2707,60 @@
                 ],
                 "parameters": [
                     {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "title",
+                        "in": "query",
+                        "description": "Filter by title",
+                        "type": "string"
+                    },
+                    {
+                        "name": "sub_title",
+                        "in": "query",
+                        "description": "Filter by sub title",
+                        "type": "string"
+                    },
+                    {
+                        "name": "subject",
+                        "in": "query",
+                        "description": "Filter by subject",
+                        "type": "string"
+                    },
+                    {
+                        "name": "domain",
+                        "in": "query",
+                        "description": "Filter by domain",
+                        "type": "string"
+                    },
+                    {
+                        "name": "subdomain",
+                        "in": "query",
+                        "description": "Filter by subdomain",
+                        "type": "string"
+                    },
+                    {
+                        "name": "created_by",
+                        "in": "query",
+                        "description": "Filter created by user id",
+                        "type": "string"
+                    },
+                    {
+                        "name": "from_date",
+                        "in": "query",
+                        "description": "Created at start date(YYYY-mm-dd) ",
+                        "type": "string"
+                    },
+                    {
+                        "name": "to_date",
+                        "in": "query",
+                        "description": "Created at end date(YYYY-mm-dd) ",
+                        "type": "string"
+                    },
+                    {
                         "name": "skip",
                         "in": "query",
                         "description": "this is offset or skip the records",
@@ -1445,6 +2771,37 @@
                         "in": "query",
                         "description": "Number of records to be retrieved ",
                         "type": "integer"
+                    },
+                    {
+                        "name": "sort_by",
+                        "in": "query",
+                        "description": "Sort by value",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "created_at",
+                            "enum": [
+                                "created_at",
+                                "title",
+                                "sub_title"
+                            ]
+                        },
+                        "collectionFormat": "multi"
+                    },
+                    {
+                        "name": "order_by",
+                        "in": "query",
+                        "description": "Order by Ascending or descending",
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "default": "DESC",
+                            "enum": [
+                                "ASC",
+                                "DESC"
+                            ]
+                        },
+                        "collectionFormat": "multi"
                     }
                 ],
                 "responses": {
@@ -1475,7 +2832,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "page group json input",
+                        "description": "page group json input <br> Sample JSON to update page group http://jsoneditoronline.org/?id=006e448f74cf6f8673d10d8513b2a247",
                         "required": true,
                         "schema": {}
                     }
@@ -1511,7 +2868,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "page group json input",
+                        "description": "page group json input <br> Sample JSON to create page group http://jsoneditoronline.org/?id=f63e8d7425c66d5b8abf4bcf71eebb46",
                         "required": true,
                         "schema": {}
                     }
@@ -1590,6 +2947,189 @@
                     },
                     "400": {
                         "description": "Invalid media id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/particular": {
+            "get": {
+                "tags": [
+                    "Particular"
+                ],
+                "summary": "Returns list of Particular ",
+                "description": "Returns Particular  data",
+                "operationId": "particular_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Particular"
+                ],
+                "summary": "Update particular details",
+                "description": "",
+                "operationId": "add_or_update_particular",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Update particular document <br> Sample JSON http://jsoneditoronline.org/?id=5f498ec51cd3cb139241dfdd61a181c3",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Particular"
+                ],
+                "summary": "Create a particular",
+                "description": "",
+                "operationId": "add_or_update_particular",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Create particular document <br> Sample JSON http://jsoneditoronline.org/?id=b2f6cc5c7648377b4367795a45dd0fc8",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Particular"
+                ],
+                "summary": "delete particular data",
+                "description": "Delete knowledge  from system",
+                "operationId": "delete_particular",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the particular that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/particular/{_id}": {
+            "get": {
+                "tags": [
+                    "Particular"
+                ],
+                "summary": "Returns Particular  flow data",
+                "description": "Returns Particular  data",
+                "operationId": "particular_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the Particular  that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid Particular  id"
                     }
                 },
                 "security": [
@@ -1986,6 +3526,193 @@
                 ]
             }
         },
+        "/resource_category": {
+            "get": {
+                "tags": [
+                    "Resource Category"
+                ],
+                "summary": "Returns list of resource category",
+                "description": "Returns resource category data",
+                "operationId": "resource_category_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Resource Category"
+                ],
+                "summary": "Update resource category details",
+                "description": "",
+                "operationId": "add_or_update_resource_category",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "resource_category_id",
+                        "in": "query",
+                        "description": "Resource category id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "resource_category",
+                        "in": "query",
+                        "description": "Resource category name",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Resource Category"
+                ],
+                "summary": "Create a resource_category",
+                "description": "",
+                "operationId": "add_or_update_resource_category",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "resource_category",
+                        "in": "query",
+                        "description": "Resource category  input",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Resource Category"
+                ],
+                "summary": "delete resource category data",
+                "description": "Delete resource category from system",
+                "operationId": "delete_resource_category",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the resource category that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/resource_category/{_id}": {
+            "get": {
+                "tags": [
+                    "Resource Category"
+                ],
+                "summary": "Returns resource_category data",
+                "description": "Returns resource_category data",
+                "operationId": "resource_category_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the resource_category that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid resource_category id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
         "/resource": {
             "get": {
                 "tags": [
@@ -2068,6 +3795,13 @@
                         "type": "string"
                     },
                     {
+                        "name": "resource_category_id",
+                        "in": "query",
+                        "description": "Resource category ID",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
                         "name": "url",
                         "in": "query",
                         "description": "URL of resource",
@@ -2134,6 +3868,13 @@
                         "name": "type",
                         "in": "query",
                         "description": "Type of resource",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "resource_category_id",
+                        "in": "query",
+                        "description": "Resource category ID",
                         "required": true,
                         "type": "string"
                     },
@@ -2427,6 +4168,189 @@
                 ]
             }
         },
+        "/sub_domain": {
+            "get": {
+                "tags": [
+                    "Sub Domain"
+                ],
+                "summary": "Returns list of sub domain",
+                "description": "Returns sub domain data",
+                "operationId": "sub_domain_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Sub Domain"
+                ],
+                "summary": "Update sub domain details",
+                "description": "",
+                "operationId": "add_or_update_sub_domain",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Sub Domain json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Sub Domain"
+                ],
+                "summary": "Create a sub domain",
+                "description": "",
+                "operationId": "add_or_update_sub_domain",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "Sub domain json input",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Sub Domain"
+                ],
+                "summary": "delete sub domain data",
+                "description": "Delete sub domain from system",
+                "operationId": "delete_sub_domain",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the sub domain that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/sub_domain/{_id}": {
+            "get": {
+                "tags": [
+                    "Sub Domain"
+                ],
+                "summary": "Returns sub_domain flow data",
+                "description": "Returns sub domain data",
+                "operationId": "sub_domain_list",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the sub domain that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid sub domain id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
         "/subject": {
             "get": {
                 "tags": [
@@ -2696,10 +4620,19 @@
                 "summary": "User registration into the system",
                 "description": "User registration into the system",
                 "operationId": "register",
+                "consumes": [
+                    "multipart/form-data"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "parameters": [
+                    {
+                        "name": "profile_image",
+                        "in": "formData",
+                        "description": "file to upload",
+                        "type": "file"
+                    },
                     {
                         "name": "first_name",
                         "in": "query",
@@ -2775,6 +4708,101 @@
                     }
                 }
             }
+        },
+        "/forgot_password": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Forgot password",
+                "description": "Reset Password",
+                "operationId": "forgot_password",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "Registered username",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                }
+            }
+        },
+        "/reset_password": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Check if user is initiated for reset of password",
+                "description": "Check if user is initiated for reset of password",
+                "operationId": "user",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "username of the user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid user id"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Forgot password",
+                "description": "Reset Password",
+                "operationId": "reset_password",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "description": "Registered username",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "description": "New password",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                }
+            }
         }
     },
     "definitions": {},
@@ -2807,7 +4835,7 @@
             "description": "Question Type related API's"
         },
         {
-            "name": "organization",
+            "name": "Organization",
             "description": "Organization related API's"
         },
         {
@@ -2840,11 +4868,43 @@
         },
         {
             "name": "Class",
-            "description": "Layout related API's"
+            "description": "Class related API's"
         },
         {
             "name": "Class Flow",
-            "description": "Layout related API's"
+            "description": "Class Flow related API's"
+        },
+        {
+            "name": "Keyword",
+            "description": "Keyword related API's"
+        },
+        {
+            "name": "Domain",
+            "description": "Domain related API's"
+        },
+        {
+            "name": "Sub Domain",
+            "description": "Sub Domain related API's"
+        },
+        {
+            "name": "Knowledge Unit",
+            "description": "Knowledge Unit related API's"
+        },
+        {
+            "name": "Particular",
+            "description": "Particular related API's"
+        },
+        {
+            "name": "Resource Category",
+            "description": "Resource Category related API's"
+        },
+        {
+            "name": "Codex",
+            "description": "Codex related API's"
+        },
+        {
+            "name": "Bulk Upload Page Group",
+            "description": "Bulk upload api for creating page groups"
         }
     ]
 }
