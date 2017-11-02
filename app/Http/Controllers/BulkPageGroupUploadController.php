@@ -118,7 +118,7 @@ class BulkPageGroupUploadController extends Controller {
                 $zipDirectory = public_path("bulk_upload_archives/" .
                         $bulkUploadRequestDetails->_id);
                 $zipFilePath = $zipDirectory . "/" . $archive_file_name;
-                echo $zipFilePath;
+                
                 $metaDataPath = $zipDirectory . "/" . $metaDataFileName;
 
                 $archiveFile->move($zipDirectory, $archive_file_name);
