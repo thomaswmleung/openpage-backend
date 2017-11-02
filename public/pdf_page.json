@@ -1,13 +1,19 @@
 {
-    "_id": "",
     "page_group": {
+        "keywords": ["this is new keyword", "page group keyword"],
+        "title": "test title",
+        "sub_title": "Sub test title",
+        "subject": "test subject",
+        "domain": "domain name",
+        "subdomain": "sub domain name",
         "page": [
             {
                 "page_id": "",
+                "keywords": ["this is page keyword", "page page1 keyword"],
                 "overlay": [
                     {
                         "type": "image",
-                        "url": "http://localhost/openpage-backend/public/images/op.png",
+                        "url": "https://storage.googleapis.com/openpage-bucket-170711/150640709759c9f2b911c78.png",
                         "x": "10",
                         "y": "25",
                         "w": "50",
@@ -32,7 +38,7 @@
                 ],
                 "main":
                         {
-                            
+
                             "header_text": "第1页的标题 this is english",
                             "section": [
                                 {
@@ -46,10 +52,11 @@
                                     "question": [
                                         {
                                             "question_id": "",
+                                            "keywords": ["question key", "seond question"],
                                             "question_type": "mc_with_image",
                                             "answer_cols": 2,
                                             "question_text": "this is first question",
-                                            "image": "http://localhost/openpage-backend/public/images/question_image.png",
+                                            "image": "https://storage.googleapis.com/openpage-bucket-170711/150640720159c9f3218a52f.png",
                                             "answer": [
                                                 {
                                                     "text": "answer1",
@@ -76,7 +83,7 @@
                                             "question_type": "mc_without_image",
                                             "answer_cols": 1,
                                             "question_text": "This is second question",
-                                            "image": "http://localhost/openpage-backend/public/images/question_image.png",
+                                            "image": "https://storage.googleapis.com/openpage-bucket-170711/150640720159c9f3218a52f.png",
                                             "answer": [
                                                 {
                                                     "text": "answer1",
@@ -103,7 +110,7 @@
                 "background": [
                     {
                         "type": "image",
-                        "url": "http://localhost/openpage-backend/public/images/bg.png",
+                        "url": "https://storage.googleapis.com/openpage-bucket-170711/150640728959c9f3794136e.png",
                         "x": "5",
                         "y": "5",
                         "w": "200",
@@ -169,10 +176,11 @@
             },
             {
                 "page_id": "",
+                "keywords": ["this is seocond page keyword", "page page1 page 2222 keyword"],
                 "overlay": [
                     {
                         "type": "image",
-                        "url": "http://localhost/openpage-backend/public/images/op.png",
+                        "url": "https://storage.googleapis.com/openpage-bucket-170711/150640709759c9f2b911c78.png",
                         "x": "10",
                         "y": "25",
                         "w": "50",
@@ -208,10 +216,11 @@
                             "suggestion_box": "",
                             "question": [
                                 {
+                                    "keywords": ["question key", "seond question"],
                                     "question_type": "mc_without_image",
                                     "answer_cols": 1,
                                     "question_text": "Second page question 1",
-                                    "image": "http://localhost/openpage-backend/public/images/question_image.png",
+                                    "image": "https://storage.googleapis.com/openpage-bucket-170711/150640720159c9f3218a52f.png",
                                     "answer": [
                                         {
                                             "text": "answer1",
@@ -235,9 +244,10 @@
                                 },
                                 {
                                     "question_type": "mc_without_image",
+                                    "keywords": ["question key", "seond question"],
                                     "answer_cols": 1,
                                     "question_text": "Second Page Sample question 2",
-                                    "image": "http://localhost/openpage-backend/public/images/question_image.png",
+                                    "image": "https://storage.googleapis.com/openpage-bucket-170711/150640720159c9f3218a52f.png",
                                     "answer": [
                                         {
                                             "text": "answer1",
@@ -264,7 +274,7 @@
                 "background": [
                     {
                         "type": "image",
-                        "url": "http://localhost/openpage-backend/public/images/bg.png",
+                        "url": "https://storage.googleapis.com/openpage-bucket-170711/150640728959c9f3794136e.png",
                         "x": "5",
                         "y": "5",
                         "w": "200",

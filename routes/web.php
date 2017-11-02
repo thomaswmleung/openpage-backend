@@ -154,4 +154,7 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('codex', 'CodexController@create_codex');
     Route::put('codex', 'CodexController@update_codex');
     Route::delete('codex', 'CodexController@delete_codex');
+    
+    Route::get('bulk_upload','BulkPageGroupUploadController@bulk_upload');
+
 });

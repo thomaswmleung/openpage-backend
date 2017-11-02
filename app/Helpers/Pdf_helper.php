@@ -380,7 +380,7 @@ class Pdf_helper {
                                 $question_image_url = $question['image'];
                             }
                             if (isset($question_image_url) AND $question_image_url != "" AND ! filter_var($question_image_url, FILTER_VALIDATE_URL)) {
-                                return response(json_encode(array("error" => "Invalid question image")))->header('Content-Type', 'application/json');
+                                return json_encode(array("error" => "Invalid question image"));
                             }
                             $answer_array = array();
                             if (isset($question['answer'])) {
