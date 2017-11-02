@@ -36,10 +36,7 @@ class OrganizationController extends Controller {
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
+     *   )
      * )
      */
 
@@ -64,10 +61,7 @@ class OrganizationController extends Controller {
      *  @SWG\Response(
      *     response=400,
      *     description="Invalid question type id",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
+     *   )
      * )
      */
     public function organization(Request $request) {

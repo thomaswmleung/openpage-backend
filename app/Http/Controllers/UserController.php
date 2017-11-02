@@ -12,6 +12,7 @@ use App\Helpers\ErrorMessageHelper;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\GCS_helper;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller {
     /**
@@ -320,12 +321,16 @@ class UserController extends Controller {
         $validator = Validator::make($user_data, $rules, $formulated_messages);
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
-            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+//            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            $error = $response_error_array[0]['ERR_MSG'];
+            $url_encode_msg = urlencode($error);
+            return Redirect::to('http://anyonebook.stagingapps.net/#/verify-confirmation?success=false&msg='.$url_encode_msg);
+//            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             $this->activate_user($user_data);
             $responseArray = array("success" => TRUE);
-            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
+            return Redirect::to('http://anyonebook.stagingapps.net/#/verify-confirmation?success=true');
+//            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
     }
 

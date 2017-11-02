@@ -42,82 +42,81 @@
 
     ],
     "toc": [
-        {
-            "type": "unit",
-            "reference_text": "string for reference text",
-            "language_knowledge": "string for knowledge of language",
-            "icon": [
-                "tsa",
-                "star",
-                "ta"
-            ],
-            "particular": [
-                "line1 string",
-                "line2 string"
-            ],
-            "page_code": "2"
-        },
-        {
-            "type": "inline",
-            "reference_text": "string for reference text",
-            "language_knowledge": "string for knowledge of language",
-            "icon": [
-                "tsa",
-                "star",
-                "ta"
-            ],
-            "particular": [
-                "line1 string",
-                "line2 string"
-            ],
-            "page_code": "2"
-        },
-        {
-            "type": "inline",
-            "reference_text": "string for reference text",
-            "language_knowledge": "string for knowledge of language",
-            "icon": [
-                "tsa",
-                "star",
-                "ta"
-            ],
-            "particular": [
-                "line1 string",
-                "line2 string"
-            ],
-            "page_code": "2"
-        },
-        {
-            "type": "unit",
-            "reference_text": "string for reference text",
-            "language_knowledge": "string for knowledge of language",
-            "icon": [
-                "tsa",
-                "star",
-                "ta"
-            ],
-            "particular": [
-                "line1 string",
-                "line2 string"
-            ],
-            "page_code": "2"
-        },
-        {
-            "type": "inline",
-            "reference_text": "string for reference text",
-            "language_knowledge": "string for knowledge of language",
-            "icon": [
-                "tsa",
-                "star",
-                "ta"
-            ],
-            "particular": [
-                "line1 string",
-                "line2 string"
-            ],
-            "page_code": "2"
-        }
-    ],
+  {
+    "unit_number": "unit number",
+    "unit_title": "unit title",
+    "as_exercise": true,
+    "exercises": [
+      {
+        "type": "unit",
+        "reference_text": "string for reference text",
+        "language_knowledge": "string for knowledge of language",
+        "icon": [
+          "tsa",
+          "star",
+          "ta"
+        ],
+        "particular": [
+          "line1 string",
+          "line2 string"
+        ],
+        "page_code": "2"
+      },
+      {
+        "type": "inline",
+        "reference_text": "string for reference text",
+        "language_knowledge": "string for knowledge of language",
+        "icon": [
+          "tsa",
+          "star",
+          "ta"
+        ],
+        "particular": [
+          "line1 string",
+          "line2 string"
+        ],
+        "page_code": "2"
+      }
+    ]
+  },
+  {
+    "unit_number": "unit number",
+    "unit_title": "unit title",
+    "as_exercise": true,
+    "pages": [
+      {
+        "type": "unit",
+        "reference_text": "string for reference text",
+        "language_knowledge": "string for knowledge of language",
+        "icon": [
+          "tsa",
+          "star",
+          "ta"
+        ],
+        "particular": [
+          "line1 string",
+          "line2 string"
+        ],
+        "page_code": "2"
+      },
+      {
+        "type": "inline",
+        "reference_text": "string for reference text",
+        "language_knowledge": "string for knowledge of language",
+        "icon": [
+          "tsa",
+          "star",
+          "ta"
+        ],
+        "particular": [
+          "line1 string",
+          "line2 string"
+        ],
+        "page_code": "2"
+      }
+    ]
+  }
+],
     "cover": {
         "layout": "learnfree",
         "school_logo": "http://localhost/openpage-backend/public/test_images/test.png",

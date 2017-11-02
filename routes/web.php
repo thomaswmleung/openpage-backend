@@ -25,7 +25,10 @@ Route::get('book/{_id}', 'BookController@book_list');
 
 Route::get('codex', 'CodexController@codex');
 Route::get('codex/{cid}', 'CodexController@codex');
-    
+
+Route::get('organization', 'OrganizationController@organization');
+Route::get('organization/{_id}', 'OrganizationController@organization');
+
 Route::group(['middleware' => ['login_auth']], function () {
 
     Route::get('user', 'UserController@user');
@@ -52,13 +55,12 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::put('question_type', 'QuestionTypeController@update_question_type');
     Route::delete('question_type', 'QuestionTypeController@delete_question_type');
 
-    Route::get('organization', 'OrganizationController@organization');
-    Route::get('organization/{_id}', 'OrganizationController@organization');
+
     Route::post('organization', 'OrganizationController@create_organization');
     Route::put('organization', 'OrganizationController@create_organization');
     Route::delete('organization', 'OrganizationController@delete_organization');
 
-    
+
     Route::post('book', 'BookController@create_book');
     Route::put('book', 'BookController@create_book');
     Route::delete('book', 'BookController@delete_book');
@@ -88,69 +90,68 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('subject', 'SubjectController@create_subject');
     Route::put('subject', 'SubjectController@create_subject');
     Route::delete('subject', 'SubjectController@delete_subject');
-    
+
     Route::get('layout', 'LayoutController@layout_list');
     Route::get('layout/{_id}', 'LayoutController@layout_list');
     Route::post('layout', 'LayoutController@add_or_update_layout');
     Route::put('layout', 'LayoutController@add_or_update_layout');
     Route::delete('layout', 'LayoutController@delete_layout');
-    
+
     Route::get('resource', 'ResourceController@resource');
     Route::get('resource/{_id}', 'ResourceController@resource');
     Route::post('resource', 'ResourceController@create_or_update_resource');
     Route::put('resource', 'ResourceController@create_or_update_resource');
     Route::delete('resource', 'ResourceController@delete_resource');
-    
+
     Route::get('class', 'ClassController@class_list');
     Route::get('class/{_id}', 'ClassController@class_list');
     Route::post('class', 'ClassController@add_or_update_class');
     Route::put('class', 'ClassController@add_or_update_class');
     Route::delete('class', 'ClassController@delete_class');
-    
+
     Route::get('class_flow', 'ClassFlowController@class_flow_list');
     Route::get('class_flow/{_id}', 'ClassFlowController@class_flow_list');
     Route::post('class_flow', 'ClassFlowController@add_or_update_class_flow');
     Route::put('class_flow', 'ClassFlowController@add_or_update_class_flow');
     Route::delete('class_flow', 'ClassFlowController@delete_class_flow');
-   
-    Route::get('keyword','KeywordController@keyword_list');
-    Route::get('keyword/{_id}','KeywordController@keyword_list');
-    Route::post('keyword','KeywordController@create_or_update_keyword');
-    Route::put('keyword','KeywordController@create_or_update_keyword');
-    Route::delete('keyword','KeywordController@delete_keyword');
-    
+
+    Route::get('keyword', 'KeywordController@keyword_list');
+    Route::get('keyword/{_id}', 'KeywordController@keyword_list');
+    Route::post('keyword', 'KeywordController@create_or_update_keyword');
+    Route::put('keyword', 'KeywordController@create_or_update_keyword');
+    Route::delete('keyword', 'KeywordController@delete_keyword');
+
     Route::get('domain', 'DomainController@domain_list');
     Route::get('domain/{_id}', 'DomainController@domain_list');
     Route::post('domain', 'DomainController@add_or_update_domain');
     Route::put('domain', 'DomainController@add_or_update_domain');
     Route::delete('domain', 'DomainController@delete_domain');
-    
+
     Route::get('sub_domain', 'SubDomainController@sub_domain_list');
     Route::get('sub_domain/{_id}', 'SubDomainController@sub_domain_list');
     Route::post('sub_domain', 'SubDomainController@add_or_update_sub_domain');
     Route::put('sub_domain', 'SubDomainController@add_or_update_sub_domain');
     Route::delete('sub_domain', 'SubDomainController@delete_sub_domain');
-    
+
     Route::get('knowledge_unit', 'KnowledgeUnitController@knowledge_unit_list');
     Route::get('knowledge_unit/{_id}', 'KnowledgeUnitController@knowledge_unit_list');
     Route::post('knowledge_unit', 'KnowledgeUnitController@add_or_update_knowledge_unit');
     Route::put('knowledge_unit', 'KnowledgeUnitController@add_or_update_knowledge_unit');
     Route::delete('knowledge_unit', 'KnowledgeUnitController@delete_knowledge_unit');
-    
+
     Route::get('particular', 'ParticularController@particular_list');
     Route::get('particular/{_id}', 'ParticularController@particular_list');
     Route::post('particular', 'ParticularController@add_or_update_particular');
     Route::put('particular', 'ParticularController@add_or_update_particular');
     Route::delete('particular', 'ParticularController@delete_particular');
-    
+
     Route::get('resource_category', 'ResourceCategoryController@resource_category_list');
     Route::get('resource_category/{_id}', 'ResourceCategoryController@resource_category_list');
     Route::post('resource_category', 'ResourceCategoryController@add_or_update_resource_category');
     Route::put('resource_category', 'ResourceCategoryController@add_or_update_resource_category');
     Route::delete('resource_category', 'ResourceCategoryController@delete_resource_category');
-    
+
     Route::post('codex', 'CodexController@create_codex');
     Route::put('codex', 'CodexController@update_codex');
     Route::delete('codex', 'CodexController@delete_codex');
-
 });
