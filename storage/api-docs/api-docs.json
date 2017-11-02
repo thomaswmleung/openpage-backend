@@ -108,7 +108,6 @@
                                 "level",
                                 "title",
                                 "published_year"
-                                "year"
                             ]
                         },
                         "collectionFormat": "multi"
@@ -269,6 +268,112 @@
                         "description": "Invalid book id"
                     }
                 }
+            }
+        },
+        "/bulk_upload": {
+            "post": {
+                "tags": [
+                    "Bulk Upload Page Group"
+                ],
+                "summary": "Bulk upload api for creating page groups",
+                "description": "Bulk upload api for creating page groups",
+                "operationId": "bulk_upload",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "archive_file",
+                        "in": "formData",
+                        "description": "Archive file to upload(.zip)",
+                        "required": true,
+                        "type": "file"
+                    },
+                    {
+                        "name": "meta_data_csv_file",
+                        "in": "formData",
+                        "description": "Meta data file to upload(.xlsx)",
+                        "required": true,
+                        "type": "file"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/get_bulk_upload_request_list": {
+            "get": {
+                "tags": [
+                    "Bulk Upload Page Group"
+                ],
+                "summary": "Returns bulk upload data",
+                "description": "Returns bulk upload  data",
+                "operationId": "get_bulk_upload_request_list",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid request"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/get_bulk_upload_details/{req_id}": {
+            "get": {
+                "tags": [
+                    "Bulk Upload Page Group"
+                ],
+                "summary": "Returns Bulk Upload details",
+                "description": "Returns Bulk Upload details",
+                "operationId": "get_bulk_upload_details",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "req_id",
+                        "in": "path",
+                        "description": "ID of the bulk upload to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid id"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
             }
         },
         "/class": {
@@ -2035,118 +2140,6 @@
             "put": {
                 "tags": [
                     "Organization"
-                ],
-                "summary": "Updating organization information",
-                "description": "Updation of organization",
-                "operationId": "create_organization",
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "_id",
-                        "in": "query",
-                        "description": "ID of organization",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "name",
-                        "in": "query",
-                        "description": "Name of the organization",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "address",
-                        "in": "query",
-                        "description": "address of the organization",
-                        "type": "string"
-                    },
-                    {
-                        "name": "email",
-                        "in": "query",
-                        "description": "email of the organization",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "contact_person",
-                        "in": "query",
-                        "description": "contact person of the organization",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "type",
-                        "in": "query",
-                        "description": "Type of the organization",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "user_id[]",
-                        "in": "query",
-                        "description": "The user ids of organization",
-                        "required": true,
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "multi"
-                    },
-                    {
-                        "name": "logo",
-                        "in": "query",
-                        "description": "logo of the organization",
-                        "type": "string"
-                    },
-                    {
-                        "name": "remark",
-                        "in": "query",
-                        "description": "remark of the organization",
-                        "type": "string"
-                    },
-                    {
-                        "name": "consultant[]",
-                        "in": "query",
-                        "description": "The consultants of organization",
-                        "required": true,
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "multi"
-                    },
-                    {
-                        "name": "role[]",
-                        "in": "query",
-                        "description": "The roles of organization",
-                        "required": true,
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "collectionFormat": "multi"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation"
-                    },
-                    "400": {
-                        "description": "Invalid data supplied"
-                    }
-                },
-                "security": [
-                    {
-                        "token": []
-                    }
-                ]
-            },
-            "put": {
-                "tags": [
-                    "organization"
                 ],
                 "summary": "Updating organization information",
                 "description": "Updation of organization",
@@ -4900,6 +4893,10 @@
         {
             "name": "Codex",
             "description": "Codex related API's"
+        },
+        {
+            "name": "Bulk Upload Page Group",
+            "description": "Bulk upload api for creating page groups"
         }
     ]
 }
