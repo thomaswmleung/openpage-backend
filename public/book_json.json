@@ -1,264 +1,268 @@
 {
-  "_id": "",
-  "page": [
-    {
-      "type": "exercise/test",
-      "_id": "page_id",
-      "unit": "string for unit",
-      "topic": "string for topic",
-      "page_code": "",
-      "page_title": "",
-      "royalty": "",
-      "author": [
-        "line1",
-        "line2",
-        "line3"
-      ],
-      "page_number": "number"
-    },
-    {
-      "type": "exercise/test",
-      "_id": "page_id",
-      "unit": "string for unit",
-      "topic": "string for topic",
-      "page_code": "",
-      "page_title": "",
-      "royalty": "",
-      "author": [
-        "line1",
-        "line2",
-        "line3"
-      ],
-      "page_number": "number"
-    },
-    {
-      "type": "exercise/test",
-      "_id": "page_id",
-      "unit": "string for unit",
-      "topic": "string for topic",
-      "page_code": "",
-      "page_title": "",
-      "royalty": "",
-      "author": [
-        "line1",
-        "line2",
-        "line3"
-      ],
-      "page_number": "number"
-    },
-    {
-      "type": "exercise/test",
-      "_id": "page_id",
-      "unit": "string for unit",
-      "topic": "string for topic",
-      "page_code": "",
-      "page_title": "",
-      "royalty": "",
-      "author": [
-        "line1",
-        "line2",
-        "line3"
-      ],
-      "page_number": "number"
-    },
-    {
-      "type": "exercise/test",
-      "_id": "page_id",
-      "unit": "string for unit",
-      "topic": "string for topic",
-      "page_code": "",
-      "page_title": "",
-      "royalty": "",
-      "author": [
-        "line1",
-        "line2",
-        "line3"
-      ],
-      "page_number": "number"
-    },
-    {
-      "type": "exercise/test",
-      "_id": "page_id",
-      "unit": "string for unit",
-      "topic": "string for topic",
-      "page_code": "",
-      "page_title": "",
-      "royalty": "",
-      "author": [
-        "line1",
-        "line2",
-        "line3"
-      ],
-      "page_number": "number"
-    },
-    {
-      "type": "exercise/test",
-      "_id": "page_id",
-      "unit": "string for unit",
-      "topic": "string for topic",
-      "page_code": "",
-      "page_title": "",
-      "royalty": "",
-      "author": [
-        "line1",
-        "line2",
-        "line3"
-      ],
-      "page_number": "number"
-    },
-    {
-      "type": "exercise/test",
-      "_id": "page_id",
-      "unit": "string for unit",
-      "topic": "string for topic",
-      "page_code": "",
-      "page_title": "",
-      "royalty": "",
-      "author": [
-        "line1",
-        "line2",
-        "line3"
-      ],
-      "page_number": "number"
-    }
-  ],
-  "toc": [
-    {
-      "type": "unit/inline",
-      "reference_text": "string for reference text",
-      "language_knowledge": "string for knowledge of language",
-      "icon": [
-        "tsa",
-        "star",
-        "ta"
-      ],
-      "particular": [
-        "line1 string",
-        "line2 string"
-      ],
-      "page_code": "2"
-    },
-    {
-      "type": "unit/inline",
-      "reference_text": "string for reference text",
-      "language_knowledge": "string for knowledge of language",
-      "icon": [
-        "tsa",
-        "star",
-        "ta"
-      ],
-      "particular": [
-        "line1 string",
-        "line2 string"
-      ],
-      "page_code": "2"
-    },
-    {
-      "type": "unit/inline",
-      "reference_text": "string for reference text",
-      "language_knowledge": "string for knowledge of language",
-      "icon": [
-        "tsa",
-        "star",
-        "ta"
-      ],
-      "particular": [
-        "line1 string",
-        "line2 string"
-      ],
-      "page_code": "2"
-    },
-    {
-      "type": "unit/inline",
-      "reference_text": "string for reference text",
-      "language_knowledge": "string for knowledge of language",
-      "icon": [
-        "tsa",
-        "star",
-        "ta"
-      ],
-      "particular": [
-        "line1 string",
-        "line2 string"
-      ],
-      "page_code": "2"
-    },
-    {
-      "type": "unit/inline",
-      "reference_text": "string for reference text",
-      "language_knowledge": "string for knowledge of language",
-      "icon": [
-        "tsa",
-        "star",
-        "ta"
-      ],
-      "particular": [
-        "line1 string",
-        "line2 string"
-      ],
-      "page_code": "2"
-    }
-  ],
-  "cover": {
-    "layout": "learnfree",
-    "title": "string",
-    "subtitle": "string",
-    "school_logo": "logo_image_url",
-    "school_name": "string",
-    "cover_image": "image_url",
-    "level": "p1",
-    "color": "lightgreen/red/blue/yellow/purple",
-    "version": "string",
-    "toc_text": [
-      {
-        "string": "string in first page",
-        "font_size": "20px"
-      },
-      {
-        "string": "string in second page",
-        "font_size": "14px"
-      }
+    "_id": "598d5ae5c74b1b04e4004dcd",
+    "title": "Sample Title Book",
+    "subtitle": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    "codex_id": "59ad508135686e261c000876",
+    "author":"iLearners",
+    "published_year":2015,
+    "publisher":"iLearners",
+    "isbn": "9780241956001",
+    "price": 1050.00,
+    "page": [
+        {
+            "type": "exercise/test",
+            "_id": "page_id",
+            "unit": "string for unit",
+            "topic": "string for topic",
+            "page_code": "",
+            "page_title": "",
+            "royalty": "",
+            "author": [
+                "line1",
+                "line2",
+                "line3"
+            ],
+            "page_number": "number"
+        },
+        {
+            "type": "exercise/test",
+            "_id": "page_id",
+            "unit": "string for unit",
+            "topic": "string for topic",
+            "page_code": "",
+            "page_title": "",
+            "royalty": "",
+            "author": [
+                "line1",
+                "line2",
+                "line3"
+            ],
+            "page_number": "number"
+        },
+        {
+            "type": "exercise/test",
+            "_id": "page_id",
+            "unit": "string for unit",
+            "topic": "string for topic",
+            "page_code": "",
+            "page_title": "",
+            "royalty": "",
+            "author": [
+                "line1",
+                "line2",
+                "line3"
+            ],
+            "page_number": "number"
+        },
+        {
+            "type": "exercise/test",
+            "_id": "page_id",
+            "unit": "string for unit",
+            "topic": "string for topic",
+            "page_code": "",
+            "page_title": "",
+            "royalty": "",
+            "author": [
+                "line1",
+                "line2",
+                "line3"
+            ],
+            "page_number": "number"
+        },
+        {
+            "type": "exercise/test",
+            "_id": "page_id",
+            "unit": "string for unit",
+            "topic": "string for topic",
+            "page_code": "",
+            "page_title": "",
+            "royalty": "",
+            "author": [
+                "line1",
+                "line2",
+                "line3"
+            ],
+            "page_number": "number"
+        },
+        {
+            "type": "exercise/test",
+            "_id": "page_id",
+            "unit": "string for unit",
+            "topic": "string for topic",
+            "page_code": "",
+            "page_title": "",
+            "royalty": "",
+            "author": [
+                "line1",
+                "line2",
+                "line3"
+            ],
+            "page_number": "number"
+        },
+        {
+            "type": "exercise/test",
+            "_id": "page_id",
+            "unit": "string for unit",
+            "topic": "string for topic",
+            "page_code": "",
+            "page_title": "",
+            "royalty": "",
+            "author": [
+                "line1",
+                "line2",
+                "line3"
+            ],
+            "page_number": "number"
+        },
+        {
+            "type": "exercise/test",
+            "_id": "page_id",
+            "unit": "string for unit",
+            "topic": "string for topic",
+            "page_code": "",
+            "page_title": "",
+            "royalty": "",
+            "author": [
+                "line1",
+                "line2",
+                "line3"
+            ],
+            "page_number": "number"
+        }
     ],
-    "icon_text": [
-      {
-        "code": "tsa",
-        "image_url": "tsa icon image url",
-        "label": "label text of tsa"
-      }
+    "toc": [
+        {
+            "type": "unit/inline",
+            "reference_text": "string for reference text",
+            "language_knowledge": "string for knowledge of language",
+            "icon": [
+                "tsa",
+                "star",
+                "ta"
+            ],
+            "particular": [
+                "line1 string",
+                "line2 string"
+            ],
+            "page_code": "2"
+        },
+        {
+            "type": "unit/inline",
+            "reference_text": "string for reference text",
+            "language_knowledge": "string for knowledge of language",
+            "icon": [
+                "tsa",
+                "star",
+                "ta"
+            ],
+            "particular": [
+                "line1 string",
+                "line2 string"
+            ],
+            "page_code": "2"
+        },
+        {
+            "type": "unit/inline",
+            "reference_text": "string for reference text",
+            "language_knowledge": "string for knowledge of language",
+            "icon": [
+                "tsa",
+                "star",
+                "ta"
+            ],
+            "particular": [
+                "line1 string",
+                "line2 string"
+            ],
+            "page_code": "2"
+        },
+        {
+            "type": "unit/inline",
+            "reference_text": "string for reference text",
+            "language_knowledge": "string for knowledge of language",
+            "icon": [
+                "tsa",
+                "star",
+                "ta"
+            ],
+            "particular": [
+                "line1 string",
+                "line2 string"
+            ],
+            "page_code": "2"
+        },
+        {
+            "type": "unit/inline",
+            "reference_text": "string for reference text",
+            "language_knowledge": "string for knowledge of language",
+            "icon": [
+                "tsa",
+                "star",
+                "ta"
+            ],
+            "particular": [
+                "line1 string",
+                "line2 string"
+            ],
+            "page_code": "2"
+        }
     ],
-    "toc_footer_text": "string for toc footer",
-    "royalty_text": "string for royalty"
-  },
-  "syllabus": {
-    "subject": "CHINESE/ENGLISH/MATH/GROW for searching purpose",
-    "domain": [
-      {
-        "_id": "",
-        "code": "domain_code",
-        "title": "domain_title"
-      }
+    "cover": {
+        "layout": "learnfree",
+        "school_logo": "https://storage.googleapis.com/openpage-bucket-170711/150535998859b9f87486c2a.jpg",
+        "school_name": "string",
+        "cover_image": "https://storage.googleapis.com/openpage-bucket-170711/150535998859b9f87486c2a.jpg",
+        "level": "p1",
+        "color": "lightgreen/red/blue/yellow/purple",
+        "version": "string",
+        "toc_text": [
+            {
+                "string": "string in first page",
+                "font_size": "20px"
+            },
+            {
+                "string": "string in second page",
+                "font_size": "14px"
+            }
+        ],
+        "icon_text": [
+            {
+                "code": "tsa",
+                "image_url": "tsa icon image url",
+                "label": "label text of tsa"
+            }
+        ],
+        "toc_footer_text": "string for toc footer",
+        "royalty_text": "string for royalty"
+    },
+    "syllabus": {
+        "subject": "CHINESE/ENGLISH/MATH/GROW for searching purpose",
+        "domain": [
+            {
+                "_id": "",
+                "code": "domain_code",
+                "title": "domain_title"
+            }
+        ],
+        "subdomain": [
+            {
+                "_id": "",
+                "code": "subdomain_code",
+                "title": "subdomain_title"
+            }
+        ],
+        "knowledge_unit": [
+            {
+                "_id": "",
+                "code": "knowledge_unit_code",
+                "title": "knowledge_unit_title"
+            }
+        ]
+    },
+    "keyword": [
+        "key1",
+        "key2",
+        "key3"
     ],
-    "subdomain": [
-      {
-        "_id": "",
-        "code": "subdomain_code",
-        "title": "subdomain_title"
-      }
-    ],
-    "knowledge_unit": [
-      {
-        "_id": "",
-        "code": "knowledge_unit_code",
-        "title": "knowledge_unit_title"
-      }
-    ]
-  },
-  "keyword": [
-    "key1",
-    "key2",
-    "key3"
-  ],
-  "organisation": "59ad508135686e261c000876",
-  "created_by": "5977575c32081ddc19000035",
-  "updated_by": "5977575c32081ddc19000035"
+    "organisation": "59ad508135686e261c000876"
 }

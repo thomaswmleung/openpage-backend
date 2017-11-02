@@ -7,7 +7,9 @@ use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 class BookModel extends Eloquent {
 
     protected $collection = 'book';
-    protected $fillable = array('page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation', 'preview_url', 'preview_images', 'created_by', 'updated_by');
+    protected $fillable = array('title','subtitle','author','published_year','publisher','isbn','price',
+        'codex_id','page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation',
+        'preview_url', 'preview_images', 'created_by', 'updated_by');
 
     public function create_book($insert_data, $main_id) {
         //$result = MainModel::create($insert_data);
@@ -34,6 +36,10 @@ class BookModel extends Eloquent {
         if (isset($query_details['organisation'])) {
             $organisation = $query_details['organisation'];
         }
+        $codex_id = "";
+        if (isset($query_details['codex_id'])) {
+            $codex_id = $query_details['codex_id'];
+        }
         $school_name = "";
         if (isset($query_details['school_name'])) {
             $school_name = $query_details['school_name'];
@@ -53,28 +59,26 @@ class BookModel extends Eloquent {
         if ($sort_by == "level") {
             $sort_by = "cover.level";
         }
-        if ($sort_by == "title") {
-            $sort_by = "cover.title";
-        }
-        if ($sort_by == "year") {
-            $sort_by = "cover.year";
-        }
+    
         $order_by = $query_details['order_by'];
 
-        if ($search_key != "" || $organisation != "" || $school_name != "" || $title != "" || $subtitle != "" || $level != "" || $version != "" || $subject != "" || count($keywords_array)>0) {
+        if ($search_key != "" || $organisation != "" || $codex_id != "" || $school_name != "" || $title != "" || $subtitle != "" || $level != "" || $version != "" || $subject != "" || count($keywords_array)>0) {
             $book_data = BookModel::
                     Where(function($filterByQuery)use ($query_details) {
                         if ($query_details['organisation'] != "") {
                             $filterByQuery->where('organisation', 'like', $query_details['organisation']);
                         }
+                        if ($query_details['codex_id'] != "") {
+                            $filterByQuery->where('codex_id', 'like', $query_details['codex_id']);
+                        }
                         if ($query_details['school_name'] != "") {
                             $filterByQuery->where('cover.school_name', 'like', $query_details['school_name']);
                         }
                         if ($query_details['title'] != "") {
-                            $filterByQuery->where('cover.title', 'like', $query_details['title']);
+                            $filterByQuery->where('title', 'like', $query_details['title']);
                         }
                         if ($query_details['subtitle'] != "") {
-                            $filterByQuery->where('cover.subtitle', 'like', $query_details['subtitle']);
+                            $filterByQuery->where('subtitle', 'like', $query_details['subtitle']);
                         }
                         if ($query_details['level'] != "") {
                             $filterByQuery->where('cover.level', 'like', $query_details['level']);
@@ -112,6 +116,10 @@ class BookModel extends Eloquent {
         } else {
             $search_key = "";
         }
+        $codex_id = "";
+        if (isset($query_details['codex_id'])) {
+            $codex_id = $query_details['codex_id'];
+        }
         if (isset($query_details['organisation'])) {
             $organisation = $query_details['organisation'];
         } else {
@@ -128,20 +136,23 @@ class BookModel extends Eloquent {
         $version = $query_details['version'];
         $subject = $query_details['subject'];
         $keywords_array = $query_details['keywords'];
-        if ($search_key != "" || $organisation != "" || $school_name != "" || $title != "" || $subtitle != "" || $level != "" || $version != "" || $subject != "" || count($keywords_array)>0) {
+        if ($search_key != "" || $organisation != "" || $codex_id != "" || $school_name != "" || $title != "" || $subtitle != "" || $level != "" || $version != "" || $subject != "" || count($keywords_array)>0) {
             $total_count = BookModel::
                     Where(function($filterByQuery)use ($query_details) {
                         if ($query_details['organisation'] != "") {
                             $filterByQuery->where('organisation',$query_details['organisation']);
                         }
+                        if ($query_details['codex_id'] != "") {
+                            $filterByQuery->where('codex_id', 'like', $query_details['codex_id']);
+                        }
                         if ($query_details['school_name'] != "") {
                             $filterByQuery->where('cover.school_name','like', $query_details['school_name']);
                         }
                         if ($query_details['title'] != "") {
-                            $filterByQuery->where('cover.title', 'like', $query_details['title']);
+                            $filterByQuery->where('title', 'like', $query_details['title']);
                         }
                         if ($query_details['subtitle'] != "") {
-                            $filterByQuery->where('cover.subtitle', 'like', $query_details['subtitle']);
+                            $filterByQuery->where('subtitle', 'like', $query_details['subtitle']);
                         }
                         if ($query_details['level'] != "") {
                             $filterByQuery->where('cover.level', 'like', $query_details['level']);

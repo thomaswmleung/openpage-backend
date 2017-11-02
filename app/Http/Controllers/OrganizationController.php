@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 class OrganizationController extends Controller {
     /**
      * @SWG\Get(path="/organization",
-     * tags={"organization"},
+     * tags={"Organization"},
      *   summary="Returns list of organizations",
      *   description="Returns organization  data",
      *   operationId="organization",
@@ -36,16 +36,13 @@ class OrganizationController extends Controller {
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
+     *   )
      * )
      */
 
     /**
      * @SWG\Get(path="/organization/{_id}",
-     * tags={"organization"},
+     * tags={"Organization"},
      *   summary="Returns organization data",
      *   description="Returns organization data",
      *   operationId="organization",
@@ -64,10 +61,7 @@ class OrganizationController extends Controller {
      *  @SWG\Response(
      *     response=400,
      *     description="Invalid question type id",
-     *   ),
-     *   security={{
-     *     "token":{}
-     *   }}
+     *   )
      * )
      */
     public function organization(Request $request) {
@@ -116,7 +110,7 @@ class OrganizationController extends Controller {
 
     /**
      * @SWG\Post(path="/organization",
-     *   tags={"organization"},
+     *   tags={"Organization"},
      *   summary="Creating/Storing new organization",
      *   description="Creation of organization",
      *   operationId="create_organization",
@@ -212,7 +206,7 @@ class OrganizationController extends Controller {
      */
     /**
      * @SWG\Put(path="/organization",
-     *   tags={"organization"},
+     *   tags={"Organization"},
      *   summary="Updating organization information",
      *   description="Updation of organization",
      *   operationId="create_organization",
@@ -372,7 +366,7 @@ class OrganizationController extends Controller {
 
     /**
      * @SWG\Delete(path="/organization",
-     *   tags={"organization"},
+     *   tags={"Organization"},
      *   summary="delete organization data",
      *   description="Delete organization in the system",
      *   operationId="delete_organization",

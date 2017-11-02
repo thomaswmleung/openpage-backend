@@ -817,10 +817,10 @@ class Pdf_helper {
         //setting book title
 
         $fpdf->SetXY(5, 5);
-        $book_title = $book_data_array['cover']['title'];
+        $book_title = $book_data_array['title'];
         $fpdf->MultiCell(200, 10, $book_title, 0, 'C');
         $fpdf->SetXY(5, $fpdf->GetY());
-        $sub_title = $book_data_array['cover']['subtitle'];
+        $sub_title = $book_data_array['subtitle'];
         $fpdf->SetFont('msjh', '', 12);
         $fpdf->MultiCell(200, 5, $sub_title, 0, 'C');
 
@@ -861,57 +861,60 @@ class Pdf_helper {
         $tocy = $fpdf->GetY();
         $fpdf->SetFont('msjh', '', 12);
         foreach ($toc_array as $toc) {
+            
+         
+            $exercises_array = $toc['exercises'];
+            
+            foreach ($exercises_array as $exercise) {
+                
+                if ($exercise['type'] == 'unit') {
+                    $fpdf->SetFillColor(147, 148, 150);
+                    $fpdf->MultiCell(205, 10, $exercise['reference_text'], 0, 'L', true);
+                    $tocy = $fpdf->GetY();
+                } else if ($exercise['type'] == 'inline') {
 
-//            var_dump($toc);
-//            exit();
-            if ($toc['type'] == 'unit') {
-                $fpdf->SetFillColor(147, 148, 150);
-                $fpdf->MultiCell(205, 10, $toc['reference_text'], 0, 'L', true);
-                $tocy = $fpdf->GetY();
-            } else if ($toc['type'] == 'inline') {
-
-                $fpdf->SetFont('msjh', '', 8);
-                $fpdf->SetXY($toc_col1x, $tocy);
-                $fpdf->MultiCell($toc_col1_width, 5, $toc['reference_text'], 0, 'L');
-                $fpdf->SetFont('msjh', '', 12);
-                $fpdf->SetXY($toc_col2x, $tocy + 0.5);
-                $fpdf->SetFillColor(234, 238, 239);
-                $fpdf->MultiCell($toc_col2_width, 10, $toc['language_knowledge'], 0, 'L', true);
+                    $fpdf->SetFont('msjh', '', 8);
+                    $fpdf->SetXY($toc_col1x, $tocy);
+                    $fpdf->MultiCell($toc_col1_width, 5, $exercise['reference_text'], 0, 'L');
+                    $fpdf->SetFont('msjh', '', 12);
+                    $fpdf->SetXY($toc_col2x, $tocy + 0.5);
+                    $fpdf->SetFillColor(234, 238, 239);
+                    $fpdf->MultiCell($toc_col2_width, 10, $exercise['language_knowledge'], 0, 'L', true);
 //            
-                $particular_str = "";
-                foreach ($toc['particular'] as $particular) {
-                    $particular_str .= $particular . "\n";
+                    $particular_str = "";
+                    foreach ($exercise['particular'] as $particular) {
+                        $particular_str .= $particular . "\n";
+                    }
+                    $fpdf->SetFont('msjh', '', 8);
+                    $fpdf->SetXY($toc_col3x, $tocy + 0.5);
+                    $fpdf->MultiCell($toc_col3_width, 5, $particular_str, 0, 'L');
+                    $fpdf->SetFont('msjh', '', 12);
+
+
+                    $fpdf->SetXY($toc_col4x, $tocy);
+                    $fpdf->MultiCell($toc_col4_width, 10, $exercise['page_code'], 0, 'L');
+
+
+
+                    $tocy = $fpdf->GetY();
+
+                    $fpdf->Line(5, $tocy, 210, $tocy);
+
+//            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
+//            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
                 }
-                $fpdf->SetFont('msjh', '', 8);
-                $fpdf->SetXY($toc_col3x, $tocy + 0.5);
-                $fpdf->MultiCell($toc_col3_width, 5, $particular_str, 0, 'L');
-                $fpdf->SetFont('msjh', '', 12);
-
-
-                $fpdf->SetXY($toc_col4x, $tocy);
-                $fpdf->MultiCell($toc_col4_width, 10, $toc['page_code'], 0, 'L');
-
-
-
-                $tocy = $fpdf->GetY();
-
-                $fpdf->Line(5, $tocy, 210, $tocy);
-
-//            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
-//            $fpdf->MultiCell(205, 10,$toc['reference_text'] , 0, 'L',true);
+                if ($fpdf->CheckPageBreak(30)) {
+                    $fpdf->AddPage();
+                    $tocy = 30;
+                    $actualPDFPageIndex++;
+                }
+                $fpdf->SetXY(5, $tocy);
             }
-            if ($fpdf->CheckPageBreak(30)) {
-                $fpdf->AddPage();
-                $tocy = 30;
-                $actualPDFPageIndex++;
-            }
-            $fpdf->SetXY(5, $tocy);
         }
 
         $page_array = $book_data_array['page'];
-
+        $pageIndex = 0;
         foreach ($page_array AS $page_details) {
-            $pageIndex = 0;
             $actualPageIndexArray = array();
             array_push($actualPageIndexArray, $actualPDFPageIndex);
             $fpdf->AddPage();
@@ -1013,7 +1016,7 @@ class Pdf_helper {
         return $book_data_array;
     }
 
-    public function generate_page_pdf_from_json($page_json,$isTeacherCopy=FALSE) {
+    public function generate_page_pdf_from_json($page_json, $isTeacherCopy = FALSE) {
         $page = json_decode($page_json, true);
         // create new blank page
         $fpdf = new tFPDF();
@@ -1447,7 +1450,7 @@ class Pdf_helper {
             return $responseArray;
         }
 
-                // generate images
+        // generate images
         if (!file_exists(public_path('pdf_images'))) {
             mkdir(public_path('pdf_images'), 0777, true);
         }

@@ -75,6 +75,12 @@ return [
     'book_keyword_required' => array('error_code'=>'E1406','error_message' =>"Book Keyword is Required."),
     'book_organisation_required' => array('error_code'=>'E1407','error_message' =>"Organisation is Required."),
     'invalid_book_id' => array('error_code'=>'E1408','error_message' =>"Invalid Book ID."),
+    'book_title_required' => array('error_code'=>'E1409','error_message' =>"Book title is Required."),
+    'book_author_required' => array('error_code'=>'E1410','error_message' =>"Book author is Required."),
+    'book_published_year_required' => array('error_code'=>'E1411','error_message' =>"Book Published year is Required."),
+    'book_publisher_required' => array('error_code'=>'E1412','error_message' =>"Book Publisher is Required."),
+    'book_isbn_required' => array('error_code'=>'E1413','error_message' =>"Book ISBN is Required."),
+    'book_price_required' => array('error_code'=>'E1414','error_message' =>"Book Price is Required."),
     
     'subject_id_required' => array('error_code'=>'E1501','error_message' =>"Subject ID is Required."),
     'subject_code_required' => array('error_code'=>'E1502','error_message' =>"Subject Code is Required."),
@@ -134,5 +140,6 @@ return [
     'codex_created_by_required' => array('error_code'=>'E2507','error_message' =>"Created by is required."),
     'invalid_codex_created_by' => array('error_code'=>'E2508','error_message' =>"Created by has invalid id."),
     'invalid_codex_id' =>array('error_code'=>'E2509','error_message' =>"Invalid codex id.") ,
+    'codex_id_required' => array('error_code'=>'E2510','error_message' =>"Codex id is required"),
 
 ];

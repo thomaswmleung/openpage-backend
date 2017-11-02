@@ -79,6 +79,12 @@ class BookController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="codex_id",
+     *     in="query",
+     *     description="Filter by codex",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="skip",
      *     in="query",
      *     description="this is offset or skip the records",
@@ -97,7 +103,7 @@ class BookController extends Controller {
      *         type="array",
      *         @SWG\Items(
      *             type="string",
-     *             enum={"created_at","school_name","level","title","year"},
+     *             enum={"created_at","school_name","level","title","published_year"},
      *             default="created_at"
      *         ),
      *         collectionFormat="multi"
@@ -169,6 +175,10 @@ class BookController extends Controller {
             if (isset($request->organization_id)) {
                 $organization_id = $request->organization_id;
             }
+            $codex_id = "";
+            if (isset($request->codex_id)) {
+                $codex_id = $request->codex_id;
+            }
             $title = "";
             if (isset($request->title)) {
                 $title = $request->title;
@@ -216,6 +226,7 @@ class BookController extends Controller {
             $query_details = array(
                 'search_key' => $search_key,
                 'organisation' => $organization_id,
+                'codex_id' => $codex_id,
                 'school_name' => $school_name,
                 'title' => $title,
                 'subtitle' => $subtitle,
@@ -300,8 +311,16 @@ class BookController extends Controller {
             return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
         }
 
-        
+
         $book_array = array(
+            'title' => $book_data_array['title'],
+            'subtitle' => $book_data_array['subtitle'],
+            'author' => $book_data_array['author'],
+            'published_year' => $book_data_array['published_year'],
+            'publisher' => $book_data_array['publisher'],
+            'isbn' => $book_data_array['isbn'],
+            'price' => $book_data_array['price'],
+            'codex_id' => $book_data_array['page'],
             'page' => $book_data_array['page'],
             'toc' => $book_data_array['toc'],
             'cover' => $book_data_array['cover'],
@@ -311,6 +330,13 @@ class BookController extends Controller {
         );
 
         $rules = array(
+            'title' => 'required',
+            'author' => 'required',
+            'published_year' => 'required',
+            'publisher' => 'required',
+            'isbn' => 'required',
+            'price' => 'required',
+            'codex_id' => 'required',
             'page' => 'required',
             'toc' => 'required',
             'cover' => 'required',
@@ -328,6 +354,14 @@ class BookController extends Controller {
 
         $messages = [
             '_id.required' => config('error_constants.book_id_required'),
+            'title.required' => config('error_constants.book_title_required'),
+            'author.required' => config('error_constants.book_author_required'),
+            'published_year.required' => config('error_constants.book_published_year_required'),
+            'publisher.required' => config('error_constants.book_publisher_required'),
+            'isbn.required' => config('error_constants.book_isbn_required'),
+            'price.required' => config('error_constants.book_price_required'),
+            'codex_id.required' => config('error_constants.codex_id_required'),
+            'codex_id.exists' => config('error_constants.invalid_codex_id'),
             'page.required' => config('error_constants.book_page_required'),
             'toc.required' => config('error_constants.book_toc_required'),
             'cover.required' => config('error_constants.book_cover_required'),
@@ -436,21 +470,30 @@ class BookController extends Controller {
 
 
             $data_array = array(
+                'title' => $book_data_array['title'],
+                'subtitle' => $book_data_array['subtitle'],
+                'author' => $book_data_array['author'],
+                'published_year' => $book_data_array['published_year'],
+                'publisher' => $book_data_array['publisher'],
+                'isbn' => $book_data_array['isbn'],
+                'price' => $book_data_array['price'],
+                'codex_id' => $book_data_array['codex_id'],
                 'page' => $book_data_array['page'],
                 'toc' => $book_data_array['toc'],
                 'cover' => $book_data_array['cover'],
                 'syllabus' => $book_data_array['syllabus'],
                 'keyword' => $book_data_array['keyword'],
                 'organisation' => $book_data_array['organisation'],
-                'preview_url' => $book_data_array['preview_image_array'],
-                'preview_images' => $book_data_array['preview_url'],
-                'updated_by' => $user_id
+                'preview_url' => $book_data_array['preview_url'],
+                'preview_images' => $book_data_array['preview_image_array'],
             );
 
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $data_array['created_by'] = $user_id;
+            }else{
+                $data_array['updated_by'] = $user_id;
             }
-            
+
             $book_id = "";
             if (isset($book_data_array['_id'])) {
                 $book_id = $book_data_array['_id'];

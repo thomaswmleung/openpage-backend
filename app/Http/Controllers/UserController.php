@@ -12,6 +12,7 @@ use App\Helpers\ErrorMessageHelper;
 use Illuminate\Support\Facades\Log;
 use App\Helpers\GCS_helper;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller {
     /**
@@ -165,6 +166,12 @@ class UserController extends Controller {
      *     required=true,
      *     type="string"
      *   ),
+     *   @SWG\Parameter(
+     *     name="organization_id",
+     *     in="query",
+     *     description="Organization id",
+     *     type="string"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -173,12 +180,17 @@ class UserController extends Controller {
      * )
      */
     public function register(Request $request) {
+        $organization_id="";
+        if(isset($request->organization_id)){
+            $organization_id = trim($request->organization_id);
+        }
         $user_data = array(
             'profile_image' => $request->file('profile_image'),
             'first_name' => trim($request->first_name),
             'last_name' => trim($request->last_name),
             'email' => strtolower(trim($request->email)),
             'password' => trim($request->password),
+            'organization_id' => $organization_id,
         );
         $rules = array(
             'first_name' => 'required',
@@ -186,6 +198,9 @@ class UserController extends Controller {
             'password' => 'required',
             'email' => 'min:3|required|email|unique:users,email'
         );
+        if($organization_id != ""){
+            $rules['organization_id'] = "exists:organization,_id";
+        }
         if ($request->hasFile('profile_image')) {
             $rules['profile_image'] = 'mimes:jpeg,png,jpg,tiff,gif';
         }
@@ -196,7 +211,8 @@ class UserController extends Controller {
             'email.email' => config('error_constants.email_vaild'),
             'email.required' => config('error_constants.email_required'),
             'email.unique' => config('error_constants.email_already_taken'),
-            'password.required' => config('error_constants.password_required')
+            'password.required' => config('error_constants.password_required'),
+            'organization_id.exists' => config('error_constants.organization_doesnot_exist'),
         ];
 
 
@@ -305,12 +321,16 @@ class UserController extends Controller {
         $validator = Validator::make($user_data, $rules, $formulated_messages);
         if ($validator->fails()) {
             $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
-            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
-            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+//            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            $error = $response_error_array[0]['ERR_MSG'];
+            $url_encode_msg = urlencode($error);
+            return Redirect::to('http://anyonebook.stagingapps.net/#/verify-confirmation?success=false&msg='.$url_encode_msg);
+//            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             $this->activate_user($user_data);
             $responseArray = array("success" => TRUE);
-            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
+            return Redirect::to('http://anyonebook.stagingapps.net/#/verify-confirmation?success=true');
+//            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
     }
 
