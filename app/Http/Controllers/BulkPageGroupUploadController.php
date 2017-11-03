@@ -53,9 +53,13 @@ class BulkPageGroupUploadController extends Controller {
      */
     public function bulk_upload(Request $request) {
 
+
+        if (!file_exists(public_path("bulk_upload_archives"))) {
+            mkdir(public_path("bulk_upload_archives"), 0777, true);
+        }
         $objPHPExcel = new PHPExcel();
-        $zipDirectory = public_path("bulk_upload_archives/sample.zip");
-        $zip = new ZipArchive();
+//        $zipDirectory = public_path("bulk_upload_archives/sample.zip");
+//        $zip = new ZipArchive();
 //        $targetPath = public_path('bulk_upload_archives/target_path1');
 //        if ($zip->open($zipDirectory) === TRUE) {
 //            $zip->extractTo($targetPath);
@@ -115,16 +119,16 @@ class BulkPageGroupUploadController extends Controller {
 
 
 
-                $zipDirectory = public_path("bulk_upload_archives/" .
+                $zipDirectory = public_path("bulk_upload_archives". DIRECTORY_SEPARATOR.
                         $bulkUploadRequestDetails->_id);
                 $zipFilePath = $zipDirectory . "/" . $archive_file_name;
-                
+
                 $metaDataPath = $zipDirectory . "/" . $metaDataFileName;
 
                 $archiveFile->move($zipDirectory, $archive_file_name);
                 $metaDataFile->move($zipDirectory, $metaDataFile->getClientOriginalName());
                 $zip = new ZipArchive();
-                $targetPath = public_path('bulk_upload_archives/' . $bulkUploadRequestDetails->_id);
+                $targetPath = public_path('bulk_upload_archives'. DIRECTORY_SEPARATOR. $bulkUploadRequestDetails->_id);
                 if ($zip->open($zipFilePath) === TRUE) {
                     $zip->extractTo($targetPath);
                     $zip->close();
@@ -330,7 +334,7 @@ class BulkPageGroupUploadController extends Controller {
         }
     }
 
-        /**
+    /**
      * @SWG\Get(path="/get_bulk_upload_request_list",
      *   tags={"Bulk Upload Page Group"},
      *   summary="Returns bulk upload data",
@@ -350,7 +354,6 @@ class BulkPageGroupUploadController extends Controller {
      *   }}
      * )
      */
-    
     public function get_bulk_upload_request_list() {
 
         $bulkUploadRequestModel = new BulkUploadRequestModel();
