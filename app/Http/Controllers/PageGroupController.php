@@ -627,6 +627,14 @@ class PageGroupController extends Controller {
                 if(isset($page_data_array['page_group']['subdomain'])){
                     $subdomain = $page_data_array['page_group']['subdomain'];
                 }
+                $level_of_difficulty = "";
+                if(isset($page_data_array['page_group']['level_of_difficulty'])){
+                    $level_of_difficulty = $page_data_array['page_group']['level_of_difficulty'];
+                }
+                $level_of_scaffolding = "";
+                if(isset($page_data_array['page_group']['level_of_scaffolding'])){
+                    $level_of_scaffolding = $page_data_array['page_group']['level_of_scaffolding'];
+                }
                 
                 
                 if(!isset($page_data_array['layout'])){
@@ -659,6 +667,8 @@ class PageGroupController extends Controller {
                     'student_preview_image_array' => $page_data_array['preview_image_array'],
                     'teacher_copy_preview_url' => $teachersCopyArray['preview_url'],
                     'teacher_preview_image_array' => $teachersCopyArray['preview_image_array'],
+                    'level_of_difficulty' => $level_of_difficulty,
+                    'level_of_scaffolding' => $level_of_scaffolding,
                 );
                 
                 if ($request->isMethod('post')) {

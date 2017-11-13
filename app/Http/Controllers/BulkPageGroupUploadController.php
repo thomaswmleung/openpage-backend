@@ -168,6 +168,8 @@ class BulkPageGroupUploadController extends Controller {
                     $page_group_domain = $rowData[0][4];
                     $page_group_sub_domain = $rowData[0][5];
                     $page_group_teacher_copy = $rowData[0][6];
+                    $level_of_difficulty = $rowData[0][7];
+                    $level_of_scaffolding = $rowData[0][8];
 
                     $queueData = array(
                         'bulk_request_id' => $bulkUploadRequestDetails->_id,
@@ -178,7 +180,9 @@ class BulkPageGroupUploadController extends Controller {
                         'domain' => $page_group_domain,
                         'sub_domain' => $page_group_sub_domain,
                         'teacher_copy' => $page_group_teacher_copy,
-                        'status' => 'PENDING'
+                        'status' => 'PENDING',
+                        'level_of_difficulty' => $level_of_difficulty,
+                        'level_of_scaffolding' => $level_of_scaffolding
                     );
 
                     $bulkUploadQueueModel = new BulkUploadQueueModel();
@@ -212,8 +216,10 @@ class BulkPageGroupUploadController extends Controller {
 //        exit();
         $bulkUploadQueueModel = new BulkUploadQueueModel();
         $queue_entity = $bulkUploadQueueModel->fetch_pending_entity();
-
+        Log::error("Started to pick the queue");
         if ($queue_entity != NULL) {
+            
+            Log::error("FOUND Item in queue" . $queue_entity->_id);
             $bulkUploadReqId = $queue_entity->bulk_request_id;
             $queue_id = $queue_entity->_id;
 
@@ -233,16 +239,20 @@ class BulkPageGroupUploadController extends Controller {
 
                 $gcs_upload_file_name = $bulkUploadReqId . '_' . $queue_entity->import_file_name;
                 $upload_file_path = $tmp_folder_path . DIRECTORY_SEPARATOR . $gcs_upload_file_name;
-                copy($input_file, $upload_file_path);
-
+                if(!copy($input_file, $upload_file_path)){
+                    Log::error("Failed to copy the file ===>  " .$upload_file_path );
+                }
+                
+                
                 // Upload file to GCS
 
                 $gcs_result = GCS_helper::upload_to_gcs($upload_file_path);
 
                 //upload image to GCS
                 if (!$gcs_result) {
+                    Log::error("File failed to upload to GCS ==> " . $upload_file_path);
                     $responseArray['error'] = "Error in upload of GCS";
-                    return $responseArray;
+                    exit();
                 }
                 unlink($upload_file_path);
 
@@ -264,7 +274,9 @@ class BulkPageGroupUploadController extends Controller {
                         'subject' => $queue_entity->subject,
                         'domain' => $queue_entity->domain,
                         'subdomain' => $queue_entity->sub_domain,
-                        'page' => array()
+                        'page' => array(),
+                        'level_of_difficulty' => $queue_entity->level_of_difficulty,
+                        'level_of_scaffolding' => $queue_entity->level_of_scaffolding,
                 ));
                 $ch = curl_init();
                 $url = "http://localhost/openpage-backend/public/page_group";
@@ -282,7 +294,7 @@ class BulkPageGroupUploadController extends Controller {
                 $page_group_response_json = curl_exec($ch);
 
                 curl_close($ch);
-                echo "<pre>";
+                 Log::error("Page Group CURL result ==>" . $page_group_response_json);
                 $page_group_details = json_decode($page_group_response_json, TRUE);
                 $page_group_id = $page_group_details['page_group_id'];
 

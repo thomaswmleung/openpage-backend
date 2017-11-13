@@ -10,7 +10,7 @@ class BulkUploadQueueModel extends Eloquent {
 
     protected $collection = 'bulk_upload_queue';
     protected $fillable = array('bulk_request_id', 'import_file_name', 'page_group_title', 'page_group_subtitle', 'subject', 'domain',
-        'sub_domain', 'teacher_copy', 'status');
+        'sub_domain', 'teacher_copy', 'status','level_of_difficulty','level_of_scaffolding');
 
     public function add_to_queue($requestArray) {
         $result = BulkUploadQueueModel::create($requestArray);

@@ -11,7 +11,7 @@ class PageGroupModel extends Eloquent {
     protected $collection = 'page_group';
     protected $fillable = array('page', 'title', 'sub_title', 'subject', 'domain', 'subdomain', 'preview_url', 'teacher_copy_preview_url',
         'student_copy_preview_url', 'teacher_preview_image_array',
-        'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus');
+        'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus','level_of_difficulty','level_of_scaffolding');
 
     public function add_page_group($insert_data) {
         $result = PageGroupModel::create($insert_data);
