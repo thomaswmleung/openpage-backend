@@ -83,7 +83,7 @@
     "unit_number": "unit number",
     "unit_title": "unit title",
     "as_exercise": true,
-    "pages": [
+    "exercises": [
       {
         "type": "unit",
         "reference_text": "string for reference text",

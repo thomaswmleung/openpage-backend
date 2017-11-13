@@ -862,8 +862,10 @@ class Pdf_helper {
         $fpdf->SetFont('msjh', '', 12);
         foreach ($toc_array as $toc) {
             
-         
-            $exercises_array = $toc['exercises'];
+            $exercises_array = array();
+            if(isset($toc['exercises'])){
+                $exercises_array = $toc['exercises'];
+            }
             
             foreach ($exercises_array as $exercise) {
                 

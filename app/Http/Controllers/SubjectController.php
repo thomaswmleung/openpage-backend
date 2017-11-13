@@ -130,7 +130,7 @@ class SubjectController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="subject json input",
+     *     description="subject json input <br> Sample JSON to create subject http://www.jsoneditoronline.org/?id=e4805b21d8f8188e0375118c97724e09",
      *     required=true,
      *     @SWG\Schema()
      *   ),
@@ -156,7 +156,7 @@ class SubjectController extends Controller {
      *   @SWG\Parameter(
      *     in="body",
      *     name="data",
-     *     description="Subject json input",
+     *     description="Subject json input <br> Sample JSON to update subject http://jsoneditoronline.org/?id=071768eec0c9b53452c094e462b1adf1",
      *     required=true,
      *     @SWG\Schema()
      *   ),
