@@ -236,10 +236,10 @@ class StaticHtmlPageController extends Controller {
 
         $staticHtmlPageModel = new StaticHtmlPageModel();
         $static_page_id = $staticHtmlPageModel->create_or_update_static_html_page($static_html_page_array, $static_html_page_id);
-        if ($static_page_id != "") {
-            $success_msg = 'Static page Successfully';
+        if ($request->isMethod('put')) {
+            $success_msg = 'Static page updated successfully';
         } else {
-            $success_msg = 'Static page Created Successfully';
+            $success_msg = 'Static page created successfully';
         }
         $result_data = array(
             'id'=>$static_page_id,
