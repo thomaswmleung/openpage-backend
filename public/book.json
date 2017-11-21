@@ -3,9 +3,9 @@
     "title": "Sample Title Book",
     "subtitle": "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
     "codex_id": "59ad508135686e261c000876",
-    "author":"iLearners",
-    "published_year":2015,
-    "publisher":"iLearners",
+    "author": "iLearners",
+    "published_year": 2015,
+    "publisher": "iLearners",
     "isbn": "9780241956001",
     "price": 1050.00,
     "page": [
@@ -42,81 +42,81 @@
 
     ],
     "toc": [
-  {
-    "unit_number": "unit number",
-    "unit_title": "unit title",
-    "as_exercise": true,
-    "exercises": [
-      {
-        "type": "unit",
-        "reference_text": "string for reference text",
-        "language_knowledge": "string for knowledge of language",
-        "icon": [
-          "tsa",
-          "star",
-          "ta"
-        ],
-        "particular": [
-          "line1 string",
-          "line2 string"
-        ],
-        "page_code": "2"
-      },
-      {
-        "type": "inline",
-        "reference_text": "string for reference text",
-        "language_knowledge": "string for knowledge of language",
-        "icon": [
-          "tsa",
-          "star",
-          "ta"
-        ],
-        "particular": [
-          "line1 string",
-          "line2 string"
-        ],
-        "page_code": "2"
-      }
-    ]
-  },
-  {
-    "unit_number": "unit number",
-    "unit_title": "unit title",
-    "as_exercise": true,
-    "exercises": [
-      {
-        "type": "unit",
-        "reference_text": "string for reference text",
-        "language_knowledge": "string for knowledge of language",
-        "icon": [
-          "tsa",
-          "star",
-          "ta"
-        ],
-        "particular": [
-          "line1 string",
-          "line2 string"
-        ],
-        "page_code": "2"
-      },
-      {
-        "type": "inline",
-        "reference_text": "string for reference text",
-        "language_knowledge": "string for knowledge of language",
-        "icon": [
-          "tsa",
-          "star",
-          "ta"
-        ],
-        "particular": [
-          "line1 string",
-          "line2 string"
-        ],
-        "page_code": "2"
-      }
-    ]
-  }
-],
+        {
+            "unit_number": "unit number",
+            "unit_title": "unit title",
+            "as_exercise": true,
+            "exercises": [
+                {
+                    "type": "unit",
+                    "reference_text": "first referenece text",
+                    "language_knowledge": "string for first of language",
+                    "icon": [
+                        "tsa",
+                        "star",
+                        "ta"
+                    ],
+                    "particular": [
+                        "line1 string",
+                        "line2 string"
+                    ],
+                    "page_code": "2"
+                },
+                {
+                    "type": "inline",
+                    "reference_text": "second for reference text",
+                    "language_knowledge": "second for knowledge of language",
+                    "icon": [
+                        "tsa",
+                        "star",
+                        "ta"
+                    ],
+                    "particular": [
+                        "line1 string",
+                        "line2 string"
+                    ],
+                    "page_code": "2"
+                }
+            ]
+        },
+        {
+            "unit_number": "unit number",
+            "unit_title": "unit title",
+            "as_exercise": true,
+            "exercises": [
+                {
+                    "type": "unit",
+                    "reference_text": "third string for reference text",
+                    "language_knowledge": "third string for knowledge of language",
+                    "icon": [
+                        "tsa",
+                        "star",
+                        "ta"
+                    ],
+                    "particular": [
+                        "line1 string",
+                        "line2 string"
+                    ],
+                    "page_code": "3"
+                },
+                {
+                    "type": "inline",
+                    "reference_text": " fourth string for reference text",
+                    "language_knowledge": "fourth string for knowledge of language",
+                    "icon": [
+                        "tsa",
+                        "star",
+                        "ta"
+                    ],
+                    "particular": [
+                        "line1 string",
+                        "line2 string"
+                    ],
+                    "page_code": "4"
+                }
+            ]
+        }
+    ],
     "cover": {
         "layout": "learnfree",
         "school_logo": "http://localhost/openpage-backend/public/test_images/test.png",
@@ -175,5 +175,4 @@
         "string"
     ],
     "organisation": "59ad508135686e261c000876"
-  
 }

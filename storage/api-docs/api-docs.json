@@ -4154,6 +4154,197 @@
                 ]
             }
         },
+        "/static_html_page": {
+            "get": {
+                "tags": [
+                    "Static HTML page"
+                ],
+                "summary": "Returns list of static pages",
+                "description": "Returns static pages data",
+                "operationId": "static_html_page",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "search_key",
+                        "in": "query",
+                        "description": "Search parameter or key word to search",
+                        "type": "string"
+                    },
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "description": "this is offset or skip the records",
+                        "type": "integer"
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Number of records to be retrieved ",
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Static HTML page"
+                ],
+                "summary": "Update static page details",
+                "description": "Update static page details",
+                "operationId": "add_or_update_static_html_page",
+                "consumes": [
+                    "application/x-www-form-urlencoded"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "static_html_page_id",
+                        "in": "query",
+                        "description": "static page id",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "page_code",
+                        "in": "query",
+                        "description": "Page code of the static page",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content",
+                        "in": "query",
+                        "description": "Page content of the static page",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Static HTML page"
+                ],
+                "summary": "Create a static_html_page",
+                "description": "",
+                "operationId": "add_or_update_static_html_page",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "page_code",
+                        "in": "query",
+                        "description": "Page code of the static page",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "content",
+                        "in": "query",
+                        "description": "Page content of the static page",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Static HTML page"
+                ],
+                "summary": "delete static page data",
+                "description": "Delete static page from system",
+                "operationId": "delete_static_html_page",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "query",
+                        "description": "ID of the static page that needs to be deleted",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data supplied"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
+        "/static_html_page/{_id}": {
+            "get": {
+                "tags": [
+                    "Static HTML page"
+                ],
+                "summary": "Returns Static page data",
+                "description": "Returns Static page data",
+                "operationId": "static_html_page",
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "_id",
+                        "in": "path",
+                        "description": "ID of the static html page that needs to be displayed",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid static html page id"
+                    }
+                }
+            }
+        },
         "/sub_domain": {
             "get": {
                 "tags": [
@@ -4396,7 +4587,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "Subject json input",
+                        "description": "Subject json input <br> Sample JSON to update subject http://jsoneditoronline.org/?id=071768eec0c9b53452c094e462b1adf1",
                         "required": true,
                         "schema": {}
                     }
@@ -4432,7 +4623,7 @@
                     {
                         "name": "data",
                         "in": "body",
-                        "description": "subject json input",
+                        "description": "subject json input <br> Sample JSON to create subject http://www.jsoneditoronline.org/?id=e4805b21d8f8188e0375118c97724e09",
                         "required": true,
                         "schema": {}
                     }
@@ -4897,6 +5088,10 @@
         {
             "name": "Bulk Upload Page Group",
             "description": "Bulk upload api for creating page groups"
+        },
+        {
+            "name": "Static HTML page",
+            "description": "Static HTML page related API's"
         }
     ]
 }
