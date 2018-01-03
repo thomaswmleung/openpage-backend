@@ -10,8 +10,9 @@ class PageGroupModel extends Eloquent {
 
     protected $collection = 'page_group';
     protected $fillable = array('page', 'title', 'sub_title', 'subject', 'domain', 'subdomain', 'preview_url', 'teacher_copy_preview_url',
-        'student_copy_preview_url', 'teacher_preview_image_array',
-        'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus','level_of_difficulty','level_of_scaffolding');
+        'student_copy_preview_url', 'teacher_preview_image_array', 'parent_page_group_id', 'versions', 'affiliation', 'current_version_details',
+        'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus', 'level_of_difficulty', 'level_of_scaffolding',
+        'codex', 'area', 'author', 'remark');
 
     public function add_page_group($insert_data) {
         $result = PageGroupModel::create($insert_data);
@@ -52,6 +53,11 @@ class PageGroupModel extends Eloquent {
             } else {
                 $search_key = "";
             }
+            if (isset($query_details['codex'])) {
+                $codex = $query_details['codex'];
+            } else {
+                $codex = "";
+            }
             if (isset($query_details['title'])) {
                 $title = $query_details['title'];
             } else {
@@ -85,9 +91,12 @@ class PageGroupModel extends Eloquent {
         $sort_by = $query_details['sort_by'];
         $order_by = $query_details['order_by'];
 
-        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "") {
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "" || $codex != "") {
             $page_group_data = PageGroupModel::
                     Where(function($filterByQuery)use ($query_details) {
+                        if ($query_details['codex'] != "") {
+                            $filterByQuery->where('codex', 'like', $query_details['codex']);
+                        }
                         if ($query_details['title'] != "") {
                             $filterByQuery->where('title', 'like', $query_details['title']);
                         }
@@ -119,15 +128,28 @@ class PageGroupModel extends Eloquent {
                             ->orWhere('sub_title', 'like', "%$search_key%")
                             ->orWhere('subject', 'like', "%$search_key%")
                             ->orWhere('domain', 'like', "%$search_key%")
+                            ->orWhere('syllabus', 'like', "%$search_key%")
+                            ->orWhere('syllabus.knowledge_unit', 'like', "%$search_key%")
+                            ->orWhere('affiliation.publisher', 'like', "%$search_key%")
+                            ->orWhere('affiliation.book_title', 'like', "%$search_key%")
+                            ->orWhere('affiliation.version', 'like', "%$search_key%")
+                            ->orWhere('affiliation.unit', 'like', "%$search_key%")
+                            ->orWhere('affiliation.lesson_title', 'like', "%$search_key%")
+                            ->orWhere('level_of_difficulty', 'like', "%$search_key%")
+                            ->orWhere('codex', 'like', "%$search_key%")
+                            ->orWhere('area', 'like', "%$search_key%")
+                            ->orWhere('author', 'like', "%$search_key%")
+                            ->orWhere('remark', 'like', "%$search_key%")
                             ->orWhere('subdomain', 'like', "%$search_key%");
                         }
                     })
+                    ->Where('parent_page_group_id', '=', NULL)
                     ->skip($skip)
                     ->take($limit)
                     ->orderBy($sort_by, $order_by)
                     ->get();
         } else {
-            $page_group_data = PageGroupModel::skip($skip)->take($limit)->orderBy($sort_by, $order_by)->get();
+            $page_group_data = PageGroupModel::skip($skip)->Where('parent_page_group_id', '=', NULL)->take($limit)->orderBy($sort_by, $order_by)->get();
         }
         return $page_group_data;
     }
@@ -137,6 +159,11 @@ class PageGroupModel extends Eloquent {
         $search_key = "";
         if (isset($query_details['search_key'])) {
             $search_key = $query_details['search_key'];
+        }
+        if (isset($query_details['codex'])) {
+            $codex = $query_details['codex'];
+        } else {
+            $codex = "";
         }
         $title = "";
         if (isset($query_details['title'])) {
@@ -171,9 +198,12 @@ class PageGroupModel extends Eloquent {
             $created_by = $query_details['created_by'];
         }
 
-        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "") {
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "" || $codex != "") {
             $total_count = PageGroupModel::
                     Where(function($filterByQuery)use ($query_details) {
+                        if ($query_details['codex'] != "") {
+                            $filterByQuery->where('codex', 'like', $query_details['codex']);
+                        }
                         if ($query_details['title'] != "") {
                             $filterByQuery->where('title', 'like', $query_details['title']);
                         }
@@ -183,7 +213,7 @@ class PageGroupModel extends Eloquent {
                         if ($query_details['created_by'] != "") {
                             $filterByQuery->where('created_by', 'like', $query_details['created_by']);
                         }
-                         if ($query_details['subject'] != "") {
+                        if ($query_details['subject'] != "") {
                             $filterByQuery->where('subject', 'like', $query_details['subject']);
                         }
                         if ($query_details['domain'] != "") {
@@ -204,12 +234,25 @@ class PageGroupModel extends Eloquent {
                             ->orWhere('sub_title', 'like', "%$search_key%")
                             ->orWhere('subject', 'like', "%$search_key%")
                             ->orWhere('domain', 'like', "%$search_key%")
+                            ->orWhere('syllabus', 'like', "%$search_key%")
+                            ->orWhere('syllabus.knowledge_unit', 'like', "%$search_key%")
+                            ->orWhere('affiliation.publisher', 'like', "%$search_key%")
+                            ->orWhere('affiliation.book_title', 'like', "%$search_key%")
+                            ->orWhere('affiliation.version', 'like', "%$search_key%")
+                            ->orWhere('affiliation.unit', 'like', "%$search_key%")
+                            ->orWhere('affiliation.lesson_title', 'like', "%$search_key%")
+                            ->orWhere('level_of_difficulty', 'like', "%$search_key%")
+                            ->orWhere('codex', 'like', "%$search_key%")
+                            ->orWhere('area', 'like', "%$search_key%")
+                            ->orWhere('author', 'like', "%$search_key%")
+                            ->orWhere('remark', 'like', "%$search_key%")
                             ->orWhere('subdomain', 'like', "%$search_key%");
                         }
                     })
+                    ->Where('parent_page_group_id', '=', NULL)
                     ->count();
         } else {
-            $total_count = PageGroupModel::count();
+            $total_count = PageGroupModel::Where('parent_page_group_id', '=', NULL)->count();
         }
         return $total_count;
     }
@@ -221,10 +264,12 @@ class PageGroupModel extends Eloquent {
             $pagesArray = $page_group_info->page;
 //            \Illuminate\Support\Facades\Log::error(json_encode($pagesArray));
             $page_detail_array = array();
-            foreach ($pagesArray as $page_id) {
-                $page_detail = PageModel::get_page_details($page_id);
-                if ($page_detail != NULL) {
-                    array_push($page_detail_array, $page_detail);
+            if (is_array($pagesArray)) {
+                foreach ($pagesArray as $page_id) {
+                    $page_detail = PageModel::get_page_details($page_id);
+                    if ($page_detail != NULL) {
+                        array_push($page_detail_array, $page_detail);
+                    }
                 }
             }
             $page_group_info->page = $page_detail_array;
@@ -232,8 +277,17 @@ class PageGroupModel extends Eloquent {
 
         return $page_group_info;
     }
-    
-    
-    
+
+    public function version_update($page_group_id, $version_data) {
+        $result = PageGroupModel::where('_id', $page_group_id)
+                ->push('versions', $version_data);
+        return $result;
+    }
+
+    public function affiliation_update($page_group_id, $affiliation_data) {
+        $result = PageGroupModel::where('_id', $page_group_id)
+                ->push('affiliation', $affiliation_data);
+        return $result;
+    }
 
 }

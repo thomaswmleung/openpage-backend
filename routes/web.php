@@ -13,6 +13,7 @@
 
 Route::post('login', 'LoginController@login');
 Route::get('log_out', 'LoginController@log_out');
+Route::get('backup', 'BackupController@backup_db');
 
 Route::post('register', 'UserController@register');
 Route::get('activate', 'UserController@activate');

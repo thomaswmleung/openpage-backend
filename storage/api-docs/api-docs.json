@@ -2699,6 +2699,12 @@
                         "type": "string"
                     },
                     {
+                        "name": "codex",
+                        "in": "query",
+                        "description": "Filter by codex",
+                        "type": "string"
+                    },
+                    {
                         "name": "title",
                         "in": "query",
                         "description": "Filter by title",
