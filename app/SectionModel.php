@@ -8,8 +8,8 @@ use App\QuestionsModel;
 class SectionModel extends Eloquent {
 
     protected $collection = 'section';
-    protected $fillable = array('instruction_text', 'section_type', 'start_question_no', 
-        'with_sample_question', 'answer_cols', 'suggestion_box','paraBox', 'question');
+    protected $fillable = array('instruction_text','instruction', 'paraBox','section_type', 'start_question_no', 
+        'with_sample_question', 'answer_cols', 'suggestion_box','paraBox', 'question','table','table_data');
 
     public function add_section($insert_data, $section_id) {
         // $result = SectionModel::create($insert_data);
@@ -20,15 +20,23 @@ class SectionModel extends Eloquent {
     }
 
     public static function get_section_details($section_id) {
-        $section_details = SectionModel::find($section_id);
-
-        $question_id_array = $section_details->question;
+        $section_details = SectionModel::find($section_id)->toArray();
+        $section_details['instruction'] = array();
+        $section_details['instruction']['text'] = $section_details['instruction_text'];
+//        var_dump($section_details);
+//        exit();
+        if(isset($section_details['section_type'])){
+        $section_details['type'] = $section_details['section_type'];
+        }else{
+            $section_details['type'] = "";
+        }
+        $question_id_array = $section_details['question'];
         $question_details_array = array();
         foreach ($question_id_array as $question_id) {
             $q_details = QuestionsModel::get_question_details($question_id);
             array_push($question_details_array, $q_details);
         }
-        $section_details->question = $question_details_array;
+        $section_details['question'] = $question_details_array;
         return $section_details;
     }
 

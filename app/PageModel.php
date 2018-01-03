@@ -142,15 +142,15 @@ class PageModel extends Eloquent {
 
     public static function get_page_details($page_id) {
         $page_details = array();
-        $page_model_data = PageModel::find($page_id);
+        $page_model_data = PageModel::find($page_id)->toArray();
 
         if ($page_model_data != NULL) {
-            $page_details['overlay'] = $page_model_data->overlay;
-            $page_details['background'] = $page_model_data['background'];
+//            $page_details['overlay'] = $page_model_data['overlay'];
+//            $page_details['background'] = $page_model_data['background'];
 
-            $main_id = $page_model_data->main_id;
+            $main_id = $page_model_data['main_id'];
             $main_details = MainModel::get_main_details($main_id);
-            $page_model_data->main_details = $main_details;
+            $page_model_data['main'] = $main_details;
             return $page_model_data;
         } else {
             return FALSE;
