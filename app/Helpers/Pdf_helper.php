@@ -295,7 +295,7 @@ class Pdf_helper {
         return json_encode($responseArray);
     }
 
-    public function getStringHeight($fpdf, $width, $lineHeight, $text) {
+    static public function getStringHeight($fpdf, $width, $lineHeight, $text) {
         $tempPdf = clone $fpdf;
         $currentY = $tempPdf->GetY();
 
@@ -673,7 +673,46 @@ class Pdf_helper {
         
         // End of QR code
         
-        
+        // Start of affiliation
+//
+
+        if (isset($page['affiliation'])) {
+            $affiliation_details = $page['affiliation'];
+        } else {
+            $affiliation_details = array();
+        }
+
+
+        if (isset($affiliation_details['position-coordinates'])) {
+            $affiliation_coordinates = $affiliation_details['position-coordinates'];
+
+            if (!isset($affiliation_details['position-coordinates']['x'])) {
+                $affiliation_coordinates['x'] = 5;
+            }
+
+            if (!isset($affiliation_details['position-coordinates']['y'])) {
+                $affiliation_coordinates['y'] = 5;
+            }
+
+            if (!isset($affiliation_details['position-coordinates']['max-width'])) {
+                $affiliation_coordinates['max-width'] = 10;
+            }
+        } else {
+            $affiliation_coordinates = array();
+            $affiliation_coordinates['x'] = 5;
+            $affiliation_coordinates['y'] = 5;
+            $affiliation_coordinates['max-width'] = 10;
+        }
+
+
+
+        if (isset($affiliation_details['text'])) {
+            $fpdf->SetXY($affiliation_coordinates['x'], $affiliation_coordinates['y']);
+            $fpdf->SetFont('msjhb', '', 10);
+            $fpdf->MultiCell($affiliation_coordinates['max-width'], 5, $affiliation_details['text'], 0);
+        }
+
+        //end of affiliation
         // End of Book specific details
         // displaying background image
 
@@ -719,13 +758,14 @@ class Pdf_helper {
             $page_section_array = $page['main']['section'];
             $sectionCount = 0;
 
-
+            $sectionStartX = 20;
             foreach ($page_section_array as $section) {
 
                 // Handling of different question types
                 if (isset($section['instruction']['text'])) {
-
-                    $fpdf->SetXY(10, $fpdf->GetY());
+                    
+                    
+                    $fpdf->SetXY($sectionStartX, $fpdf->GetY());
                     $fpdf->SetFont('msjh', '', 18);
 //                            $fpdf->MultiCell(200, 5, $section['instruction']['text'], 0, 'L');
                     $fpdf->Write(7, $section['instruction']['text']);
@@ -733,7 +773,7 @@ class Pdf_helper {
                 }else if (isset($section['instruction_text'])) {
                     $section_instruction_text = $section['instruction_text'];
                     // display section instruction
-                    $fpdf->SetXY(10, $fpdf->GetY() + 5);
+                    $fpdf->SetXY($sectionStartX, $fpdf->GetY() + 5);
                     $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
                 }
                 
@@ -750,14 +790,14 @@ class Pdf_helper {
 
                     if (!is_array($section['paraBox']['text'])) {
                         $paraBoxStartY = $fpdf->GetY() + 5;
-                        $fpdf->SetXY(10, $fpdf->GetY() + 5);
-                        $fpdf->MultiCell(190, 10, str_replace('\r', "\n", $section['paraBox']['text']), 1, 'L');
+                        $fpdf->SetXY($sectionStartX, $fpdf->GetY() + 5);
+                        $fpdf->MultiCell(180, 10, str_replace('\r', "\n", $section['paraBox']['text']), 1, 'L');
 
                         $paraBoxEndY = $fpdf->GetY();
                         $totalLines = abs(($paraBoxEndY - $paraBoxStartY) / 10);
                         for ($paraBoxLineIndex = 0; $paraBoxLineIndex <= $totalLines; $paraBoxLineIndex += 5) {
                             if ($paraBoxLineIndex != 0) {
-                                $fpdf->SetXY(200, ($paraBoxLineIndex * 10) + $paraBoxStartY - 10);
+                                $fpdf->SetXY(190, ($paraBoxLineIndex * 10) + $paraBoxStartY - 10);
                                 $fpdf->MultiCell(10, 10, $paraBoxLineIndex, 0, 'L');
                             }
                         }
@@ -843,7 +883,7 @@ class Pdf_helper {
                     for ($optionIndex = 0; $optionIndex < sizeof($optionsArray); $optionIndex++) {
 
 //                               $lines = $fpdf->NbLines($optionWidth, $optionsArray[$optionIndex]);
-                        $lineHeight = $this->getStringHeight($fpdf, $optionWidth, 7, $optionsArray[$optionIndex]);
+                        $lineHeight = Pdf_helper::getStringHeight($fpdf, $optionWidth, 7, $optionsArray[$optionIndex]);
 //                                    echo $lineHeight;
 //                                    echo "<br/>";
 //                                    if ($lineHeight >= 7) {
@@ -1229,14 +1269,14 @@ class Pdf_helper {
                     } else if (isset($section['type']) AND
                             $section['type'] == "rewrite_sentences_1") {
                         $currentY = $fpdf->GetY() + 7;
-                        $question_x = 20;
-                        $answer_x = 20;
+                        $question_x = 30;
+                        $answer_x = 30;
                         $answer_length = 20;
                         $question_length = 150;
                         $question['text'] = trim($question['text']);
                         $question_text_without_answer = substr($question['text'], 0, strpos($question['text'], "{{"));
 
-                        $fpdf->SetXY(10, $currentY);
+                        $fpdf->SetXY(20, $currentY);
                         $fpdf->MultiCell(10, 7, $questionCount . ". ", 0, 'L');
 
                         $fpdf->SetXY($question_x, $currentY);
@@ -1905,7 +1945,7 @@ class Pdf_helper {
                         $estimatedHeight = 0;
 //                            $estimatedHeight = $fpdf->getStringHeight (200, $question['question_text']);
                         if (isset($question['question_text'])) {
-                            $estimatedHeight = $this->getStringHeight($fpdf, 200, 5, $question['question_text']);
+                            $estimatedHeight = Pdf_helper::getStringHeight($fpdf, 200, 5, $question['question_text']);
                         }
                         $question_image_url = "";
                         if (isset($question['image'])) {
@@ -2832,9 +2872,9 @@ class Pdf_helper {
 
 
                     $estimatedHeight = 0;
-//                            $estimatedHeight = $fpdf->getStringHeight (200, $question['question_text']);
+//                  $estimatedHeight = $fpdf->getStringHeight (200, $question['question_text']);
                     if (isset($question['question_text'])) {
-                        $estimatedHeight = $this->getStringHeight($fpdf, 200, 5, $question['question_text']);
+                        $estimatedHeight = Pdf_helper::getStringHeight($fpdf, 200, 5, $question['question_text']);
                     }
                     $question_image_url = "";
                     if (isset($question['image'])) {
