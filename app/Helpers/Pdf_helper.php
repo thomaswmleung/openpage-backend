@@ -22,13 +22,15 @@ class Pdf_helper {
         $fpdf->SetAutoPageBreak(false);
         $responseArray = $page_data_array;
 
-        if (isset($page_data_array['page_group']['page'])) {
+        $isPdfEmpty = TRUE;
+
+        if (isset($page_data_array['page_group']['page']) || isset($page_data_array['page_group']['import_url'])) {
 
             $pageCOunt = 0;
 
             if (isset($responseArray['page_group']['import_url']) &&
-                    $responseArray['page_group']['import_url'] != null) {
-
+                    $responseArray['page_group']['import_url'] != null AND ! $isTeacherCopy) {
+                $isPdfEmpty = TRUE;
                 $filename = basename($responseArray['page_group']['import_url']);
 
                 $uniqueId = uniqid();
@@ -36,7 +38,85 @@ class Pdf_helper {
                 $pdf_path = public_path("tmp" . DIRECTORY_SEPARATOR . $uniqueId . $filename);
                 GCS_helper::download_object($filename, $pdf_path);
 
-                $im = new \Imagick($pdf_path);
+                $im = new Imagick($pdf_path);
+
+                $count = $im->getNumberImages();
+
+                for ($page_index = 0; $page_index < $count; $page_index++) {
+                    $pdf_img = new Imagick();
+                    $pdf_img->setresolution(210, 297);
+                    $pdf_img->readimage($pdf_path . "[" . $page_index . "]");
+
+                    $image_name_from_file = substr($filename, 0, strpos($filename, "."));
+                    $image_name = $uniqueId . $image_name_from_file . $page_index . ".jpg";
+                    $image_path = "tmp" . DIRECTORY_SEPARATOR . $image_name;
+                    $image_absolute_path = public_path($image_path);
+
+
+                    $pdf_img->scaleImage(1050, 1485);
+                    $pdf_img->setImageFormat('jpg');
+                    $pdf_img->setImageCompression(imagick::COMPRESSION_JPEG);
+                    $pdf_img->setImageCompressionQuality(100);
+                    $pdf_img->setImageCompose(Imagick::COMPOSITE_ATOP);
+                    $pdf_img->setImageAlphaChannel(11);
+                    $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+                    $pdf_img->writeImage($image_absolute_path);
+
+                    $gcs_result = GCS_helper::upload_to_gcs($image_path);
+
+                    //upload image to GCS
+                    if (!$gcs_result) {
+                        $responseArray['error'] = "Error in upload of GCS";
+                        return $responseArray;
+                    }
+                    unlink($image_path);
+                    $pdf_img->destroy();
+                    $gcs_path = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $image_name;
+                    $background_data = array();
+                    $background_data[0] = array(
+                        'type' => "image",
+                        'url' => $gcs_path,
+                        'x' => 0,
+                        'y' => 0,
+                        'w' => 210,
+                        'h' => 297);
+                    $page_data = array(
+                        'overlay' => array(),
+                        'main_id' => "",
+                        'background' => $background_data,
+                        'remark' => "",
+                        'is_imported' => TRUE
+                    );
+
+                    $page_model = new PageModel();
+                    $page_model = $page_model->add_or_update_page($page_data);
+                    $page_data['page_id'] = $page_model->_id;
+                    if (!isset($page_data_array['page_group']['page'])) {
+                        $page_data_array['page_group']['page'] = array();
+                    }
+                    array_push($page_data_array['page_group']['page'], $page_data);
+                }
+//                file_put_contents (public_path("tmp/test_1.jpg"), $im);
+//                $im = new \Imagick(public_path("tmp".DIRECTORY_SEPARATOR.$filename));
+//                var_dump(public_path("tmp".DIRECTORY_SEPARATOR."test_1.jpg"));
+
+
+                unlink($pdf_path);
+//                var_dump(sizeof($page_data_array['page_group']['page']));
+//                exit();
+            }
+
+             if (isset($responseArray['page_group']['teachers_import_url']) &&
+                    $responseArray['page_group']['teachers_import_url'] != null && $isTeacherCopy) {
+                $isPdfEmpty = FALSE;
+                $filename = basename($responseArray['page_group']['teachers_import_url']);
+
+                $uniqueId = uniqid();
+
+                $pdf_path = public_path("tmp" . DIRECTORY_SEPARATOR . $uniqueId . $filename);
+                GCS_helper::download_object($filename, $pdf_path);
+
+                $im = new Imagick($pdf_path);
 
                 $count = $im->getNumberImages();
 
@@ -45,7 +125,7 @@ class Pdf_helper {
                     $pdf_img->setresolution(210, 297);
                     $pdf_img->readimage($pdf_path . "[" . $page_index . "]");
 //                    $pdf_img = new Imagick($pdf_path . "[" . $page_index . "]");
-                    $pdf_img->setImageFormat('jpg');
+//                    $pdf_img->setImageFormat('jpg');
 
                     $image_name_from_file = substr($filename, 0, strpos($filename, "."));
                     $image_name = $uniqueId . $image_name_from_file . $page_index . ".jpg";
@@ -56,6 +136,17 @@ class Pdf_helper {
 //                    $pdf_img->setResolution(2100, 2970);
 //                    $pdf_img->setImageCompression(Imagick::COMPRESSION_JPEG);
 //                    $pdf_img->setImageCompressionQuality(100);
+
+
+                    $pdf_img->scaleImage(1050, 1485);
+                    $pdf_img->setImageFormat('jpg');
+                    $pdf_img->setImageCompression(imagick::COMPRESSION_JPEG);
+                    $pdf_img->setImageCompressionQuality(100);
+
+
+                    $pdf_img->setImageCompose(Imagick::COMPOSITE_ATOP);
+                    $pdf_img->setImageAlphaChannel(11);
+                    $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
                     $pdf_img->writeImage($image_absolute_path);
 
 //                    var_dump($image_absolute_path);
@@ -91,10 +182,13 @@ class Pdf_helper {
                     $page_model = new PageModel();
                     $page_model = $page_model->add_or_update_page($page_data);
                     $page_data['page_id'] = $page_model->_id;
+                    if (!isset($page_data_array['page_group']['page'])) {
+                        $page_data_array['page_group']['page'] = array();
+                    }
                     array_push($page_data_array['page_group']['page'], $page_data);
                 }
 //                file_put_contents (public_path("tmp/test_1.jpg"), $im);
-//                $im = new \Imagick(public_path("tmp".DIRECTORY_SEPARATOR.$filename));
+//                $im = new Imagick(public_path("tmp".DIRECTORY_SEPARATOR.$filename));
 //                var_dump(public_path("tmp".DIRECTORY_SEPARATOR."test_1.jpg"));
 
 
@@ -102,7 +196,7 @@ class Pdf_helper {
 //                var_dump(sizeof($page_data_array['page_group']['page']));
 //                exit();
             }
-
+            
             $responseArray['page_group']['page'] = array();
             $page_array = $page_data_array['page_group']['page'];
             $responseArray['page_group']['page'] = $page_array;
@@ -165,7 +259,7 @@ class Pdf_helper {
 
 
 
-            $pdf_img->scaleImage(2100, 2970);
+            $pdf_img->scaleImage(1050, 1485);
             $pdf_img->setImageFormat('jpg');
             $pdf_img->setImageCompression(imagick::COMPRESSION_JPEG);
             $pdf_img->setImageCompressionQuality(100);
@@ -2059,11 +2153,10 @@ class Pdf_helper {
                 $fpdf->SetFont('msjhb', '', 10);
                 $fpdf->MultiCell($chapter_number_coordinates['max-width'], 10, $chapter_number_details['text'], 0);
             }
-            
+
             // End of Chapter Number
-            
             // Start of Chapter Name
-            
+
             $chapter_name_details = $page_details['chapter-name'];
 
             if (isset($chapter_name_details['position-coordinates'])) {
@@ -2094,14 +2187,13 @@ class Pdf_helper {
                 $fpdf->SetFont('msjhb', '', 10);
                 $fpdf->MultiCell($chapter_name_coordinates['max-width'], 10, $chapter_name_details['text'], 0);
             }
-            
-            
-            
+
+
+
             //// End of Chapter Name
-            
             // Start of date grade 1
-            
-             $date_grade_1_details = $page_details['date_and_grade_1'];
+
+            $date_grade_1_details = $page_details['date_and_grade_1'];
 
             if (isset($date_grade_1_details['position-coordinates'])) {
                 $date_grade_1_coordinates = $date_grade_1_details['position-coordinates'];
@@ -2131,9 +2223,9 @@ class Pdf_helper {
                 $fpdf->SetFont('msjhb', '', 10);
                 $fpdf->MultiCell($date_grade_1_coordinates['max-width'], 10, $date_grade_1_details['text'], 0);
             }
-            
-            
-            
+
+
+
             // end of date grade 1
 //            $pdf_name = "test_book.pdf";
 //            $pdf_path = public_path('test' . DIRECTORY_SEPARATOR . $pdf_name);
@@ -2141,8 +2233,6 @@ class Pdf_helper {
 //            $fpdf->Output($pdf_path, 'F');
 //            echo $pdf_name;
 //            exit();
-
-
 //            $fpdf->SetXY(18, 5);
 //            $fpdf->MultiCell(180, 10, $page_details['page_title'], 0);
 //            $fpdf->SetFont('msjh', '', 12);
@@ -2152,7 +2242,6 @@ class Pdf_helper {
 //            $fpdf->MultiCell(8, 5, $page_details['topic'], 0);
 //            $fpdf->SetXY(5, 260);
 //            $fpdf->MultiCell(8, 5, $page_details['page_number'], 0);
-
 //            $author_info_array = array();
 //            if (isset($page_details['author'])) {
 //                $author_info_array = $page_details['author'];
