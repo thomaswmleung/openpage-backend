@@ -212,6 +212,7 @@ class Pdf_helper {
                 $responseArray['page_group']['page'][$pageCOunt]['actual_page_index_array'] = $actualPageIndexArray;
                 $pageCOunt++;
             }
+                    }
         } else {
             // page is not defined.
             $isValidJson = FALSE;
@@ -290,7 +291,7 @@ class Pdf_helper {
 
         return json_encode($responseArray);
     }
-    }
+    
 
     public function getStringHeight($fpdf, $width, $lineHeight, $text) {
         $tempPdf = clone $fpdf;
