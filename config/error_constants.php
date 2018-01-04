@@ -141,5 +141,10 @@ return [
     'invalid_codex_created_by' => array('error_code'=>'E2508','error_message' =>"Created by has invalid id."),
     'invalid_codex_id' =>array('error_code'=>'E2509','error_message' =>"Invalid codex id.") ,
     'codex_id_required' => array('error_code'=>'E2510','error_message' =>"Codex id is required"),
+    
+    'static_html_page_code_required' => array('error_code'=>'E2601','error_message' =>"Static page code is required"),
+    'static_html_page_code_unique' => array('error_code'=>'E2602','error_message' =>"Static page code already exists"),
+    'static_html_page_id_invalid' => array('error_code'=>'E2603','error_message' =>"Static page id is invalid"),
+    'static_html_page_content_required' => array('error_code'=>'E2701','error_message' =>"Static page content is required"),
 
 ];

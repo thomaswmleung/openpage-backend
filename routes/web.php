@@ -13,6 +13,7 @@
 
 Route::post('login', 'LoginController@login');
 Route::get('log_out', 'LoginController@log_out');
+Route::get('backup', 'BackupController@backup_db');
 
 Route::post('register', 'UserController@register');
 Route::get('activate', 'UserController@activate');
@@ -32,7 +33,11 @@ Route::get('codex/{cid}', 'CodexController@codex');
 Route::get('organization', 'OrganizationController@organization');
 Route::get('organization/{_id}', 'OrganizationController@organization');
 
-Route::get('variants','BulkPageGroupUploadController@test');
+Route::get('variants', 'BulkPageGroupUploadController@test');
+
+Route::get('static_html_page', 'StaticHtmlPageController@static_html_page');
+Route::get('static_html_page/{_id}', 'StaticHtmlPageController@static_html_page');
+
 Route::group(['middleware' => ['login_auth']], function () {
 
     Route::get('user', 'UserController@user');
@@ -158,8 +163,12 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('codex', 'CodexController@create_codex');
     Route::put('codex', 'CodexController@update_codex');
     Route::delete('codex', 'CodexController@delete_codex');
-    
-    Route::post('bulk_upload','BulkPageGroupUploadController@bulk_upload');
+
+    Route::post('bulk_upload', 'BulkPageGroupUploadController@bulk_upload');
     Route::get('get_bulk_upload_request_list', 'BulkPageGroupUploadController@get_bulk_upload_request_list');
     Route::get('get_bulk_upload_details/{req_id}', 'BulkPageGroupUploadController@get_bulk_upload_details');
+
+    Route::post('static_html_page', 'StaticHtmlPageController@add_or_update_static_html_page');
+    Route::put('static_html_page', 'StaticHtmlPageController@add_or_update_static_html_page');
+    Route::delete('static_html_page', 'StaticHtmlPageController@delete_static_html_page');
 });

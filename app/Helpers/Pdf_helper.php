@@ -30,7 +30,7 @@ class Pdf_helper {
 
             if (isset($responseArray['page_group']['import_url']) &&
                     $responseArray['page_group']['import_url'] != null AND ! $isTeacherCopy) {
-                $isPdfEmpty = TRUE;
+                $isPdfEmpty = FALSE;
                 $filename = basename($responseArray['page_group']['import_url']);
 
                 $uniqueId = uniqid();
@@ -196,10 +196,11 @@ class Pdf_helper {
 //                var_dump(sizeof($page_data_array['page_group']['page']));
 //                exit();
             }
-            
-            $responseArray['page_group']['page'] = array();
-            $page_array = $page_data_array['page_group']['page'];
-            $responseArray['page_group']['page'] = $page_array;
+
+            if (isset($responseArray['page_group']['teachers_import_url']) &&
+                    $responseArray['page_group']['teachers_import_url'] != null && $isTeacherCopy) {
+                $isPdfEmpty = FALSE;
+                $filename = basename($responseArray['page_group']['teachers_import_url']);
 
             $actualPDFPageIndex = 0;
             foreach ($page_array as $page) {
@@ -253,12 +254,11 @@ class Pdf_helper {
             $pdf_img->readimage($pdf_path . "[" . $pageIndex . "]");
 //            $pdf_img = new Imagick($pdf_path . "[" . $pageIndex . "]");
 
+
+//            $pdf_img->setImageFormat('jpg');
             $image_name = $pdf_name . "pdf_image_" . $pageIndex . ".jpg";
             $gcs_path = "pdf_images" . DIRECTORY_SEPARATOR . $image_name;
             $image_path = public_path($gcs_path);
-
-
-
             $pdf_img->scaleImage(1050, 1485);
             $pdf_img->setImageFormat('jpg');
             $pdf_img->setImageCompression(imagick::COMPRESSION_JPEG);
@@ -267,7 +267,6 @@ class Pdf_helper {
 
             $pdf_img->setImageCompose(Imagick::COMPOSITE_ATOP);
             $pdf_img->setImageAlphaChannel(11);
-            $pdf_img->setImageBackgroundColor('white');
             $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
             $pdf_img->writeImage($image_path);
             $gcs_result = GCS_helper::upload_to_gcs($gcs_path);
@@ -290,6 +289,7 @@ class Pdf_helper {
 //        $responseArray['preview_url'] = "custom_url";
 
         return json_encode($responseArray);
+    }
     }
 
     public function getStringHeight($fpdf, $width, $lineHeight, $text) {

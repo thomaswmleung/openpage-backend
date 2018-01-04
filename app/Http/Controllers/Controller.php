@@ -119,6 +119,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   name="Bulk Upload Page Group",
  *   description="Bulk upload api for creating page groups"
  * )
+ * @SWG\Tag(
+ *   name="Static HTML page",
+ *   description="Static HTML page related API's"
+ * )
  * 
  */
 class Controller extends BaseController

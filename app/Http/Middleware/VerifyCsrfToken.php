@@ -14,7 +14,7 @@ class VerifyCsrfToken extends BaseVerifier {
     protected $except = [
         'login', 'log_out', 'register','forgot_password','reset_password', 'media', 'page_group','book','subject','question_type',
         'organization','page','section','question','layout','resource','class','class_flow',
-        'keyword','domain','sub_domain','knowledge_unit','particular','resource_category','codex','bulk_upload',
+        'keyword','domain','sub_domain','knowledge_unit','particular','resource_category','codex','bulk_upload','static_html_page'
     ];
 
 }
