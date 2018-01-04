@@ -7,6 +7,7 @@ use App\Helpers\GCS_helper;
 use Illuminate\Support\Facades\Config;
 use App\PageModel;
 use Imagick;
+use Illuminate\Support\Facades\Log;
 
 class Pdf_helper {
 
@@ -106,7 +107,7 @@ class Pdf_helper {
 //                exit();
             }
 
-             if (isset($responseArray['page_group']['teachers_import_url']) &&
+            if (isset($responseArray['page_group']['teachers_import_url']) &&
                     $responseArray['page_group']['teachers_import_url'] != null && $isTeacherCopy) {
                 $isPdfEmpty = FALSE;
                 $filename = basename($responseArray['page_group']['teachers_import_url']);
@@ -197,22 +198,26 @@ class Pdf_helper {
 //                exit();
             }
 
-            if (isset($responseArray['page_group']['teachers_import_url']) &&
-                    $responseArray['page_group']['teachers_import_url'] != null && $isTeacherCopy) {
-                $isPdfEmpty = FALSE;
-                $filename = basename($responseArray['page_group']['teachers_import_url']);
+            if (isset($page_data_array['page_group']['page'])) {
+//                $isPdfEmpty = FALSE;
+//                $filename = basename($responseArray['page_group']['teachers_import_url']);
 
-            $actualPDFPageIndex = 0;
-            foreach ($page_array as $page) {
-                $actualPageIndexArray = array();
-                array_push($actualPageIndexArray, $actualPDFPageIndex);
+                $responseArray['page_group']['page'] = array();
+                $page_array = $page_data_array['page_group']['page'];
+                $responseArray['page_group']['page'] = $page_array;
 
-                $this->generate_page($fpdf, $page, $actualPageIndexArray, $actualPDFPageIndex, $pageCOunt, $isTeacherCopy, $responseArray);
+                $actualPDFPageIndex = 0;
+                $actualPDFPageIndex = 0;
+                foreach ($page_array as $page) {
+                    $actualPageIndexArray = array();
+                    array_push($actualPageIndexArray, $actualPDFPageIndex);
 
-                $responseArray['page_group']['page'][$pageCOunt]['actual_page_index_array'] = $actualPageIndexArray;
-                $pageCOunt++;
+                    $this->generate_page($fpdf, $page, $actualPageIndexArray, $actualPDFPageIndex, $pageCOunt, $isTeacherCopy, $responseArray);
+
+                    $responseArray['page_group']['page'][$pageCOunt]['actual_page_index_array'] = $actualPageIndexArray;
+                    $pageCOunt++;
+                }
             }
-                    }
         } else {
             // page is not defined.
             $isValidJson = FALSE;
@@ -254,8 +259,6 @@ class Pdf_helper {
             $pdf_img->setresolution(210, 297);
             $pdf_img->readimage($pdf_path . "[" . $pageIndex . "]");
 //            $pdf_img = new Imagick($pdf_path . "[" . $pageIndex . "]");
-
-
 //            $pdf_img->setImageFormat('jpg');
             $image_name = $pdf_name . "pdf_image_" . $pageIndex . ".jpg";
             $gcs_path = "pdf_images" . DIRECTORY_SEPARATOR . $image_name;
@@ -291,7 +294,6 @@ class Pdf_helper {
 
         return json_encode($responseArray);
     }
-    
 
     public function getStringHeight($fpdf, $width, $lineHeight, $text) {
         $tempPdf = clone $fpdf;
@@ -498,9 +500,181 @@ class Pdf_helper {
     }
 
     static public function generate_page(&$fpdf, &$page, &$actualPageIndexArray, &$actualPDFPageIndex, &$pageCOunt, &$isTeacherCopy, &$responseArray) {
+//        Log::error("Generate Page called");
+//        var_dump($page);
+//        exit();
+
+
         // create new blank page
         $fpdf->AddPage();
         $actualPDFPageIndex++;
+
+
+        // Start of Book Specific details
+        // start of chapter number
+        if (isset($page['chapter_number'])) {
+            $chapter_number_details = $page['chapter_number'];
+        } else {
+            $chapter_number_details = array();
+        }
+        if (isset($chapter_number_details['position-coordinates'])) {
+            $chapter_number_coordinates = $chapter_number_details['position-coordinates'];
+
+            if (!isset($chapter_number_details['position-coordinates']['x'])) {
+                $chapter_number_coordinates['x'] = 5;
+            }
+
+            if (!isset($chapter_number_details['position-coordinates']['y'])) {
+                $chapter_number_coordinates['y'] = 5;
+            }
+
+            if (!isset($chapter_number_details['position-coordinates']['max-width'])) {
+                $chapter_number_coordinates['max-width'] = 10;
+            }
+        } else {
+            $chapter_number_coordinates = array();
+            $chapter_number_coordinates['x'] = 5;
+            $chapter_number_coordinates['y'] = 5;
+            $chapter_number_coordinates['max-width'] = 10;
+        }
+
+
+
+        if (isset($chapter_number_details['text'])) {
+            $fpdf->SetXY($chapter_number_coordinates['x'], $chapter_number_coordinates['y']);
+            $fpdf->SetFont('msjhb', '', 10);
+            $fpdf->MultiCell($chapter_number_coordinates['max-width'], 10, $chapter_number_details['text'], 0);
+        }
+        // End of chapter number
+        //Start of Chapter Name
+
+        if (isset($page['chapter-name'])) {
+            $chapter_name_details = $page['chapter-name'];
+        } else {
+            $chapter_name_details = array();
+        }
+
+        if (isset($chapter_name_details['position-coordinates'])) {
+            $chapter_name_coordinates = $chapter_name_details['position-coordinates'];
+
+            if (!isset($chapter_name_details['position-coordinates']['x'])) {
+                $chapter_name_coordinates['x'] = 5;
+            }
+
+            if (!isset($chapter_name_details['position-coordinates']['y'])) {
+                $chapter_name_coordinates['y'] = 5;
+            }
+
+            if (!isset($chapter_name_details['position-coordinates']['max-width'])) {
+                $chapter_name_coordinates['max-width'] = 10;
+            }
+        } else {
+            $chapter_name_coordinates = array();
+            $chapter_name_coordinates['x'] = 5;
+            $chapter_name_coordinates['y'] = 5;
+            $chapter_name_coordinates['max-width'] = 10;
+        }
+
+
+
+        if (isset($chapter_name_details['text'])) {
+            $fpdf->SetXY($chapter_name_coordinates['x'], $chapter_name_coordinates['y']);
+            $fpdf->SetFont('msjhb', '', 10);
+            $fpdf->MultiCell($chapter_name_coordinates['max-width'], 10, $chapter_name_details['text'], 0);
+        }
+
+
+
+        // End of Chapter Name
+        // Start of date grade 1
+//
+
+        if (isset($page['date_and_grade_1'])) {
+            $date_grade_1_details = $page['date_and_grade_1'];
+        } else {
+            $date_grade_1_details = array();
+        }
+
+
+        if (isset($date_grade_1_details['position-coordinates'])) {
+            $date_grade_1_coordinates = $date_grade_1_details['position-coordinates'];
+
+            if (!isset($date_grade_1_details['position-coordinates']['x'])) {
+                $date_grade_1_coordinates['x'] = 5;
+            }
+
+            if (!isset($date_grade_1_details['position-coordinates']['y'])) {
+                $date_grade_1_coordinates['y'] = 5;
+            }
+
+            if (!isset($date_grade_1_details['position-coordinates']['max-width'])) {
+                $date_grade_1_coordinates['max-width'] = 10;
+            }
+        } else {
+            $date_grade_1_coordinates = array();
+            $date_grade_1_coordinates['x'] = 5;
+            $date_grade_1_coordinates['y'] = 5;
+            $date_grade_1_coordinates['max-width'] = 10;
+        }
+
+
+
+        if (isset($date_grade_1_details['text'])) {
+            $fpdf->SetXY($date_grade_1_coordinates['x'], $date_grade_1_coordinates['y']);
+            $fpdf->SetFont('msjhb', '', 10);
+            $fpdf->MultiCell($date_grade_1_coordinates['max-width'], 10, $date_grade_1_details['text'], 0);
+        }
+
+        //end of date grade 1
+        
+        // Start of QR code
+        
+        if (isset($page['qr_code'])) {
+            $qr_code_details = $page['qr_code'];
+        } else {
+            $qr_code_details = array();
+        }
+
+
+        if (isset($qr_code_details['position-coordinates'])) {
+            $qr_coordinates = $qr_code_details['position-coordinates'];
+
+            if (!isset($qr_code_details['position-coordinates']['x'])) {
+                $qr_coordinates['x'] = 175;
+            }
+
+            if (!isset($qr_code_details['position-coordinates']['y'])) {
+                $qr_coordinates['y'] = 5;
+            }
+
+            if (!isset($qr_code_details['position-coordinates']['width'])) {
+                $qr_coordinates['width'] = 20;
+            }
+            if (!isset($qr_code_details['position-coordinates']['height'])) {
+                $qr_coordinates['height'] = 20;
+            }
+        } else {
+            $qr_coordinates = array();
+            $qr_coordinates['x'] = 175;
+            $qr_coordinates['y'] = 5;
+            $qr_coordinates['width'] = 20;
+            $qr_coordinates['height'] = 20;
+            
+        }
+
+
+
+        if (isset($qr_code_details['image_url']) AND $qr_code_details['image_url'] != "") {
+            
+             $fpdf->Image($qr_code_details['image_url'], $qr_coordinates['x'], $qr_coordinates['y'],
+                     $qr_coordinates['width'], $qr_coordinates['height']);
+        }
+        
+        
+        // End of QR code
+        
+        
+        // End of Book specific details
         // displaying background image
 
         if (isset($page['background']) AND $page['background'] != "") {
@@ -556,7 +730,13 @@ class Pdf_helper {
 //                            $fpdf->MultiCell(200, 5, $section['instruction']['text'], 0, 'L');
                     $fpdf->Write(7, $section['instruction']['text']);
                     $fpdf->SetFont('msjh', '', 14);
+                }else if (isset($section['instruction_text'])) {
+                    $section_instruction_text = $section['instruction_text'];
+                    // display section instruction
+                    $fpdf->SetXY(10, $fpdf->GetY() + 5);
+                    $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
                 }
+                
 //                        var_dump($section['paraBox']);
 //                        exit();
                 if (isset($section['instruction']['tcNote'])) {
@@ -709,12 +889,7 @@ class Pdf_helper {
                     $optBoxY = $fpdf->GetY();
 //                            }
                 }
-                if (isset($section['instruction_text'])) {
-                    $section_instruction_text = $section['instruction_text'];
-                    // display section instruction
-                    $fpdf->SetXY(10, $fpdf->GetY() + 5);
-                    $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
-                }
+                
 
                 $section_question_array = array();
 
@@ -733,7 +908,7 @@ class Pdf_helper {
                 $wordMatchQuestionMaxY = 0;
 
                 $currentY = $fpdf->GetY() + 10;
-
+                
                 foreach ($section_question_array as $question) {
                     $isQuestionCountDisplayed = FALSE;
 
@@ -1005,7 +1180,7 @@ class Pdf_helper {
 
                         $currentY = $fpdf->GetY() + 7;
                     } else if (isset($section['type']) AND
-                            $section['type'] == "rerwite_sentences_2") {
+                            $section['type'] == "rewrite_sentences_2") {
 
                         $currentY = $fpdf->GetY() + 7;
                         $question_x = 20;
@@ -1052,7 +1227,7 @@ class Pdf_helper {
                             $currentY += 7;
                         }
                     } else if (isset($section['type']) AND
-                            $section['type'] == "rerwite_sentences_1") {
+                            $section['type'] == "rewrite_sentences_1") {
                         $currentY = $fpdf->GetY() + 7;
                         $question_x = 20;
                         $answer_x = 20;
@@ -1080,8 +1255,6 @@ class Pdf_helper {
                         $fpdf->Line(20, $currentY, 190, $currentY);
                     } else if (isset($section['type']) AND
                             $section['type'] == "true_and_false_1") {
-
-//                                $isTeacherCopy = false;
                         $currentY = $fpdf->GetY() + 7;
                         $question_x = 20;
                         $answer_x = 175;
@@ -1668,6 +1841,8 @@ class Pdf_helper {
                             }
                         }
                     } else {
+
+                        
                         if (isset($question['optBox']['option'])) {
 
                             $optionBoxString = implode("    ", $question['optBox']['option']);
@@ -1740,7 +1915,7 @@ class Pdf_helper {
                             return json_encode(array("error" => "Invalid question image"));
                         }
                         $answer_array = array();
-                        if (isset($question['answer'])) {
+                        if (isset($question['answer']) AND is_array($answer_array)) {
                             $answer_array = $question['answer'];
                         }
                         if ($question_image_url != "") {
@@ -2115,118 +2290,181 @@ class Pdf_helper {
 
         $page_array = $book_data_array['page'];
         $pageIndex = 0;
-        $fpdf->AddPage();
+//        $fpdf->AddPage();
+        $actualPageIndexArray = array();
         foreach ($page_array AS $page_details) {
-            $actualPageIndexArray = array();
+
+            $page_data = PageModel::get_page_details($page_details['_id']);
             array_push($actualPageIndexArray, $actualPDFPageIndex);
 
             $actualPDFPageIndex++;
 
+
+
+            if (isset($page_details['chapter_number'])) {
+                $page_data['chapter_number'] = $page_details['chapter_number'];
+            } else {
+                $page_data['chapter_number'] = array();
+            }
+
+            if (isset($page_details['affiliation'])) {
+                $page_data['affiliation'] = $page_details['affiliation'];
+            } else {
+                $page_data['affiliation'] = array();
+            }
+
+            if (isset($page_details['chapter-name'])) {
+                $page_data['chapter-name'] = $page_details['chapter-name'];
+            } else {
+                $page_data['chapter-name'] = array();
+            }
+
+            if (isset($page_details['date_and_grade_1'])) {
+                $page_data['date_and_grade_1'] = $page_details['date_and_grade_1'];
+            } else {
+                $page_data['date_and_grade_1'] = array();
+            }
+
+            if (isset($page_details['qr_code'])) {
+                $page_data['qr_code'] = $page_details['qr_code'];
+            } else {
+                $page_data['qr_code'] = array();
+            }
+
+            if (isset($page_details['date_and_grade_2'])) {
+                $page_data['date_and_grade_2'] = $page_details['date_and_grade_2'];
+            } else {
+                $page_data['date_and_grade_2'] = array();
+            }
+
+            if (isset($page_details['page_number'])) {
+                $page_data['page_number'] = $page_details['page_number'];
+            } else {
+                $page_data['page_number'] = array();
+            }
+
+            if (isset($page_details['credits1'])) {
+                $page_data['credits1'] = $page_details['credits1'];
+            } else {
+                $page_data['credits1'] = array();
+            }
+
+            if (isset($page_details['credits2'])) {
+                $page_data['credits2'] = $page_details['credits2'];
+            } else {
+                $page_data['credits2'] = array();
+            }
+
+            if (isset($page_details['credits3'])) {
+                $page_data['credits3'] = $page_details['credits3'];
+            } else {
+                $page_data['credits3'] = array();
+            }
+
+
+
+
+
+
+
+
             // Start of Chapter Number
-
-            $chapter_number_details = $page_details['chapter_number'];
-
-            if (isset($chapter_number_details['position-coordinates'])) {
-                $chapter_number_coordinates = $chapter_number_details['position-coordinates'];
-
-                if (!isset($chapter_number_details['position-coordinates']['x'])) {
-                    $chapter_number_coordinates['x'] = 5;
-                }
-
-                if (!isset($chapter_number_details['position-coordinates']['y'])) {
-                    $chapter_number_coordinates['y'] = 5;
-                }
-
-                if (!isset($chapter_number_details['position-coordinates']['max-width'])) {
-                    $chapter_number_coordinates['max-width'] = 10;
-                }
-            } else {
-                $chapter_number_coordinates = array();
-                $chapter_number_coordinates['x'] = 5;
-                $chapter_number_coordinates['y'] = 5;
-                $chapter_number_coordinates['max-width'] = 10;
-            }
-
-
-
-            if (isset($chapter_number_details['text'])) {
-                $fpdf->SetXY($chapter_number_coordinates['x'], $chapter_number_coordinates['y']);
-                $fpdf->SetFont('msjhb', '', 10);
-                $fpdf->MultiCell($chapter_number_coordinates['max-width'], 10, $chapter_number_details['text'], 0);
-            }
-
-            // End of Chapter Number
-            // Start of Chapter Name
-
-            $chapter_name_details = $page_details['chapter-name'];
-
-            if (isset($chapter_name_details['position-coordinates'])) {
-                $chapter_name_coordinates = $chapter_name_details['position-coordinates'];
-
-                if (!isset($chapter_name_details['position-coordinates']['x'])) {
-                    $chapter_name_coordinates['x'] = 5;
-                }
-
-                if (!isset($chapter_name_details['position-coordinates']['y'])) {
-                    $chapter_name_coordinates['y'] = 5;
-                }
-
-                if (!isset($chapter_name_details['position-coordinates']['max-width'])) {
-                    $chapter_name_coordinates['max-width'] = 10;
-                }
-            } else {
-                $chapter_name_coordinates = array();
-                $chapter_name_coordinates['x'] = 5;
-                $chapter_name_coordinates['y'] = 5;
-                $chapter_name_coordinates['max-width'] = 10;
-            }
-
-
-
-            if (isset($chapter_name_details['text'])) {
-                $fpdf->SetXY($chapter_name_coordinates['x'], $chapter_name_coordinates['y']);
-                $fpdf->SetFont('msjhb', '', 10);
-                $fpdf->MultiCell($chapter_name_coordinates['max-width'], 10, $chapter_name_details['text'], 0);
-            }
-
-
-
-            //// End of Chapter Name
-            // Start of date grade 1
-
-            $date_grade_1_details = $page_details['date_and_grade_1'];
-
-            if (isset($date_grade_1_details['position-coordinates'])) {
-                $date_grade_1_coordinates = $date_grade_1_details['position-coordinates'];
-
-                if (!isset($date_grade_1_details['position-coordinates']['x'])) {
-                    $date_grade_1_coordinates['x'] = 5;
-                }
-
-                if (!isset($date_grade_1_details['position-coordinates']['y'])) {
-                    $date_grade_1_coordinates['y'] = 5;
-                }
-
-                if (!isset($date_grade_1_details['position-coordinates']['max-width'])) {
-                    $date_grade_1_coordinates['max-width'] = 10;
-                }
-            } else {
-                $date_grade_1_coordinates = array();
-                $date_grade_1_coordinates['x'] = 5;
-                $date_grade_1_coordinates['y'] = 5;
-                $date_grade_1_coordinates['max-width'] = 10;
-            }
-
-
-
-            if (isset($date_grade_1_details['text'])) {
-                $fpdf->SetXY($date_grade_1_coordinates['x'], $date_grade_1_coordinates['y']);
-                $fpdf->SetFont('msjhb', '', 10);
-                $fpdf->MultiCell($date_grade_1_coordinates['max-width'], 10, $date_grade_1_details['text'], 0);
-            }
-
-
-
+//            if (isset($chapter_number_details['position-coordinates'])) {
+//                $chapter_number_coordinates = $chapter_number_details['position-coordinates'];
+//
+//                if (!isset($chapter_number_details['position-coordinates']['x'])) {
+//                    $chapter_number_coordinates['x'] = 5;
+//                }
+//
+//                if (!isset($chapter_number_details['position-coordinates']['y'])) {
+//                    $chapter_number_coordinates['y'] = 5;
+//                }
+//
+//                if (!isset($chapter_number_details['position-coordinates']['max-width'])) {
+//                    $chapter_number_coordinates['max-width'] = 10;
+//                }
+//            } else {
+//                $chapter_number_coordinates = array();
+//                $chapter_number_coordinates['x'] = 5;
+//                $chapter_number_coordinates['y'] = 5;
+//                $chapter_number_coordinates['max-width'] = 10;
+//            }
+//            if (isset($chapter_number_details['text'])) {
+//                $fpdf->SetXY($chapter_number_coordinates['x'], $chapter_number_coordinates['y']);
+//                $fpdf->SetFont('msjhb', '', 10);
+//                $fpdf->MultiCell($chapter_number_coordinates['max-width'], 10, $chapter_number_details['text'], 0);
+//            }
+//
+//            // End of Chapter Number
+//            // Start of Chapter Name
+//
+//            $chapter_name_details = $page_details['chapter-name'];
+//
+//            if (isset($chapter_name_details['position-coordinates'])) {
+//                $chapter_name_coordinates = $chapter_name_details['position-coordinates'];
+//
+//                if (!isset($chapter_name_details['position-coordinates']['x'])) {
+//                    $chapter_name_coordinates['x'] = 5;
+//                }
+//
+//                if (!isset($chapter_name_details['position-coordinates']['y'])) {
+//                    $chapter_name_coordinates['y'] = 5;
+//                }
+//
+//                if (!isset($chapter_name_details['position-coordinates']['max-width'])) {
+//                    $chapter_name_coordinates['max-width'] = 10;
+//                }
+//            } else {
+//                $chapter_name_coordinates = array();
+//                $chapter_name_coordinates['x'] = 5;
+//                $chapter_name_coordinates['y'] = 5;
+//                $chapter_name_coordinates['max-width'] = 10;
+//            }
+//
+//
+//
+//            if (isset($chapter_name_details['text'])) {
+//                $fpdf->SetXY($chapter_name_coordinates['x'], $chapter_name_coordinates['y']);
+//                $fpdf->SetFont('msjhb', '', 10);
+//                $fpdf->MultiCell($chapter_name_coordinates['max-width'], 10, $chapter_name_details['text'], 0);
+//            }
+//
+//
+//
+//            //// End of Chapter Name
+//            // Start of date grade 1
+//
+//            $date_grade_1_details = $page_details['date_and_grade_1'];
+//
+//            if (isset($date_grade_1_details['position-coordinates'])) {
+//                $date_grade_1_coordinates = $date_grade_1_details['position-coordinates'];
+//
+//                if (!isset($date_grade_1_details['position-coordinates']['x'])) {
+//                    $date_grade_1_coordinates['x'] = 5;
+//                }
+//
+//                if (!isset($date_grade_1_details['position-coordinates']['y'])) {
+//                    $date_grade_1_coordinates['y'] = 5;
+//                }
+//
+//                if (!isset($date_grade_1_details['position-coordinates']['max-width'])) {
+//                    $date_grade_1_coordinates['max-width'] = 10;
+//                }
+//            } else {
+//                $date_grade_1_coordinates = array();
+//                $date_grade_1_coordinates['x'] = 5;
+//                $date_grade_1_coordinates['y'] = 5;
+//                $date_grade_1_coordinates['max-width'] = 10;
+//            }
+//
+//
+//
+//            if (isset($date_grade_1_details['text'])) {
+//                $fpdf->SetXY($date_grade_1_coordinates['x'], $date_grade_1_coordinates['y']);
+//                $fpdf->SetFont('msjhb', '', 10);
+//                $fpdf->MultiCell($date_grade_1_coordinates['max-width'], 10, $date_grade_1_details['text'], 0);
+//            }
+//
             // end of date grade 1
 //            $pdf_name = "test_book.pdf";
 //            $pdf_path = public_path('test' . DIRECTORY_SEPARATOR . $pdf_name);
@@ -2261,8 +2499,6 @@ class Pdf_helper {
             $fpdf->SetFont('msjh', '', 12);
 
             // page details
-
-            $page_data = PageModel::get_page_details($page_details['_id']);
 //            var_dump($page_data);
 //            exit();
             $page_data['current_book_index'] = $actualPDFPageIndex;
