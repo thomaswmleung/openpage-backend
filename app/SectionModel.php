@@ -20,7 +20,7 @@ class SectionModel extends Eloquent {
     }
 
     public static function get_section_details($section_id) {
-        $section_details = SectionModel::find($section_id)->toArray();
+        $section_details = SectionModel::where("_id",$section_id)->first();
         $section_details['instruction'] = array();
         $section_details['instruction']['text'] = $section_details['instruction_text'];
 //        var_dump($section_details);

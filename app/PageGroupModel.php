@@ -12,7 +12,7 @@ class PageGroupModel extends Eloquent {
     protected $fillable = array('page', 'title', 'sub_title', 'subject', 'domain', 'subdomain', 'preview_url', 'teacher_copy_preview_url',
         'student_copy_preview_url', 'teacher_preview_image_array', 'parent_page_group_id', 'versions', 'affiliation', 'current_version_details',
         'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus', 'level_of_difficulty', 'level_of_scaffolding',
-        'codex', 'area', 'author', 'remark');
+        'codex', 'area', 'author', 'remark', 'particulars', 'learning_objective','syllabus_code');
 
     public function add_page_group($insert_data) {
         $result = PageGroupModel::create($insert_data);
@@ -80,18 +80,35 @@ class PageGroupModel extends Eloquent {
             if (isset($query_details['subdomain'])) {
                 $subdomain = $query_details['subdomain'];
             }
+            $level_of_difficulty = "";
+            if (isset($query_details['level_of_difficulty'])) {
+                $level_of_difficulty = $query_details['level_of_difficulty'];
+            }
+            $particulars = "";
+            if (isset($query_details['particulars'])) {
+                $particulars = $query_details['particulars'];
+            }
+            $learning_objective = "";
+            if (isset($query_details['learning_objective'])) {
+                $learning_objective = $query_details['learning_objective'];
+            }
+            $syllabus_code = "";
+            if (isset($query_details['syllabus_code'])) {
+                $learning_objective = $query_details['syllabus_code'];
+            }
             if (isset($query_details['created_by'])) {
                 $created_by = $query_details['created_by'];
             } else {
                 $created_by = "";
             }
         }
+
         $from_date = $query_details['from_date'];
         $to_date = $query_details['to_date'];
         $sort_by = $query_details['sort_by'];
         $order_by = $query_details['order_by'];
 
-        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "" || $codex != "") {
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "" || $codex != "" || $learning_objective != "" || $particulars != "" || $level_of_difficulty != "" || $syllabus_code != "") {
             $page_group_data = PageGroupModel::
                     Where(function($filterByQuery)use ($query_details) {
                         if ($query_details['codex'] != "") {
@@ -115,6 +132,19 @@ class PageGroupModel extends Eloquent {
                         if ($query_details['created_by'] != "") {
                             $filterByQuery->where('created_by', 'like', $query_details['created_by']);
                         }
+                        if ($query_details['level_of_difficulty'] != "") {
+                            $filterByQuery->where('level_of_difficulty', '=', $query_details['level_of_difficulty']);
+                        }
+                        if ($query_details['particulars'] != "") {
+                            $filterByQuery->where('particulars', 'like', $query_details['particulars']);
+                        }
+                        if ($query_details['learning_objective'] != "") {
+                            $learningObjectiveArray = array($query_details['learning_objective']);
+                            $filterByQuery->where('learning_objective', 'all', $learningObjectiveArray);
+                        }
+                        if ($query_details['syllabus_code'] != "") {
+                            $filterByQuery->where('syllabus_code', 'like', $query_details['syllabus_code']);
+                        }
 
                         if ($query_details['from_date'] != "") {
                             $start_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));
@@ -137,6 +167,10 @@ class PageGroupModel extends Eloquent {
                             ->orWhere('affiliation.lesson_title', 'like', "%$search_key%")
                             ->orWhere('level_of_difficulty', 'like', "%$search_key%")
                             ->orWhere('codex', 'like', "%$search_key%")
+                            ->orWhere('level_of_difficulty', 'like', "%$search_key%")
+                            ->orWhere('particulars', 'like', "%$search_key%")
+                            ->orWhere('learning_objective', 'like', "%$search_key%")
+                            ->orWhere('syllabus_code', 'like', "%$search_key%")
                             ->orWhere('area', 'like', "%$search_key%")
                             ->orWhere('author', 'like', "%$search_key%")
                             ->orWhere('remark', 'like', "%$search_key%")
@@ -197,8 +231,23 @@ class PageGroupModel extends Eloquent {
         if (isset($query_details['created_by'])) {
             $created_by = $query_details['created_by'];
         }
-
-        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "" || $codex != "") {
+        $level_of_difficulty = "";
+        if (isset($query_details['level_of_difficulty'])) {
+            $level_of_difficulty = $query_details['level_of_difficulty'];
+        }
+        $particulars = "";
+        if (isset($query_details['particulars'])) {
+            $particulars = $query_details['particulars'];
+        }
+        $learning_objective = "";
+        if (isset($query_details['learning_objective'])) {
+            $learning_objective = $query_details['learning_objective'];
+        }
+        $syllabus_code = "";
+        if (isset($query_details['syllabus_code'])) {
+            $learning_objective = $query_details['syllabus_code'];
+        }
+        if ($search_key != "" || $from_date != "" || $sub_title != "" || $title != "" || $created_by != "" || $subject != "" || $domain != "" || $subdomain != "" || $codex != "" || $learning_objective != "" || $particulars != "" || $level_of_difficulty != "" || $syllabus_code != "") {
             $total_count = PageGroupModel::
                     Where(function($filterByQuery)use ($query_details) {
                         if ($query_details['codex'] != "") {
@@ -222,6 +271,19 @@ class PageGroupModel extends Eloquent {
                         if ($query_details['subdomain'] != "") {
                             $filterByQuery->where('subdomain', 'like', $query_details['subdomain']);
                         }
+                        if ($query_details['level_of_difficulty'] != "") {
+                            $filterByQuery->where('level_of_difficulty', '=', $query_details['level_of_difficulty']);
+                        }
+                        if ($query_details['particulars'] != "") {
+                            $filterByQuery->where('particulars', 'like', $query_details['particulars']);
+                        }
+                        if ($query_details['learning_objective'] != "") {
+                            $learningObjectiveArray = array($query_details['learning_objective']);
+                            $filterByQuery->where('learning_objective', 'all', $learningObjectiveArray);
+                        }
+                        if ($query_details['syllabus_code'] != "") {
+                            $filterByQuery->where('syllabus_code', 'like', $query_details['syllabus_code']);
+                        }
                         if ($query_details['from_date'] != "") {
                             $start_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));
                             $stop_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['to_date']));
@@ -243,6 +305,10 @@ class PageGroupModel extends Eloquent {
                             ->orWhere('affiliation.lesson_title', 'like', "%$search_key%")
                             ->orWhere('level_of_difficulty', 'like', "%$search_key%")
                             ->orWhere('codex', 'like', "%$search_key%")
+                            ->orWhere('level_of_difficulty', 'like', "%$search_key%")
+                            ->orWhere('particulars', 'like', "%$search_key%")
+                            ->orWhere('learning_objective', 'like', "%$search_key%")
+                            ->orWhere('syllabus_code', 'like', "%$search_key%")
                             ->orWhere('area', 'like', "%$search_key%")
                             ->orWhere('author', 'like', "%$search_key%")
                             ->orWhere('remark', 'like', "%$search_key%")

@@ -23,7 +23,6 @@ Route::post('reset_password', 'UserController@reset_password');
 Route::get('create_page_group_from_queue_cron_job', 'BulkPageGroupUploadController@create_page_group_cron');
 
 
-Route::get('imageTest', 'PageGroupController@imageTest');
 Route::get('book', 'BookController@book_list');
 Route::get('book/{_id}', 'BookController@book_list');
 
@@ -38,6 +37,9 @@ Route::get('variants', 'BulkPageGroupUploadController@test');
 Route::get('static_html_page', 'StaticHtmlPageController@static_html_page');
 Route::get('static_html_page/{_id}', 'StaticHtmlPageController@static_html_page');
 
+Route::get('page_group', 'PageGroupController@get_page_group');
+Route::get('page_group/{pid}', 'PageGroupController@get_page_group');
+
 Route::group(['middleware' => ['login_auth']], function () {
 
     Route::get('user', 'UserController@user');
@@ -51,8 +53,7 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::delete('media', 'MediaController@delete_media');
 
 
-    Route::get('page_group', 'PageGroupController@get_page_group');
-    Route::get('page_group/{pid}', 'PageGroupController@get_page_group');
+
     Route::post('page_group', 'PageGroupController@create_page_group');
     Route::put('page_group', 'PageGroupController@create_page_group');
     Route::delete('page_group', 'PageGroupController@delete_page_group');

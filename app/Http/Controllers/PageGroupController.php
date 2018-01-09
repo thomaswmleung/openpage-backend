@@ -77,6 +77,30 @@ class PageGroupController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="learning_objective",
+     *     in="query",
+     *     description="Filter by learning objective",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="particulars",
+     *     in="query",
+     *     description="Filter by particulars",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="level_of_difficulty",
+     *     in="query",
+     *     description="Filter by level of difficulty",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="syllabus_code",
+     *     in="query",
+     *     description="Filter by syllabus code",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="created_by",
      *     in="query",
      *     description="Filter created by user id",
@@ -212,6 +236,24 @@ class PageGroupController extends Controller {
             if (isset($request->subdomain)) {
                 $subdomain = $request->subdomain;
             }
+            $level_of_difficulty = "";
+            if (isset($request->level_of_difficulty)) {
+                if(is_numeric($request->level_of_difficulty)){
+                    $level_of_difficulty = (int)$request->level_of_difficulty;
+                }
+            }
+            $particulars = "";
+            if (isset($request->particulars)) {
+                $particulars = $request->particulars;
+            }
+            $learning_objective = "";
+            if (isset($request->learning_objective)) {
+                $learning_objective = $request->learning_objective;
+            }
+            $syllabus_code = "";
+            if (isset($request->syllabus_code)) {
+                $syllabus_code = $request->syllabus_code;
+            }
             $created_by = "";
             if (isset($request->created_by)) {
                 $created_by = $request->created_by;
@@ -254,6 +296,10 @@ class PageGroupController extends Controller {
                 'subject' => $subject,
                 'domain' => $domain,
                 'subdomain' => $subdomain,
+                'level_of_difficulty' => $level_of_difficulty,
+                'particulars' => $particulars,
+                'learning_objective' => $learning_objective,
+                'syllabus_code' => $syllabus_code,
                 'created_by' => $created_by,
                 'from_date' => $from_date,
                 'to_date' => $to_date,
@@ -331,7 +377,6 @@ class PageGroupController extends Controller {
         $page_data_array = json_decode($json_data, true);
 
 //        var_dump($page_data_array);
-
 //        exit();
         if ($page_data_array == null) {
             Log::error("json could not be converted to array");
@@ -405,9 +450,9 @@ class PageGroupController extends Controller {
                                 }
                                 if (isset($question['question_text'])) {
                                     $question_text = $question['question_text'];
-                                } else if(isset($question['text'])){
+                                } else if (isset($question['text'])) {
                                     $question_text = $question['text'];
-                                }else{
+                                } else {
                                     $question_text = "";
                                 }
 
@@ -452,22 +497,21 @@ class PageGroupController extends Controller {
                                 if (!isset($question['y'])) {
                                     $question['y'] = "";
                                 }
-                                
+
                                 if (!isset($question['cols'])) {
                                     $question['cols'] = "";
                                 }
-                                
+
                                 if (isset($question['mc'])) {
                                     $mc_data = $question['mc'];
-                                    
-                                }else{
-                                     $mc_data = array();
+                                } else {
+                                    $mc_data = array();
                                 }
-                                
-                               
-                                
-                                
-                                
+
+
+
+
+
                                 $insert_data = array(
                                     'question_no' => $question_number,
                                     'answer_cols' => $answer_col,
@@ -548,25 +592,25 @@ class PageGroupController extends Controller {
                             } else {
                                 $section_parabox_data = array();
                             }
-                            
+
                             if (isset($section['instruction'])) {
                                 $instruction_data = $section['instruction'];
                             } else {
                                 $instruction_data = array();
                             }
-                            
+
                             if (isset($section['paraBox'])) {
                                 $parabox_data = $section['paraBox'];
                             } else {
                                 $parabox_data = array();
                             }
-                            
+
                             if (isset($section['optBox'])) {
                                 $optbox_data = $section['optBox'];
                             } else {
                                 $optbox_data = array();
                             }
-                            
+
 
 
                             $section_question = $questions_ids;
@@ -584,15 +628,15 @@ class PageGroupController extends Controller {
                                 'paraBox' => $section_parabox_data,
                                 'question' => $section_question
                             );
-                            
-                            if(isset($section['table'])){
+
+                            if (isset($section['table'])) {
                                 $insert_data['table'] = $section['table'];
                             }
-                            
-                            if(isset($section['table_data'])){
+
+                            if (isset($section['table_data'])) {
                                 $insert_data['table_data'] = $section['table_data'];
                             }
-                            
+
                             $section_id = "";
                             if (isset($section['section_id']) && $section['section_id'] != "") {
 
@@ -673,117 +717,7 @@ class PageGroupController extends Controller {
                     }
                     array_push($page_ids, $page_id);
                 }
-
-                $page_group_title = "";
-                if (isset($page_data_array['page_group']['title'])) {
-                    $page_group_title = $page_data_array['page_group']['title'];
-                }
-
-                $page_group_sub_title = "";
-                if (isset($page_data_array['page_group']['sub_title'])) {
-                    $page_group_sub_title = $page_data_array['page_group']['sub_title'];
-                }
-
-                $teachersCopyResponse = $pdf_helper->generate_pdf_from_json($req_json, TRUE);
-                $teachersCopyArray = json_decode($teachersCopyResponse, true);
-
-                $subject = "";
-                if (isset($page_data_array['page_group']['subject'])) {
-                    $subject = $page_data_array['page_group']['subject'];
-                }
-                $domain = "";
-                if (isset($page_data_array['page_group']['domain'])) {
-                    $domain = $page_data_array['page_group']['domain'];
-                }
-                $subdomain = "";
-                if (isset($page_data_array['page_group']['subdomain'])) {
-                    $subdomain = $page_data_array['page_group']['subdomain'];
-                }
-                $level_of_difficulty = "";
-                if (isset($page_data_array['page_group']['level_of_difficulty'])) {
-                    $level_of_difficulty = $page_data_array['page_group']['level_of_difficulty'];
-                }
-                $level_of_scaffolding = "";
-                if (isset($page_data_array['page_group']['level_of_scaffolding'])) {
-                    $level_of_scaffolding = $page_data_array['page_group']['level_of_scaffolding'];
-                }
-
-
-                if (!isset($page_data_array['layout'])) {
-
-                    $page_data_array['layout'] = "";
-                }
-
-                if (!isset($page_data_array['syllabus'])) {
-
-                    $page_data_array['syllabus'] = "";
-                }
-
-
-
-
-                $page_group_insert_data = array(
-                    'page' => $page_ids,
-                    'title' => $page_group_title,
-                    'sub_title' => $page_group_sub_title,
-                    'subject' => $subject,
-                    'domain' => $domain,
-                    'subdomain' => $subdomain,
-                    'preview_url' => $page_data_array['preview_url'],
-                    'preview_image_array' => $page_data_array['preview_image_array'],
-                    'layout' => $page_data_array['layout'],
-                    'syllabus' => $page_data_array['syllabus'],
-                    'student_copy_preview_url' => $page_data_array['preview_url'],
-                    'student_preview_image_array' => $page_data_array['preview_image_array'],
-                    'teacher_copy_preview_url' => $teachersCopyArray['preview_url'],
-                    'teacher_preview_image_array' => $teachersCopyArray['preview_image_array'],
-                    'level_of_difficulty' => $level_of_difficulty,
-                    'level_of_scaffolding' => $level_of_scaffolding,
-                );
-
-                if ($request->isMethod('post')) {
-                    $page_group_insert_data['created_by'] = Token_helper::fetch_user_id_from_token($request->header('token'));
-                }
-
-                $pageGroup_result = $page_group_model->update_page_group($page_group_insert_data, $page_group_id);
-            } else {
-                
             }
-
-            // Keyword Logic 
-            $keyword_array = array();
-            if (isset($page_data_array['page_group']['keywords'])) {
-                $keyword_array = $page_data_array['page_group']['keywords'];
-            }
-            if (count($keyword_array) > 0) {
-                foreach ($keyword_array as $keyword) {
-                    // check keyword in DB
-                    $result = KeywordHelper::indexKeyword($keyword, $page_group_id, config('collection_constants.PAGE_GROUP'));
-                }
-            }
-
-            if (isset($page_data_array['preview_url'])) {
-                $response_array['student_copy_preview_url'] = $page_data_array['preview_url'];
-            }
-            if (isset($page_data_array['preview_image_array'])) {
-                $response_array['student_preview_image_array'] = $page_data_array['preview_image_array'];
-            }
-            if (isset($page_data_array['preview_image_array'])) {
-                $response_array['teacher_copy_preview_url'] = $teachersCopyArray['preview_url'];
-            }
-            if (isset($page_data_array['preview_image_array'])) {
-                $response_array['teacher_preview_image_array'] = $teachersCopyArray['preview_image_array'];
-            }
-            
-            if(isset($page_ids) AND sizeof($page_ids) > 0){
-                $response_array['page_id_array'] = $page_ids;
-            }
-            
-            
-            $response_array['success'] = TRUE;
-
-            Log::error(json_encode($response_array));
-            return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
         }
 
         $original_request_array = json_decode($req_json, TRUE);
@@ -824,6 +758,15 @@ class PageGroupController extends Controller {
         }
         if (isset($page_data_array['page_group']['level_of_difficulty'])) {
             $page_group_insert_data['level_of_difficulty'] = $page_data_array['page_group']['level_of_difficulty'];
+        }
+        if (isset($page_data_array['page_group']['learning_objective'])) {
+            $page_group_insert_data['learning_objective'] = $page_data_array['page_group']['learning_objective'];
+        }
+        if (isset($page_data_array['page_group']['particulars'])) {
+            $page_group_insert_data['particulars'] = $page_data_array['page_group']['particulars'];
+        }
+        if (isset($page_data_array['page_group']['syllabus_code'])) {
+            $page_group_insert_data['syllabus_code'] = $page_data_array['page_group']['syllabus_code'];
         }
         if (isset($page_data_array['page_group']['level_of_scaffolding'])) {
             $page_group_insert_data['level_of_scaffolding'] = $page_data_array['page_group']['level_of_scaffolding'];
@@ -868,20 +811,23 @@ class PageGroupController extends Controller {
             $version_array = array();
             $page_group_insert_data['current_version_details']['version_id'] = $page_group_id;
             $page_group_insert_data['current_version_details']['students_preview_image'] = $page_data_array['preview_image_array'][0];
+            if(isset($teachersCopyArray['preview_image_array'][0])){
             $page_group_insert_data['current_version_details']['teachers_preview_image'] = $teachersCopyArray['preview_image_array'][0];
+            }else{
+                $page_group_insert_data['current_version_details']['teachers_preview_image'] = "";
+            }
             if (isset($page_data_array['page_group']['import_url'])) {
                 $page_group_insert_data['current_version_details']['import_url'] = $page_data_array['page_group']['import_url'];
             }
             $version_array = $page_group_insert_data['current_version_details'];
             $result = $page_group_model->version_update($parent_page_group_id, $version_array);
-            
+
             $affiliation_array = array();
             if (isset($page_data_array['affiliation'])) {
                 $page_data_array['affiliation']['version_id'] = $page_group_id;
                 $affiliation_array = $page_data_array['affiliation'];
                 $result = $page_group_model->affiliation_update($parent_page_group_id, $affiliation_array);
             }
-            
         }
 
 
@@ -909,6 +855,11 @@ class PageGroupController extends Controller {
         if (isset($page_data_array['preview_image_array'])) {
             $response_array['teacher_preview_image_array'] = $teachersCopyArray['preview_image_array'];
         }
+
+        if (isset($page_ids) AND sizeof($page_ids) > 0) {
+            $response_array['page_id_array'] = $page_ids;
+        }
+        
         $response_array['success'] = TRUE;
 
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');

@@ -2735,6 +2735,30 @@
                         "type": "string"
                     },
                     {
+                        "name": "learning_objective",
+                        "in": "query",
+                        "description": "Filter by learning objective",
+                        "type": "string"
+                    },
+                    {
+                        "name": "particulars",
+                        "in": "query",
+                        "description": "Filter by particulars",
+                        "type": "string"
+                    },
+                    {
+                        "name": "level_of_difficulty",
+                        "in": "query",
+                        "description": "Filter by level of difficulty",
+                        "type": "string"
+                    },
+                    {
+                        "name": "syllabus_code",
+                        "in": "query",
+                        "description": "Filter by syllabus code",
+                        "type": "string"
+                    },
+                    {
                         "name": "created_by",
                         "in": "query",
                         "description": "Filter created by user id",

@@ -141,15 +141,19 @@ class PageModel extends Eloquent {
     }
 
     public static function get_page_details($page_id) {
+        
+        
         $page_details = array();
-        $page_model_data = PageModel::find($page_id)->toArray();
-
+        $page_model_data = PageModel::where("_id",$page_id)->first();
         if ($page_model_data != NULL) {
 //            $page_details['overlay'] = $page_model_data['overlay'];
 //            $page_details['background'] = $page_model_data['background'];
 
             $main_id = $page_model_data['main_id'];
-            $main_details = MainModel::get_main_details($main_id);
+            $main_details = NULL;
+            if (isset($main_id) AND $main_id != "") {
+                $main_details = MainModel::get_main_details($main_id);
+            }
             $page_model_data['main'] = $main_details;
             return $page_model_data;
         } else {
@@ -217,7 +221,7 @@ class PageModel extends Eloquent {
                         if ($query_details['created_by'] != "") {
                             $filterByQuery->where('created_by', 'like', $query_details['created_by']);
                         }
-                         if ($query_details['subject'] != "") {
+                        if ($query_details['subject'] != "") {
                             $filterByQuery->where('subject', 'like', $query_details['subject']);
                         }
                         if ($query_details['domain'] != "") {
@@ -227,7 +231,7 @@ class PageModel extends Eloquent {
                             $filterByQuery->where('subdomain', 'like', $query_details['subdomain']);
                         }
                         if ($query_details['from_date'] != "") {
-                            
+
                             $start_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['from_date']));
                             $stop_date = new \MongoDB\BSON\UTCDateTime(new DateTime($query_details['to_date']));
                             $filterByQuery->whereBetween('created_at', array($start_date, $stop_date));

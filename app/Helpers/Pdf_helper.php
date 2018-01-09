@@ -37,8 +37,9 @@ class Pdf_helper {
                 $uniqueId = uniqid();
 
                 $pdf_path = public_path("tmp" . DIRECTORY_SEPARATOR . $uniqueId . $filename);
-                GCS_helper::download_object($filename, $pdf_path);
 
+
+                GCS_helper::download_object($filename, $pdf_path);
                 $im = new Imagick($pdf_path);
 
                 $count = $im->getNumberImages();
@@ -59,7 +60,9 @@ class Pdf_helper {
                     $pdf_img->setImageCompression(imagick::COMPRESSION_JPEG);
                     $pdf_img->setImageCompressionQuality(100);
                     $pdf_img->setImageCompose(Imagick::COMPOSITE_ATOP);
-                    $pdf_img->setImageAlphaChannel(11);
+                    if ($pdf_img->getImageAlphaChannel()) {
+                        $pdf_img->setImageAlphaChannel(11);
+                    }
                     $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
                     $pdf_img->writeImage($image_absolute_path);
 
@@ -146,7 +149,9 @@ class Pdf_helper {
 
 
                     $pdf_img->setImageCompose(Imagick::COMPOSITE_ATOP);
+                    if ($pdf_img->getImageAlphaChannel()) {
                     $pdf_img->setImageAlphaChannel(11);
+                    }
                     $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
                     $pdf_img->writeImage($image_absolute_path);
 
@@ -270,7 +275,9 @@ class Pdf_helper {
 
 
             $pdf_img->setImageCompose(Imagick::COMPOSITE_ATOP);
-            $pdf_img->setImageAlphaChannel(11);
+            if ($pdf_img->getImageAlphaChannel()) {
+                $pdf_img->setImageAlphaChannel(11);
+            }
             $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
             $pdf_img->writeImage($image_path);
             $gcs_result = GCS_helper::upload_to_gcs($gcs_path);
@@ -503,8 +510,6 @@ class Pdf_helper {
 //        Log::error("Generate Page called");
 //        var_dump($page);
 //        exit();
-
-
         // create new blank page
         $fpdf->AddPage();
         $actualPDFPageIndex++;
@@ -626,9 +631,8 @@ class Pdf_helper {
         }
 
         //end of date grade 1
-        
         // Start of QR code
-        
+
         if (isset($page['qr_code'])) {
             $qr_code_details = $page['qr_code'];
         } else {
@@ -659,20 +663,17 @@ class Pdf_helper {
             $qr_coordinates['y'] = 5;
             $qr_coordinates['width'] = 20;
             $qr_coordinates['height'] = 20;
-            
         }
 
 
 
         if (isset($qr_code_details['image_url']) AND $qr_code_details['image_url'] != "") {
-            
-             $fpdf->Image($qr_code_details['image_url'], $qr_coordinates['x'], $qr_coordinates['y'],
-                     $qr_coordinates['width'], $qr_coordinates['height']);
+
+            $fpdf->Image($qr_code_details['image_url'], $qr_coordinates['x'], $qr_coordinates['y'], $qr_coordinates['width'], $qr_coordinates['height']);
         }
-        
-        
+
+
         // End of QR code
-        
         // Start of affiliation
 //
 
@@ -744,10 +745,11 @@ class Pdf_helper {
                 }
             }
         }
-        if (isset($page['main'])) {
+        if (isset($page['main']) ) {
 
             $fpdf->SetXY(10, 25);
             $main_data_array = $page['main'];
+            
             $page_header_text = $page['main']['header_text'];
             // define pdf header here
             $fpdf->MultiCell(200, 10, $page_header_text, 0, 'C');
@@ -763,20 +765,20 @@ class Pdf_helper {
 
                 // Handling of different question types
                 if (isset($section['instruction']['text'])) {
-                    
-                    
+
+
                     $fpdf->SetXY($sectionStartX, $fpdf->GetY());
                     $fpdf->SetFont('msjh', '', 18);
 //                            $fpdf->MultiCell(200, 5, $section['instruction']['text'], 0, 'L');
                     $fpdf->Write(7, $section['instruction']['text']);
                     $fpdf->SetFont('msjh', '', 14);
-                }else if (isset($section['instruction_text'])) {
+                } else if (isset($section['instruction_text'])) {
                     $section_instruction_text = $section['instruction_text'];
                     // display section instruction
                     $fpdf->SetXY($sectionStartX, $fpdf->GetY() + 5);
                     $fpdf->MultiCell(200, 5, $section_instruction_text, 0, 'C');
                 }
-                
+
 //                        var_dump($section['paraBox']);
 //                        exit();
                 if (isset($section['instruction']['tcNote'])) {
@@ -810,23 +812,24 @@ class Pdf_helper {
 
 
                         $bulletNum = 1;
-                        if ($section['paraBox']['bullet'] == "alphabets") {
+                        if (isset($section['paraBox']['bullet']) AND $section['paraBox']['bullet'] == "alphabets") {
                             $bulletNum = "A";
                         }
 
                         $currentParaBoxTextY = $fpdf->GetY() + 5;
-                        foreach ($section['paraBox']['text'] as $text) {
+                        if (isset($section['paraBox']['text']) AND is_array($section['paraBox']['text'])) {
+                            foreach ($section['paraBox']['text'] as $text) {
 
-                            $fpdf->SetXY(10, $currentParaBoxTextY);
-                            $fpdf->MultiCell(10, 10, $bulletNum . ".", 0, 'L');
+                                $fpdf->SetXY(10, $currentParaBoxTextY);
+                                $fpdf->MultiCell(10, 10, $bulletNum . ".", 0, 'L');
 
-                            $fpdf->SetXY(20, $currentParaBoxTextY);
-                            $fpdf->MultiCell(180, 10, str_replace('\r', "\n", $text), 0, 'L');
+                                $fpdf->SetXY(20, $currentParaBoxTextY);
+                                $fpdf->MultiCell(180, 10, str_replace('\r', "\n", $text), 0, 'L');
 
-                            $currentParaBoxTextY = $fpdf->GetY() + 5;
-                            $bulletNum++;
+                                $currentParaBoxTextY = $fpdf->GetY() + 5;
+                                $bulletNum++;
+                            }
                         }
-
                         $paraBoxEndY = $fpdf->GetY();
 
                         $fpdf->Line(8, $paraBoxStartY, 200, $paraBoxStartY);
@@ -929,7 +932,7 @@ class Pdf_helper {
                     $optBoxY = $fpdf->GetY();
 //                            }
                 }
-                
+
 
                 $section_question_array = array();
 
@@ -948,7 +951,7 @@ class Pdf_helper {
                 $wordMatchQuestionMaxY = 0;
 
                 $currentY = $fpdf->GetY() + 10;
-                
+
                 foreach ($section_question_array as $question) {
                     $isQuestionCountDisplayed = FALSE;
 
@@ -1882,7 +1885,7 @@ class Pdf_helper {
                         }
                     } else {
 
-                        
+
                         if (isset($question['optBox']['option'])) {
 
                             $optionBoxString = implode("    ", $question['optBox']['option']);

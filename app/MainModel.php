@@ -19,7 +19,7 @@ class MainModel extends Eloquent {
     }
 
     public static function get_main_details($main_id) {
-        $main_details = MainModel::find($main_id)->toArray();
+        $main_details = MainModel::where("_id",$main_id)->first();
 
         if ($main_details != NULL) {
             $sectionArray = $main_details['section'];
