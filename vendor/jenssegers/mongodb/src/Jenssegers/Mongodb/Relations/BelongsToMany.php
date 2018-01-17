@@ -1,4 +1,6 @@
-<?php namespace Jenssegers\Mongodb\Relations;
+<?php
+
+namespace Jenssegers\Mongodb\Relations;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -307,7 +309,7 @@ class BelongsToMany extends EloquentBelongsToMany
     {
         $results = [];
         foreach ($records as $id => $attributes) {
-            if (! is_array($attributes)) {
+            if (!is_array($attributes)) {
                 list($id, $attributes) = [$attributes, []];
             }
             $results[$id] = $attributes;

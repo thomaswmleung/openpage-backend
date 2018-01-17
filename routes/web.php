@@ -23,6 +23,7 @@ Route::post('reset_password', 'UserController@reset_password');
 Route::get('create_page_group_from_queue_cron_job', 'BulkPageGroupUploadController@create_page_group_cron');
 
 
+Route::get('imageTest', 'PageGroupController@imageTest');
 Route::get('book', 'BookController@book_list');
 Route::get('book/{_id}', 'BookController@book_list');
 

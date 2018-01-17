@@ -1,14 +1,21 @@
 import React from "react"
 import PropTypes from "prop-types"
-import { helpers } from "swagger-client"
+import Im from "immutable"
+import { createDeepLinkPath, sanitizeUrl } from "core/utils"
 
-const { opId } = helpers
+const SWAGGER2_OPERATION_METHODS = [
+  "get", "put", "post", "delete", "options", "head", "patch"
+]
+
+const OAS3_OPERATION_METHODS = SWAGGER2_OPERATION_METHODS.concat(["trace"])
+
 
 export default class Operations extends React.Component {
 
   static propTypes = {
     specSelectors: PropTypes.object.isRequired,
     specActions: PropTypes.object.isRequired,
+    oas3Actions: PropTypes.object.isRequired,
     getComponent: PropTypes.func.isRequired,
     layoutSelectors: PropTypes.object.isRequired,
     layoutActions: PropTypes.object.isRequired,
@@ -20,26 +27,21 @@ export default class Operations extends React.Component {
   render() {
     let {
       specSelectors,
-      specActions,
       getComponent,
       layoutSelectors,
       layoutActions,
-      authActions,
-      authSelectors,
-      getConfigs,
-      fn
+      getConfigs
     } = this.props
 
     let taggedOps = specSelectors.taggedOperations()
 
-    const Operation = getComponent("operation")
+    const OperationContainer = getComponent("OperationContainer", true)
     const Collapse = getComponent("Collapse")
+    const Markdown = getComponent("Markdown")
+    const DeepLink = getComponent("DeepLink")
 
-    let showSummary = layoutSelectors.showSummary()
     let {
       docExpansion,
-      displayOperationId,
-      displayRequestDuration,
       maxDisplayedTags,
       deepLinking
     } = getConfigs()
@@ -66,8 +68,10 @@ export default class Operations extends React.Component {
             taggedOps.map( (tagObj, tag) => {
               let operations = tagObj.get("operations")
               let tagDescription = tagObj.getIn(["tagDetails", "description"], null)
+              let tagExternalDocsDescription = tagObj.getIn(["tagDetails", "externalDocs", "description"])
+              let tagExternalDocsUrl = tagObj.getIn(["tagDetails", "externalDocs", "url"])
 
-              let isShownKey = ["operations-tag", tag]
+              let isShownKey = ["operations-tag", createDeepLinkPath(tag)]
               let showTag = layoutSelectors.isShown(isShownKey, docExpansion === "full" || docExpansion === "list")
 
               return (
@@ -77,21 +81,36 @@ export default class Operations extends React.Component {
                     onClick={() => layoutActions.show(isShownKey, !showTag)}
                     className={!tagDescription ? "opblock-tag no-desc" : "opblock-tag" }
                     id={isShownKey.join("-")}>
-                    <a
-                      className="nostyle"
-                      onClick={(e) => e.preventDefault()}
-                      href={ isDeepLinkingEnabled ? `#/${tag}` : ""}>
-                      <span>{tag}</span>
-                    </a>
+                    <DeepLink
+                        enabled={isDeepLinkingEnabled}
+                        isShown={showTag}
+                        path={tag}
+                        text={tag} />
                     { !tagDescription ? null :
                         <small>
-                          { tagDescription }
+                          <Markdown source={tagDescription} />
                         </small>
                     }
 
+                    <div>
+                    { !tagExternalDocsDescription ? null :
+                        <small>
+                          { tagExternalDocsDescription }
+                          { tagExternalDocsUrl ? ": " : null }
+                          { tagExternalDocsUrl ?
+                            <a
+                              href={sanitizeUrl(tagExternalDocsUrl)}
+                              onClick={(e) => e.stopPropagation()}
+                              target={"_blank"}
+                            >{tagExternalDocsUrl}</a> : null
+                          }
+                        </small>
+                    }
+                    </div>
+
                     <button className="expand-operation" title="Expand operation" onClick={() => layoutActions.show(isShownKey, !showTag)}>
                       <svg className="arrow" width="20" height="20">
-                        <use xlinkHref={showTag ? "#large-arrow-down" : "#large-arrow"} />
+                        <use href={showTag ? "#large-arrow-down" : "#large-arrow"} xlinkHref={showTag ? "#large-arrow-down" : "#large-arrow"} />
                       </svg>
                     </button>
                   </h4>
@@ -99,45 +118,30 @@ export default class Operations extends React.Component {
                   <Collapse isOpened={showTag}>
                     {
                       operations.map( op => {
+                        const path = op.get("path")
+                        const method = op.get("method")
+                        const specPath = Im.List(["paths", path, method])
 
-                        const path = op.get("path", "")
-                        const method = op.get("method", "")
-                        const jumpToKey = `paths.${path}.${method}`
 
-                        const operationId =
-                        op.getIn(["operation", "operationId"]) || op.getIn(["operation", "__originalOperationId"]) || opId(op.get("operation"), path, method) || op.get("id")
-                        const isShownKey = ["operations", tag, operationId]
+                        // FIXME: (someday) this logic should probably be in a selector,
+                        // but doing so would require further opening up
+                        // selectors to the plugin system, to allow for dynamic
+                        // overriding of low-level selectors that other selectors
+                        // rely on. --KS, 12/17
+                        const validMethods = specSelectors.isOAS3() ?
+                          OAS3_OPERATION_METHODS : SWAGGER2_OPERATION_METHODS
 
-                        const allowTryItOut = specSelectors.allowTryItOutFor(op.get("path"), op.get("method"))
-                        const response = specSelectors.responseFor(op.get("path"), op.get("method"))
-                        const request = specSelectors.requestFor(op.get("path"), op.get("method"))
+                        if(validMethods.indexOf(method) === -1) {
+                          return null
+                        }
 
-                        return <Operation
-                          {...op.toObject()}
-
-                          isShownKey={isShownKey}
-                          jumpToKey={jumpToKey}
-                          showSummary={showSummary}
-                          key={isShownKey}
-                          response={ response }
-                          request={ request }
-                          allowTryItOut={allowTryItOut}
-
-                          displayOperationId={displayOperationId}
-                          displayRequestDuration={displayRequestDuration}
-
-                          specActions={ specActions }
-                          specSelectors={ specSelectors }
-
-                          layoutActions={ layoutActions }
-                          layoutSelectors={ layoutSelectors }
-
-                          authActions={ authActions }
-                          authSelectors={ authSelectors }
-
-                          getComponent={ getComponent }
-                          fn={fn}
-                          getConfigs={ getConfigs }
+                        return <OperationContainer
+                          key={`${path}-${method}`}
+                          specPath={specPath}
+                          op={op}
+                          path={path}
+                          method={method}
+                          tag={tag}
                         />
                       }).toArray()
                     }

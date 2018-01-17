@@ -4,12 +4,13 @@ namespace App;
 
 use Jenssegers\Mongodb\Eloquent\Model as Eloquent;
 use App\QuestionsModel;
+use Illuminate\Support\Facades\Log;
 
 class SectionModel extends Eloquent {
 
     protected $collection = 'section';
-    protected $fillable = array('instruction_text','instruction', 'paraBox','section_type', 'start_question_no', 
-        'with_sample_question', 'answer_cols', 'suggestion_box','paraBox', 'question','table','table_data');
+    protected $fillable = array('instruction_text', 'instruction', 'paraBox', 'section_type', 'start_question_no',
+        'with_sample_question', 'answer_cols', 'suggestion_box', 'paraBox', 'question', 'table', 'table_data');
 
     public function add_section($insert_data, $section_id) {
         // $result = SectionModel::create($insert_data);
@@ -20,14 +21,29 @@ class SectionModel extends Eloquent {
     }
 
     public static function get_section_details($section_id) {
-        $section_details = SectionModel::where("_id",$section_id)->first();
-        $section_details['instruction'] = array();
-        $section_details['instruction']['text'] = $section_details['instruction_text'];
+        $section_details = SectionModel::where("_id", $section_id)->first();
+        
+        if($section_details!= NULL){
+            $section_details = $section_details->toArray();
+        }
+        
+//        Log::error($section_details['instruction']['text']);
+
+        if (!isset($section_details['instruction'])) {
+            $section_details['instruction'] = array();
+        }
+        
+        
+//        $instructionText = $section_details['instruction_text'];
+        
+//        $section_details['instruction']['text'] = $instructionText;
 //        var_dump($section_details);
 //        exit();
-        if(isset($section_details['section_type'])){
-        $section_details['type'] = $section_details['section_type'];
-        }else{
+        
+        
+        if (isset($section_details['section_type'])) {
+            $section_details['type'] = $section_details['section_type'];
+        } else {
             $section_details['type'] = "";
         }
         $question_id_array = $section_details['question'];

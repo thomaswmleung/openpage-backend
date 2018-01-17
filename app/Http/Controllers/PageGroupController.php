@@ -18,7 +18,7 @@ use App\Helpers\KeywordHelper;
 use App\Helpers\Token_helper;
 use Imagick;
 use ImagickPixel;
-
+use DNS2D;
 /*
  *  Class Name : PageGroupController
  *  Description : This controller handles parsing of JSON DATA and save to DB
@@ -238,8 +238,8 @@ class PageGroupController extends Controller {
             }
             $level_of_difficulty = "";
             if (isset($request->level_of_difficulty)) {
-                if(is_numeric($request->level_of_difficulty)){
-                    $level_of_difficulty = (int)$request->level_of_difficulty;
+                if (is_numeric($request->level_of_difficulty)) {
+                    $level_of_difficulty = (int) $request->level_of_difficulty;
                 }
             }
             $particulars = "";
@@ -811,9 +811,9 @@ class PageGroupController extends Controller {
             $version_array = array();
             $page_group_insert_data['current_version_details']['version_id'] = $page_group_id;
             $page_group_insert_data['current_version_details']['students_preview_image'] = $page_data_array['preview_image_array'][0];
-            if(isset($teachersCopyArray['preview_image_array'][0])){
-            $page_group_insert_data['current_version_details']['teachers_preview_image'] = $teachersCopyArray['preview_image_array'][0];
-            }else{
+            if (isset($teachersCopyArray['preview_image_array'][0])) {
+                $page_group_insert_data['current_version_details']['teachers_preview_image'] = $teachersCopyArray['preview_image_array'][0];
+            } else {
                 $page_group_insert_data['current_version_details']['teachers_preview_image'] = "";
             }
             if (isset($page_data_array['page_group']['import_url'])) {
@@ -859,7 +859,7 @@ class PageGroupController extends Controller {
         if (isset($page_ids) AND sizeof($page_ids) > 0) {
             $response_array['page_id_array'] = $page_ids;
         }
-        
+
         $response_array['success'] = TRUE;
 
         return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
@@ -943,32 +943,43 @@ class PageGroupController extends Controller {
     }
 
     function imageTest() {
-        $page_index = 0;
+//        $page_index = 0;
+////        $pdf_path = public_path("test/test.pdf");
 //        $pdf_path = public_path("test/test.pdf");
-        $pdf_path = public_path("test/test.pdf");
-        $pdf_img = new Imagick();
-        $pdf_img->setresolution(210, 297);
-        $pdf_img->readimage($pdf_path . "[" . $page_index . "]");
-//        $pdf_img->setImageResolution(210,297);
+//        $pdf_img = new Imagick();
+//        $pdf_img->setresolution(210, 297);
+//        $pdf_img->readimage($pdf_path . "[" . $page_index . "]");
+////        $pdf_img->setImageResolution(210,297);
+////        $pdf_img->setImageBackgroundColor('white');
+////        $pdf_img->paintTransparentImage($pdf_img->getImageBackgroundColor(), 0, 3000);
+////        $im->paintTransparentImage("rgb(255,0,255)", 0, 10);
+////        $pdf_img->resampleImage  (2100,2970, Imagick::FILTER_UNDEFINED,1);
+////        $pdf_img->resizeImage( 2100, 2970, Imagick::FILTER_UNDEFINED, 1, FALSE );
+////        $pdf_img->resizeImage( 2100, 2970, Imagick::FILTER_LANCZOS, 1, TRUE );
+////        $pdf_img->scaleImage(2100, 2970, false);
+//        $pdf_img->scaleImage(1050, 1485);
+//        $pdf_img->setImageFormat('jpg');
+//        $pdf_img->setImageCompression(imagick::COMPRESSION_JPEG);
+//        $pdf_img->setImageCompressionQuality(100);
+//
+//
+//        $pdf_img->setImageCompose(Imagick::COMPOSITE_ATOP);
+//        $pdf_img->setImageAlphaChannel(11);
 //        $pdf_img->setImageBackgroundColor('white');
-//        $pdf_img->paintTransparentImage($pdf_img->getImageBackgroundColor(), 0, 3000);
-//        $im->paintTransparentImage("rgb(255,0,255)", 0, 10);
-//        $pdf_img->resampleImage  (2100,2970, Imagick::FILTER_UNDEFINED,1);
-//        $pdf_img->resizeImage( 2100, 2970, Imagick::FILTER_UNDEFINED, 1, FALSE );
-//        $pdf_img->resizeImage( 2100, 2970, Imagick::FILTER_LANCZOS, 1, TRUE );
-//        $pdf_img->scaleImage(2100, 2970, false);
-        $pdf_img->scaleImage(1050, 1485);
-        $pdf_img->setImageFormat('jpg');
-        $pdf_img->setImageCompression(imagick::COMPRESSION_JPEG);
-        $pdf_img->setImageCompressionQuality(100);
+//        $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+//
+//        $pdf_img->writeImage(public_path("test/myImage.jpg"));
 
 
-        $pdf_img->setImageCompose(Imagick::COMPOSITE_ATOP);
-        $pdf_img->setImageAlphaChannel(11);
-        $pdf_img->setImageBackgroundColor('white');
-        $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
 
-        $pdf_img->writeImage(public_path("test/myImage.jpg"));
-    }
+//        echo DNS2D::getBarcodeHTML("4445645656", "QRCODE");
+//        $path = public_path("tmp/");
+//        DNS2D::setStorPath($path);
+//        echo DNS2D::getBarcodePNGPath("Surajsa Pawar1", "QRCODE");        
+        
+        
+        
+        
+        }
 
 }

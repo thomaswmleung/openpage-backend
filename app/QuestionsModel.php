@@ -35,7 +35,11 @@ class QuestionsModel extends Eloquent {
     }
 
     public static function get_question_details($question_id) {
-        $question_details = QuestionsModel::where('_id',$question_id);
+        
+        $question_details = QuestionsModel::where('_id',$question_id)->first();
+        if($question_details != NULL){
+            $question_details = $question_details->toArray();
+        }
         return $question_details;
     }
 

@@ -1,4 +1,6 @@
-<?php namespace Jenssegers\Mongodb\Schema;
+<?php
+
+namespace Jenssegers\Mongodb\Schema;
 
 use Illuminate\Database\Connection;
 
@@ -84,7 +86,7 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
             $transform = [];
 
             foreach ($columns as $column) {
-                $transform[$column] = $column.'_1';
+                $transform[$column] = $column . '_1';
             }
 
             $columns = $transform;
@@ -130,7 +132,7 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
      * Specify a sparse index for the collection.
      *
      * @param  string|array $columns
-     * @param  array        $options
+     * @param  array $options
      * @return Blueprint
      */
     public function sparse($columns = null, $options = [])
@@ -145,11 +147,36 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
     }
 
     /**
+     * Specify a geospatial index for the collection.
+     *
+     * @param  string|array $columns
+     * @param  string $index
+     * @param  array $options
+     * @return Blueprint
+     */
+    public function geospatial($columns = null, $index = '2d', $options = [])
+    {
+        if ($index == '2d' or $index == '2dsphere') {
+            $columns = $this->fluent($columns);
+
+            $columns = array_flip($columns);
+
+            foreach ($columns as $column => $value) {
+                $columns[$column] = $index;
+            }
+
+            $this->index($columns, null, null, $options);
+        }
+
+        return $this;
+    }
+
+    /**
      * Specify the number of seconds after wich a document should be considered expired based,
      * on the given single-field index containing a date.
      *
      * @param  string|array $columns
-     * @param  int          $seconds
+     * @param  int $seconds
      * @return Blueprint
      */
     public function expire($columns, $seconds)
@@ -196,7 +223,7 @@ class Blueprint extends \Illuminate\Database\Schema\Blueprint
      * Specify a sparse and unique index for the collection.
      *
      * @param  string|array $columns
-     * @param  array        $options
+     * @param  array $options
      * @return Blueprint
      */
     public function sparse_and_unique($columns = null, $options = [])
