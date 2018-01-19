@@ -132,6 +132,196 @@ class BulkPageGroupUploadController extends Controller {
                 if ($zip->open($zipFilePath) === TRUE) {
                     $zip->extractTo($targetPath);
                     $zip->close();
+                } else{
+                    // Throw error
+                    echo "error";
+                    exit();
+                }
+
+                $file_type = PHPExcel_IOFactory::identify($metaDataPath);
+                $objReader = PHPExcel_IOFactory::createReader($file_type);
+                $page_list_Excel = $objReader->load($metaDataPath);
+
+
+                // Read Excel sheet and generate Bulk Upload Request Details
+
+                $page_list_Excel->setActiveSheetIndex(0);
+                $sheet = $page_list_Excel->getSheet(0);
+                $highestRow = $sheet->getHighestRow();
+                $highestColumn = $sheet->getHighestColumn();
+
+                $request_details = array();
+                $response_array = array();
+                $response_array['request_id'] = $bulkUploadRequestDetails->_id;
+
+                for ($row = 2; $row <= $highestRow; $row++) {
+
+                    $rowData = $sheet->rangeToArray('A' . $row . ':' . 'N' . $row, NULL, TRUE, FALSE);
+                    if ($rowData[0][0] == "") {
+                        break;
+                    }
+
+                    $import_file = $rowData[0][0];
+                    $page_group_title = $rowData[0][1];
+                    $page_group_sub_title = $rowData[0][2];
+                    $page_group_subject = $rowData[0][3];
+                    
+                    
+                    
+                    $page_group_codex = $rowData[0][5];
+                    $page_group_syllabus_code = $rowData[0][6];
+                    $page_group_domain = $rowData[0][7];
+                    $page_group_sub_domain = $rowData[0][8];
+                    $page_group_area = $rowData[0][9]; 
+                    $page_group_knowledge_unit = $rowData[0][10]; 
+                    $page_group_learning_objective = $rowData[0][11]; 
+                    $page_group_particulars = $rowData[0][12]; 
+                    $page_group_level_of_difficulty = $rowData[0][13]; 
+                    $page_group_copyright_content = $rowData[0][14]; 
+                    $page_group_copyright_artwork = $rowData[0][15]; 
+                    $page_group_copyright_photo = $rowData[0][16]; 
+                    $page_group_linkage = $rowData[0][17]; 
+                    $page_group_user = $rowData[0][18]; 
+                    $page_group_level = $rowData[0][19]; 
+                    $page_group_nature = $rowData[0][20]; 
+                    $page_group_position = $rowData[0][21]; 
+                    $page_group_output = $rowData[0][22]; 
+                    
+                    
+//                    $page_group_teacher_copy = $rowData[0][6];
+//                    $level_of_difficulty = $rowData[0][7];
+//                    $level_of_scaffolding = $rowData[0][8];
+
+                    $queueData = array(
+                        'bulk_request_id' => $bulkUploadRequestDetails->_id,
+                        'import_file_name' => $import_file,
+                        'page_group_title' => $page_group_title,
+                        'page_group_subtitle' => $page_group_sub_title,
+                        'subject' => $page_group_subject,
+                        'syllabus_code' => $page_group_syllabus_code,
+                        'codex' => $page_group_codex,
+                        'area' => $page_group_area,
+                        'domain' => $page_group_domain,
+                        'sub_domain' => $page_group_sub_domain,
+                        'knowledge_unit' => $page_group_knowledge_unit,
+                        'learning_objective' => $page_group_learning_objective,
+                        'particulars' => $page_group_particulars,
+                        'level_of_difficulty' => $page_group_level_of_difficulty,
+                        'copyright_content' => $page_group_copyright_content,
+                        'copyright_artwork' => $page_group_copyright_artwork,
+                        'copyright_photo' => $page_group_copyright_photo,
+                        'linkage' => $page_group_linkage,
+                        'user' => $page_group_user,
+                        'artwork' => $page_group_artwork,
+                        'artwork' => $page_group_artwork,
+                        'teacher_copy' => $page_group_teacher_copy,
+                        'status' => 'PENDING',
+                        'level_of_difficulty' => $level_of_difficulty,
+                        'level_of_scaffolding' => $level_of_scaffolding
+                    );
+
+                    $bulkUploadQueueModel = new BulkUploadQueueModel();
+                    $queueData = $bulkUploadQueueModel->add_to_queue($queueData);
+//                    array_push($request_details, $rowData);
+                }
+
+
+                return response(json_encode($response_array), 200)->header('Content-Type', 'application/json');
+
+//                    var_dump($request_details);
+//                $destinationPath = public_path('images');
+//                $media_name = $input['media_file'];
+//                $image->move($destinationPath, $media_name);
+            } else {
+
+                $response_array['ERROR'] = "Something went wrong.";
+                return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
+            }
+        }
+    }
+
+    
+    public function bulk_upload_back_up(Request $request) {
+
+
+        if (!file_exists(public_path("bulk_upload_archives"))) {
+            mkdir(public_path("bulk_upload_archives"), 0777, true);
+        }
+        $objPHPExcel = new PHPExcel();
+//        $zipDirectory = public_path("bulk_upload_archives/sample.zip");
+//        $zip = new ZipArchive();
+//        $targetPath = public_path('bulk_upload_archives/target_path1');
+//        if ($zip->open($zipDirectory) === TRUE) {
+//            $zip->extractTo($targetPath);
+//            $zip->close();
+//            echo 'ok';
+//        } else {
+//            echo 'failed';
+//        }
+
+        $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
+
+        $media_array = array(
+            'archive_file' => $request->file('archive_file'),
+            'meta_data_csv_file' => $request->file('meta_data_csv_file'),
+            'meta_data_file_extension' => strtolower($request->file('meta_data_csv_file')->getClientOriginalExtension())
+        );
+
+        $rules = array(
+            'archive_file' => 'required|mimetypes:application/zip',
+//            'meta_data_csv_file' => 'required|mimetypes:application/application/application/excel,
+//                                        application/vnd.ms-excel, application/vnd.msexcel,vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel',
+            'meta_data_csv_file' => 'required',
+            'meta_data_file_extension' => 'required|in:xlsx,xls'
+        );
+
+        $messages = [
+            'archive_file.required' => config('error_constants.archive_file_required'),
+            'archive_file.mimetypes' => config('error_constants.invalid_archive_file'),
+            'meta_data_csv_file.required' => config('error_constants.meta_data_file_required'),
+            'meta_data_file_extension.in' => config('error_constants.invalid_meta_data_file')
+        ];
+
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+
+        $validator = Validator::make($media_array, $rules, $formulated_messages);
+        if ($validator->fails()) {
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+        } else {
+
+            if ($request->hasFile('archive_file')) {
+                $archiveFile = $request->file('archive_file');
+                $metaDataFile = $request->file('meta_data_csv_file');
+                $metaDataFileName = $metaDataFile->getClientOriginalName();
+                // Create bulk upload request in Mongo
+
+                $bulkUploadRequestModel = new BulkUploadRequestModel();
+                $author = Token_helper::fetch_user_id_from_token($request->header('token'));
+                $archive_file_name = $archiveFile->getClientOriginalName();
+                $dataArray = array(
+                    'archive_file_name' => $archive_file_name,
+                    'created_by' => $author
+                );
+
+                $bulkUploadRequestDetails = $bulkUploadRequestModel->create_request($dataArray);
+
+
+
+                $zipDirectory = public_path("bulk_upload_archives". DIRECTORY_SEPARATOR.
+                        $bulkUploadRequestDetails->_id);
+                $zipFilePath = $zipDirectory . "/" . $archive_file_name;
+
+                $metaDataPath = $zipDirectory . "/" . $metaDataFileName;
+
+                $archiveFile->move($zipDirectory, $archive_file_name);
+                $metaDataFile->move($zipDirectory, $metaDataFile->getClientOriginalName());
+                $zip = new ZipArchive();
+                $targetPath = public_path('bulk_upload_archives'. DIRECTORY_SEPARATOR. $bulkUploadRequestDetails->_id);
+                if ($zip->open($zipFilePath) === TRUE) {
+                    $zip->extractTo($targetPath);
+                    $zip->close();
                 } else {
                     // Throw error
                     echo "error";
@@ -205,6 +395,7 @@ class BulkPageGroupUploadController extends Controller {
         }
     }
 
+    
     public function create_page_group_cron() {
 //
 //        $file1 = public_path('bulk_upload_archives' . DIRECTORY_SEPARATOR . 'target_path/'.'1.txt');

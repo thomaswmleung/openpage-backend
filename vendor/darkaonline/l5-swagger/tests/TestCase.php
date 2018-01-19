@@ -66,11 +66,14 @@ class TestCase extends OrchestraTestCase
     protected function copyAssets()
     {
         $src = __DIR__.'/../vendor/swagger-api/swagger-ui/dist/';
-        $destination = __DIR__.'/../vendor/orchestra/testbench/fixture/vendor/swagger-api/swagger-ui/dist/';
+        $destination = __DIR__.'/../vendor/orchestra/testbench-core/fixture/vendor/swagger-api/swagger-ui/dist/';
 
         if (! is_dir($destination)) {
-            $base = __DIR__.'/../vendor/orchestra/testbench/fixture/vendor/';
-            mkdir($base = $base.'swagger-api');
+            $base = realpath(
+                __DIR__.'/../vendor/orchestra/testbench-core/fixture/vendor'
+            );
+
+            mkdir($base = $base.'/swagger-api');
             mkdir($base = $base.'/swagger-ui');
             mkdir($base = $base.'/dist');
         }

@@ -150,7 +150,7 @@ class Pdf_helper {
 
                     $pdf_img->setImageCompose(Imagick::COMPOSITE_ATOP);
                     if ($pdf_img->getImageAlphaChannel()) {
-                    $pdf_img->setImageAlphaChannel(11);
+                        $pdf_img->setImageAlphaChannel(11);
                     }
                     $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
                     $pdf_img->writeImage($image_absolute_path);
@@ -513,7 +513,41 @@ class Pdf_helper {
         // create new blank page
         $fpdf->AddPage();
         $actualPDFPageIndex++;
-
+        
+        
+        // Print the background
+        
+        if (isset($page['background']) AND $page['background'] != "") {
+            $background_data = $page['background'];
+            foreach ($background_data as $background) {
+                if ($background['type'] == "image") {
+                    $background_image_path = $background['url'];
+                    // display image only if image exist.
+                    if (isset($background_image_path) && $background_image_path != "" && $background_image_path != NULL) {
+                        $bg_image_x = $background['x'];
+                        $bg_image_y = $background['y'];
+                        $bg_image_w = $background['w'];
+                        $bg_image_h = $background['h'];
+                        $fpdf->Image($background_image_path, $bg_image_x, $bg_image_y, $bg_image_w, $bg_image_h);
+                    }
+                }
+                if ($background['type'] == "text") {
+                    // display text only if text exist.
+                    if (isset($background['string']) && $background['string'] != "" && $background['string'] != NULL) {
+                        $background_text = $background['string'];
+                        $text_x = $background['x'];
+                        $text_y = $background['y'];
+                        $text_w = $background['w'];
+                        $text_h = $background['h'];
+                        // Set font size based on w and h 
+                        $fpdf->MultiCell($text_x, $text_y, $background_text, 0, 'C');
+                    }
+                }
+            }
+        }
+        
+        // end of background
+        
 
         // Start of Book Specific details
         // start of chapter number
@@ -668,10 +702,8 @@ class Pdf_helper {
 
 
         if (isset($qr_code_details['image_url']) AND $qr_code_details['image_url'] != "") {
-
             $fpdf->Image($qr_code_details['image_url'], $qr_coordinates['x'], $qr_coordinates['y'], $qr_coordinates['width'], $qr_coordinates['height']);
         }
-
 
         // End of QR code
         // Start of affiliation
@@ -717,39 +749,12 @@ class Pdf_helper {
         // End of Book specific details
         // displaying background image
 
-        if (isset($page['background']) AND $page['background'] != "") {
-            $background_data = $page['background'];
-            foreach ($background_data as $background) {
-                if ($background['type'] == "image") {
-                    $background_image_path = $background['url'];
-                    // display image only if image exist.
-                    if (isset($background_image_path) && $background_image_path != "" && $background_image_path != NULL) {
-                        $bg_image_x = $background['x'];
-                        $bg_image_y = $background['y'];
-                        $bg_image_w = $background['w'];
-                        $bg_image_h = $background['h'];
-                        $fpdf->Image($background_image_path, $bg_image_x, $bg_image_y, $bg_image_w, $bg_image_h);
-                    }
-                }
-                if ($background['type'] == "text") {
-                    // display text only if text exist.
-                    if (isset($background['string']) && $background['string'] != "" && $background['string'] != NULL) {
-                        $background_text = $background['string'];
-                        $text_x = $background['x'];
-                        $text_y = $background['y'];
-                        $text_w = $background['w'];
-                        $text_h = $background['h'];
-                        // Set font size based on w and h 
-                        $fpdf->MultiCell($text_x, $text_y, $background_text, 0, 'C');
-                    }
-                }
-            }
-        }
-        if (isset($page['main']) ) {
+        
+        if (isset($page['main'])) {
 
             $fpdf->SetXY(10, 25);
             $main_data_array = $page['main'];
-            
+
             $page_header_text = $page['main']['header_text'];
             // define pdf header here
             $fpdf->MultiCell(200, 10, $page_header_text, 0, 'C');
@@ -2222,7 +2227,7 @@ class Pdf_helper {
         // temprorily reading it from file
 //        $json_data = file_get_contents(url('book.json'));
         $book_data_array = json_decode($input_json, true);
-
+        
         $fpdf = new tFPDF();
 //        $fpdf->AddFont('msjh', '', 'msjh.ttf', true);
         $fpdf->AddFont('msjhb', '', 'msjhb.ttf', true);
@@ -2336,8 +2341,11 @@ class Pdf_helper {
 //        $fpdf->AddPage();
         $actualPageIndexArray = array();
         foreach ($page_array AS $page_details) {
-
+            
+            
             $page_data = PageModel::get_page_details($page_details['_id']);
+            
+            
             array_push($actualPageIndexArray, $actualPDFPageIndex);
 
             $actualPDFPageIndex++;

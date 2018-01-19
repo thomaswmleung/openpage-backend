@@ -11,6 +11,9 @@ use App\KnowledgeUnitModel;
 use App\Helpers\ErrorMessageHelper;
 use Illuminate\Support\Facades\Validator;
 use App\Helpers\Pdf_helper;
+use DNS2D;
+use App\Helpers\GCS_helper;
+use Illuminate\Support\Facades\Config;
 
 class BookController extends Controller {
     /**
@@ -378,8 +381,48 @@ class BookController extends Controller {
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
+
+            $book_id = "";
+            if (isset($book_data_array['_id'])) {
+                $book_id = $book_data_array['_id'];
+            }
+            $bookModel = new BookModel();
+            $book_id = $bookModel->create_book($book_array, $book_id);
+
+            // QR code generation for every page
+
+            $book_request_array = json_decode($book_json, true);
+            $pageArray = $book_request_array['page'];
+            
+            $page_details = array();
+            foreach ($pageArray as $page_detail) {
+                $page_id = $page_detail['_id'];
+
+                $qr_code_data = "bookid-" . $book_id . "-pageid-" . $page_id;
+                $tempPath = public_path("tmp/");
+                DNS2D::setStorPath($tempPath);
+                $qrCodePath = DNS2D::getBarcodePNGPath($qr_code_data, "QRCODE");
+                
+
+                $gcs_result = GCS_helper::upload_to_gcs(public_path($qrCodePath));
+                $qrcode_gcs_path = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $qr_code_data . ".png";
+
+                if(isset($page_detail['qr_code'])){
+                    $page_detail['qr_code']['image_url'] = $qrcode_gcs_path;
+                }else{
+                    $page_detail['qr_code'] = array('image_url' => $qrcode_gcs_path);
+                    
+                }
+                
+                array_push($page_details, $page_detail);
+            }
+            
+            $book_request_array['page'] = $page_details;
+//            var_dump($pageArray);
+//            exit();
+            
             $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
-            $response_json = Pdf_helper::generate_book($book_json);
+            $response_json = Pdf_helper::generate_book(json_encode($book_request_array));
             $book_data_array = $response_json;
             $domain = array();
             $sub_domain = array();
@@ -490,18 +533,15 @@ class BookController extends Controller {
 
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $data_array['created_by'] = $user_id;
-            }else{
+            } else {
                 $data_array['updated_by'] = $user_id;
             }
 
-            $book_id = "";
-            if (isset($book_data_array['_id'])) {
-                $book_id = $book_data_array['_id'];
-            }
-            $bookModel = new BookModel();
+
+            // Update the book details
             $result = $bookModel->create_book($data_array, $book_id);
 
-            if ($book_id != "") {
+            if ($_SERVER['REQUEST_METHOD'] == 'PUT') {
                 $success_msg = 'Book Updated Successfully';
             } else {
                 $success_msg = 'Book Created Successfully';
