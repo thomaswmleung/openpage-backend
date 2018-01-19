@@ -23,6 +23,42 @@ class StaticHtmlPageController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="page_code",
+     *     in="query",
+     *     description="Filter by page code",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="reference_1",
+     *     in="query",
+     *     description="Filter by page reference 1",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="reference_2",
+     *     in="query",
+     *     description="Filter by page reference 2",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="reference_3",
+     *     in="query",
+     *     description="Filter by page reference 3",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="reference_4",
+     *     in="query",
+     *     description="Filter by page reference 4",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="reference_5",
+     *     in="query",
+     *     description="Filter by page reference 5",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="skip",
      *     in="query",
      *     description="this is offset or skip the records",
@@ -33,6 +69,30 @@ class StaticHtmlPageController extends Controller {
      *     in="query",
      *     description="Number of records to be retrieved ",
      *     type="integer"
+     *   ),
+     *   @SWG\Parameter(
+     *         name="sort_by",
+     *         in="query",
+     *         description="Sort by value",
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string",
+     *             enum={"page_code","reference_1", "reference_2", "reference_3", "reference_4", "reference_5"},
+     *             default="created_at"
+     *         ),
+     *         collectionFormat="multi"
+     *   ),
+     *   @SWG\Parameter(
+     *         name="order_by",
+     *         in="query",
+     *         description="Order by Ascending or descending",
+     *         type="array",
+     *         @SWG\Items(
+     *             type="string",
+     *             enum={"ASC", "DESC"},
+     *             default="DESC"
+     *         ),
+     *         collectionFormat="multi"
      *   ),
      *   @SWG\Response(
      *     response=200,
@@ -87,6 +147,31 @@ class StaticHtmlPageController extends Controller {
             if (isset($request->search_key)) {
                 $search_key = $request->search_key;
             }
+            $page_code = "";
+            if (isset($request->page_code)) {
+                $page_code = $request->page_code;
+            }
+            $reference_1 = "";
+            if (isset($request->reference_1)) {
+                $reference_1 = $request->reference_1;
+            }
+            $reference_2 = "";
+            if (isset($request->reference_2)) {
+                $reference_2 = $request->reference_2;
+            }
+            $reference_3 = "";
+            if (isset($request->reference_3)) {
+                $reference_3 = $request->reference_3;
+            }
+            $reference_4 = "";
+            if (isset($request->reference_4)) {
+                $reference_4 = $request->reference_4;
+            }
+            $reference_5 = "";
+            if (isset($request->reference_5)) {
+                $reference_5 = $request->reference_5;
+            }
+      
             $skip = 0;
             if (isset($request->skip)) {
                 $skip = (int) $request->skip;
@@ -95,14 +180,30 @@ class StaticHtmlPageController extends Controller {
             if (isset($request->limit)) {
                 $limit = (int) $request->limit;
             }
+            $sort_by = 'created_at';
+            if (isset($request->sort_by)) {
+                $sort_by = $request->sort_by;
+            }
+            $order_by = 'DESC';
+            if (isset($request->order_by)) {
+                $order_by = $request->order_by;
+            }
             $query_details = array(
                 'search_key' => $search_key,
+                'page_code' => $page_code,
+                'reference_1' => $reference_1,
+                'reference_2' => $reference_2,
+                'reference_3' => $reference_3,
+                'reference_4' => $reference_4,
+                'reference_5' => $reference_5,
                 'limit' => $limit,
-                'skip' => $skip
+                'skip' => $skip,
+                'sort_by' => $sort_by,
+                'order_by' => $order_by
             );
 
             $static_html_page_details = $staticHtmlPageModel->static_html_page_details($query_details);
-            $total_count = $staticHtmlPageModel->total_count($search_key);
+            $total_count = $staticHtmlPageModel->total_count($query_details);
         }
 
         $response_array = array("success" => TRUE, "data" => $static_html_page_details, "total_count" => $total_count, "errors" => array());
@@ -115,6 +216,7 @@ class StaticHtmlPageController extends Controller {
      *   summary="Create a static_html_page",
      *   description="",
      *   operationId="add_or_update_static_html_page",
+     *   consumes={"application/x-www-form-urlencoded"},
      *   produces={"application/json"},
      *   @SWG\Parameter(
      *     in="query",
@@ -124,9 +226,44 @@ class StaticHtmlPageController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
-     *     in="query",
+     *     in="formData",
      *     name="content",
      *     description="Page content of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_1",
+     *     description="Page reference_1 of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_2",
+     *     description="Page reference 2 of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_3",
+     *     description="Page reference 3 of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_4",
+     *     description="Page reference 4 of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_5",
+     *     description="Page reference 5 of the static page",
      *     required=true,
      *     type="string"
      *   ),
@@ -164,9 +301,44 @@ class StaticHtmlPageController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
-     *     in="query",
+     *     in="formData",
      *     name="content",
      *     description="Page content of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_1",
+     *     description="Page reference 1 of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_2",
+     *     description="Page reference 2 of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_3",
+     *     description="Page reference 3 of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_4",
+     *     description="Page reference 4 of the static page",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     in="formData",
+     *     name="reference_5",
+     *     description="Page reference 5 of the static page",
      *     required=true,
      *     type="string"
      *   ),
@@ -194,11 +366,36 @@ class StaticHtmlPageController extends Controller {
         if (isset($request->content)) {
             $content = $request->content;
         }
+        $reference_1 = "";
+        if (isset($request->reference_1)) {
+            $reference_1 = $request->reference_1;
+        }
+        $reference_2 = "";
+        if (isset($request->reference_2)) {
+            $reference_2 = $request->reference_2;
+        }
+        $reference_3 = "";
+        if (isset($request->reference_3)) {
+            $reference_3 = $request->reference_3;
+        }
+        $reference_4 = "";
+        if (isset($request->reference_4)) {
+            $reference_4 = $request->reference_4;
+        }
+        $reference_5 = "";
+        if (isset($request->reference_5)) {
+            $reference_5 = $request->reference_5;
+        }
 
         $static_html_page_array = array(
             '_id' => $static_html_page_id,
             'page_code' => $page_code,
             'content' => $content,
+            'reference_1' => $reference_1,
+            'reference_2' => $reference_2,
+            'reference_3' => $reference_3,
+            'reference_4' => $reference_4,
+            'reference_5' => $reference_5,
             'created_by'=>$user_id
         );
 
