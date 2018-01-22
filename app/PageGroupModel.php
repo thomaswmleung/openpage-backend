@@ -12,7 +12,9 @@ class PageGroupModel extends Eloquent {
     protected $fillable = array('page', 'title', 'sub_title', 'subject', 'domain', 'subdomain', 'preview_url', 'teacher_copy_preview_url',
         'student_copy_preview_url', 'teacher_preview_image_array', 'parent_page_group_id', 'versions', 'affiliation', 'current_version_details',
         'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus', 'level_of_difficulty', 'level_of_scaffolding',
-        'codex', 'area', 'author', 'remark', 'particulars', 'learning_objective','syllabus_code');
+        'codex', 'area', 'author', 'remark', 'particulars', 'learning_objective','syllabus_code','knowledge_unit',
+        'copyright_content','copyright_artwork','copyright_photo','linkage',
+        'row_reference','layout');
 
     public function add_page_group($insert_data) {
         $result = PageGroupModel::create($insert_data);
@@ -353,6 +355,11 @@ class PageGroupModel extends Eloquent {
     public function affiliation_update($page_group_id, $affiliation_data) {
         $result = PageGroupModel::where('_id', $page_group_id)
                 ->push('affiliation', $affiliation_data);
+        return $result;
+    }
+    
+    public function search_page_group($search_data) {
+        $result = PageGroupModel::where($search_data)->first();
         return $result;
     }
 
