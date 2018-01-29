@@ -147,4 +147,5 @@ return [
     'static_html_page_id_invalid' => array('error_code'=>'E2603','error_message' =>"Static page id is invalid"),
     'static_html_page_content_required' => array('error_code'=>'E2701','error_message' =>"Static page content is required"),
 
+    'invalid_order_id' => array('error_code'=>'E2701','error_message' =>"Invalid Order id."),
 ];

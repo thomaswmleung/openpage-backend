@@ -8,7 +8,7 @@ class BookModel extends Eloquent {
 
     protected $collection = 'book';
     protected $fillable = array('title','subtitle','author','published_year','publisher','isbn','price',
-        'codex_id','page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation',
+        'codex_id','page', 'toc', 'cover', 'syllabus', 'keyword', 'organisation','metadata',
         'preview_url', 'preview_images', 'created_by', 'updated_by');
 
     public function create_book($insert_data, $main_id) {

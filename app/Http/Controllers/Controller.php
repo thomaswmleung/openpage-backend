@@ -123,6 +123,10 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
  *   name="Static HTML page",
  *   description="Static HTML page related API's"
  * )
+ * @SWG\Tag(
+ *   name="Order",
+ *   description="Orders related API's"
+ * )
  * 
  */
 class Controller extends BaseController

@@ -14,7 +14,7 @@ class PageGroupModel extends Eloquent {
         'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus', 'level_of_difficulty', 'level_of_scaffolding',
         'codex', 'area', 'author', 'remark', 'particulars', 'learning_objective','syllabus_code','knowledge_unit',
         'copyright_content','copyright_artwork','copyright_photo','linkage',
-        'row_reference','layout');
+        'row_reference','metadata');
 
     public function add_page_group($insert_data) {
         $result = PageGroupModel::create($insert_data);
@@ -162,11 +162,6 @@ class PageGroupModel extends Eloquent {
                             ->orWhere('domain', 'like', "%$search_key%")
                             ->orWhere('syllabus', 'like', "%$search_key%")
                             ->orWhere('syllabus.knowledge_unit', 'like', "%$search_key%")
-                            ->orWhere('affiliation.publisher', 'like', "%$search_key%")
-                            ->orWhere('affiliation.book_title', 'like', "%$search_key%")
-                            ->orWhere('affiliation.version', 'like', "%$search_key%")
-                            ->orWhere('affiliation.unit', 'like', "%$search_key%")
-                            ->orWhere('affiliation.lesson_title', 'like', "%$search_key%")
                             ->orWhere('level_of_difficulty', 'like', "%$search_key%")
                             ->orWhere('codex', 'like', "%$search_key%")
                             ->orWhere('level_of_difficulty', 'like', "%$search_key%")
@@ -300,12 +295,6 @@ class PageGroupModel extends Eloquent {
                             ->orWhere('domain', 'like', "%$search_key%")
                             ->orWhere('syllabus', 'like', "%$search_key%")
                             ->orWhere('syllabus.knowledge_unit', 'like', "%$search_key%")
-                            ->orWhere('affiliation.publisher', 'like', "%$search_key%")
-                            ->orWhere('affiliation.book_title', 'like', "%$search_key%")
-                            ->orWhere('affiliation.version', 'like', "%$search_key%")
-                            ->orWhere('affiliation.unit', 'like', "%$search_key%")
-                            ->orWhere('affiliation.lesson_title', 'like', "%$search_key%")
-                            ->orWhere('level_of_difficulty', 'like', "%$search_key%")
                             ->orWhere('codex', 'like', "%$search_key%")
                             ->orWhere('level_of_difficulty', 'like', "%$search_key%")
                             ->orWhere('particulars', 'like', "%$search_key%")
@@ -360,6 +349,17 @@ class PageGroupModel extends Eloquent {
     
     public function search_page_group($search_data) {
         $result = PageGroupModel::where($search_data)->first();
+        return $result;
+    }
+    
+    public function update_version_data($page_group_id,$versionArray,$arrayIndex) {
+        $field_name = 'versions.'.$arrayIndex;
+        $result = PageGroupModel::where('_id', $page_group_id)->update(array($field_name => $versionArray));
+    }
+    
+    public function remove_version_data($page_group_id, $version_id) {
+        $result = PageGroupModel::where('_id', $page_group_id)
+                ->pull("versions",['version_id'=>$version_id]);
         return $result;
     }
 

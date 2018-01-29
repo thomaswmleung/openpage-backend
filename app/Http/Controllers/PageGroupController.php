@@ -19,6 +19,7 @@ use App\Helpers\Token_helper;
 use Imagick;
 use ImagickPixel;
 use DNS2D;
+
 /*
  *  Class Name : PageGroupController
  *  Description : This controller handles parsing of JSON DATA and save to DB
@@ -387,6 +388,9 @@ class PageGroupController extends Controller {
         if ($request->isMethod('put')) {
             if (isset($page_data_array['_id']) AND $page_data_array['_id'] != "") {
                 $page_group_id = $page_data_array['_id'];
+
+//                var_dump($page_group_id);
+//                exit();
             } else {
                 // error page group id is required
                 $error_messages = array(array("ERR_CODE" => config('error_constants.invalid_page_group_id')['error_code'],
@@ -771,6 +775,9 @@ class PageGroupController extends Controller {
         if (isset($page_data_array['page_group']['level_of_scaffolding'])) {
             $page_group_insert_data['level_of_scaffolding'] = $page_data_array['page_group']['level_of_scaffolding'];
         }
+        if (isset($page_data_array['page_group']['metadata'])) {
+            $page_group_insert_data['metadata'] = $page_data_array['page_group']['metadata'];
+        }
         if (isset($page_data_array['layout'])) {
             $page_group_insert_data['layout'] = $page_data_array['layout'];
         }
@@ -800,14 +807,22 @@ class PageGroupController extends Controller {
         if (isset($page_data_array['version'])) {
             $page_group_insert_data['current_version_details'] = $page_data_array['version'];
         }
+        if (isset($page_data_array['affiliation'])) {
+            $page_group_insert_data['affiliation'] = $page_data_array['affiliation'];
+        }
+        if (isset($page_data_array['parent_page_group_id']) AND $page_data_array['parent_page_group_id'] != "" AND $page_data_array['parent_page_group_id'] != NULL) {
+            $page_group_insert_data['parent_page_group_id'] = $page_data_array['parent_page_group_id'];
+        }
 
         if ($request->isMethod('post')) {
             $page_group_insert_data['created_by'] = Token_helper::fetch_user_id_from_token($request->header('token'));
         }
         $pageGroup_result = $page_group_model->update_page_group($page_group_insert_data, $page_group_id);
 
-        if (isset($page_data_array['parent_page_group_id']) AND $page_data_array['parent_page_group_id'] != "") {
-            $parent_page_group_id = $page_data_array['parent_page_group_id'];
+        // Query to check if parent page group id exists
+        $current_page_group_data = $page_group_model->find_page_group_details($page_group_id);
+        if (isset($current_page_group_data['parent_page_group_id']) AND $current_page_group_data['parent_page_group_id'] != "" AND $current_page_group_data['parent_page_group_id'] != NULL) {
+            $parent_page_group_id = $current_page_group_data['parent_page_group_id'];
             $version_array = array();
             $page_group_insert_data['current_version_details']['version_id'] = $page_group_id;
             $page_group_insert_data['current_version_details']['students_preview_image'] = $page_data_array['preview_image_array'][0];
@@ -820,16 +835,23 @@ class PageGroupController extends Controller {
                 $page_group_insert_data['current_version_details']['import_url'] = $page_data_array['page_group']['import_url'];
             }
             $version_array = $page_group_insert_data['current_version_details'];
-            $result = $page_group_model->version_update($parent_page_group_id, $version_array);
-
-            $affiliation_array = array();
-            if (isset($page_data_array['affiliation'])) {
-                $page_data_array['affiliation']['version_id'] = $page_group_id;
-                $affiliation_array = $page_data_array['affiliation'];
-                $result = $page_group_model->affiliation_update($parent_page_group_id, $affiliation_array);
+            $parent_page_group_data = $page_group_model->find_page_group_details($parent_page_group_id);
+            $isFound = FALSE;
+            if (isset($parent_page_group_data['versions'])) {
+                $versionArray = $parent_page_group_data['versions'];
+                $arrayIndex = 0;
+                foreach ($versionArray as $value) {
+                    if (isset($value['version_id']) AND $value['version_id'] == $page_group_id) {
+                        $update_version_result = $page_group_model->update_version_data($parent_page_group_id, $version_array, $arrayIndex);
+                        $isFound = TRUE;
+                    }
+                    $arrayIndex++;
+                }
+            }
+            if (!$isFound) {
+                $result = $page_group_model->version_update($parent_page_group_id, $version_array);
             }
         }
-
 
         // Keyword Logic 
         $keyword_array = array();
@@ -925,6 +947,21 @@ class PageGroupController extends Controller {
             $response_array = array("success" => FALSE, "errors" => $error_messages);
             return response(json_encode($response_array), 400)->header('Content-Type', 'application/json');
         }
+        if (isset($page_group_data['parent_page_group_id']) AND $page_group_data['parent_page_group_id'] != "" AND $page_group_data['parent_page_group_id'] != NULL) {
+            $parent_page_group_id = $page_group_data['parent_page_group_id'];
+            $parent_page_group_data = $pageGroupModel->find_page_group_details($parent_page_group_id);
+            if (isset($parent_page_group_data['versions'])) {
+                $versionArray = $parent_page_group_data['versions'];
+                $arrayIndex = 0;
+                foreach ($versionArray as $value) {
+                    if (isset($value['version_id']) AND $value['version_id'] == $page_group_id) {
+                        $update_version_result = $pageGroupModel->remove_version_data($parent_page_group_id, $page_group_id);
+                    }
+                    $arrayIndex++;
+                }
+            }
+            
+        }
         $gcs_result = TRUE;
         if (isset($page_group_data['preview_url']) && $page_group_data['preview_url'] != "") {
             $data = explode("/", $page_group_data['preview_url']); // fetching file name from URL
@@ -969,17 +1006,10 @@ class PageGroupController extends Controller {
 //        $pdf_img->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
 //
 //        $pdf_img->writeImage(public_path("test/myImage.jpg"));
-
-
-
 //        echo DNS2D::getBarcodeHTML("4445645656", "QRCODE");
 //        $path = public_path("tmp/");
 //        DNS2D::setStorPath($path);
 //        echo DNS2D::getBarcodePNGPath("Surajsa Pawar1", "QRCODE");        
-        
-        
-        
-        
-        }
+    }
 
 }

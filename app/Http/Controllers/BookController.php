@@ -330,6 +330,7 @@ class BookController extends Controller {
             'syllabus' => $book_data_array['syllabus'],
             'keyword' => $book_data_array['keyword'],
             'organisation' => $book_data_array['organisation'],
+            'metadata' => $book_data_array['metadata'],
         );
 
         $rules = array(

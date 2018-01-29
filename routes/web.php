@@ -173,4 +173,11 @@ Route::group(['middleware' => ['login_auth']], function () {
     Route::post('static_html_page', 'StaticHtmlPageController@add_or_update_static_html_page');
     Route::put('static_html_page', 'StaticHtmlPageController@add_or_update_static_html_page');
     Route::delete('static_html_page', 'StaticHtmlPageController@delete_static_html_page');
+    
+    
+    Route::get('order', 'OrderController@order_list');
+    Route::get('order/{_id}', 'OrderController@order_list');
+    Route::post('order', 'OrderController@add_or_update_order');
+    Route::put('order', 'OrderController@add_or_update_order');
+    Route::delete('order', 'OrderController@delete_order');
 });
