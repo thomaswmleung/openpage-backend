@@ -733,6 +733,10 @@ class PageGroupController extends Controller {
             $teachersCopyArray['preview_image_array'] = array();
         }
 
+        $page_group_insert_data['version_number'] = 1;
+        if (isset($page_data_array['page_group']['version_number']) AND $page_data_array['page_group']['version_number'] !=NULL AND $page_data_array['page_group']['version_number'] !="") {
+            $page_group_insert_data['version_number'] = $page_data_array['page_group']['version_number'];
+        }
         if (isset($page_data_array['page_group']['title'])) {
             $page_group_insert_data['title'] = $page_data_array['page_group']['title'];
         }

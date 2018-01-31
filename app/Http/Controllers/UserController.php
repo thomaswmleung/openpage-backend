@@ -172,6 +172,12 @@ class UserController extends Controller {
      *     description="Organization id",
      *     type="string"
      *   ),
+     *   @SWG\Parameter(
+     *     name="metadata",
+     *     in="formData",
+     *     description="User realted metadata",
+     *     type="string"
+     *   ),
      *   @SWG\Response(
      *     response=200,
      *     description="successful operation",
@@ -246,6 +252,8 @@ class UserController extends Controller {
                 $user_data['profile_image'] = $image_url;
             }
             $user_data['username'] = strtolower(trim($request->email));
+            $json_meta_data =json_decode($request->metadata);
+            $user_data['metadata'] = $json_meta_data;
             // generate activation code
             $user_data['activation_key'] = rand(123456789, 987456321);
             $user_data['is_verified'] = FALSE;
@@ -263,6 +271,131 @@ class UserController extends Controller {
             //Need SMTP credentials to send Email from instance
             EmailController::send_activation_mail($email_data);
             $responseArray = array("success" => TRUE, "data" => array("_id" => $data->_id), "message" => "User created successfully.");
+            return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
+        }
+    }
+    
+    /**
+     * @SWG\Put(path="/user",
+     * tags={"User"},
+     *   consumes={"multipart/form-data"},
+     *   summary="User profile",
+     *   description="User profile details",
+     *   operationId="user_profile",
+     *   consumes={"application/x-www-form-urlencoded"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *      description="file to upload",
+     *      in="formData",
+     *      name="profile_image",
+     *      type="file"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="first_name",
+     *     in="query",
+     *     description="First name of user",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="last_name",
+     *     in="query",
+     *     description="Last name of user",
+     *     required=true,
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="organization_id",
+     *     in="query",
+     *     description="Organization id",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
+     *     name="metadata",
+     *     in="query",
+     *     description="User realted metadata",
+     *     type="string"
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation",
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+    public function user_profile(Request $request) {
+        $organization_id="";
+        if(isset($request->organization_id)){
+            $organization_id = trim($request->organization_id);
+        }
+        $user_data = array(
+            'profile_image' => $request->file('profile_image'),
+            'first_name' => trim($request->first_name),
+            'last_name' => trim($request->last_name),
+            'organization_id' => $organization_id,
+        );
+        $rules = array(
+            'first_name' => 'required',
+            'last_name' => 'required',
+        );
+        if($organization_id != ""){
+            $rules['organization_id'] = "exists:organization,_id";
+        }
+        if ($request->hasFile('profile_image')) {
+            $rules['profile_image'] = 'mimes:jpeg,png,jpg,tiff,gif';
+        }
+        $messages = [
+            'profile_image.mimes' => config('error_constants.profile_image_invalid_format'),
+            'first_name.required' => config('error_constants.first_name_required'),
+            'last_name.required' => config('error_constants.last_name_required'),
+            'organization_id.exists' => config('error_constants.organization_doesnot_exist'),
+        ];
+
+
+        $formulated_messages = ErrorMessageHelper::formulateErrorMessages($messages);
+
+        $validator = Validator::make($user_data, $rules, $formulated_messages);
+
+        if ($validator->fails()) {
+            $response_error_array = ErrorMessageHelper::getResponseErrorMessages($validator->messages());
+            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
+            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
+        } else {
+            
+            if ($request->hasFile('profile_image')) {
+                dd("Ddd");
+                $image = $request->file('profile_image');
+                $input['profile_image'] = time() . uniqid() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('images');
+                $profile_image_name = $input['profile_image'];
+                $image->move($destinationPath, $profile_image_name);
+
+                //upload to GCS
+
+                $gcs_result = GCS_helper::upload_to_gcs('images/' . $profile_image_name);
+                if (!$gcs_result) {
+                    $error['error'] = array("success" => FALSE, "error" => "Error in upload of GCS");
+                    return response(json_encode($error), 400)->header('Content-Type', 'application/json');
+                }
+                // delete your local pdf file here
+                unlink($destinationPath . "/" . $profile_image_name);
+
+                $image_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $profile_image_name;
+                $user_data['profile_image'] = $image_url;
+            }
+            $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
+            
+            $json_meta_data =json_decode($request->metadata);
+            Log::error(json_encode($json_meta_data));
+            $user_data['metadata'] = $json_meta_data;
+            $usersModel = new UsersModel();
+            $data = $usersModel->update_user($user_id,$user_data);
+         
+       
+            $responseArray = array("success" => TRUE, "data" => array("_id" => $user_id), "message" => "User updated successfully.");
             return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
     }

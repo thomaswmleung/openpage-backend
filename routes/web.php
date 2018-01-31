@@ -45,6 +45,7 @@ Route::group(['middleware' => ['login_auth']], function () {
 
     Route::get('user', 'UserController@user');
     Route::get('user/{uid}', 'UserController@user');
+    Route::put('user', 'UserController@user_profile');
 
 
     Route::get('media', 'MediaController@media');

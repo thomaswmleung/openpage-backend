@@ -13,7 +13,7 @@ class PageGroupModel extends Eloquent {
         'student_copy_preview_url', 'teacher_preview_image_array', 'parent_page_group_id', 'versions', 'affiliation', 'current_version_details',
         'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus', 'level_of_difficulty', 'level_of_scaffolding',
         'codex', 'area', 'author', 'remark', 'particulars', 'learning_objective','syllabus_code','knowledge_unit',
-        'copyright_content','copyright_artwork','copyright_photo','linkage',
+        'copyright_content','copyright_artwork','copyright_photo','linkage','version_number',
         'row_reference','metadata');
 
     public function add_page_group($insert_data) {
