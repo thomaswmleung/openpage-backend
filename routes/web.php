@@ -74,6 +74,7 @@ Route::group(['middleware' => ['login_auth']], function () {
 
 
     Route::post('book', 'BookController@create_book');
+    Route::post('book_cover', 'BookController@create_book_cover');
     Route::put('book', 'BookController@create_book');
     Route::delete('book', 'BookController@delete_book');
 

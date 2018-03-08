@@ -328,11 +328,17 @@ class BookController extends Controller {
             'toc' => $book_data_array['toc'],
             'cover' => $book_data_array['cover'],
             'syllabus' => $book_data_array['syllabus'],
-            'keyword' => $book_data_array['keyword'],
-            'organisation' => $book_data_array['organisation'],
-            'metadata' => $book_data_array['metadata'],
+            'keyword' => isset($book_data_array['keyword']) ? $book_data_array['keyword'] : array(),
+            'organisation' => isset($book_data_array['organisation']) ? $book_data_array['organisation'] : "",
+            'metadata' => isset($book_data_array['metadata']) ? $book_data_array['metadata'] : "",
         );
-
+        
+//        var_dump($book_array);
+//        exit();
+//   
+        
+        
+        
         $rules = array(
             'title' => 'required',
             'author' => 'required',
@@ -596,6 +602,27 @@ class BookController extends Controller {
     public function print_book(Request $request) {
         $temp_array = array();
         Pdf_helper::generate_book(json_encode($temp_array));
+    }
+    
+    
+    public function create_book_cover(Request $request){
+        
+        $book_json = $request->getContent();
+        // $book_raw_json_data = file_get_contents(url('book_json_data.json'));
+
+        $book_data_array = json_decode($book_json, true);
+
+        if ($book_data_array == null) {
+            return response(json_encode(array("error" => "Invalid Json")))->header('Content-Type', 'application/json');
+        }
+
+
+        $response_json = Pdf_helper::generate_book_cover($book_json);
+        
+        
+        
+        
+        
     }
 
 }
