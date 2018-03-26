@@ -270,6 +270,44 @@
                 }
             }
         },
+        "/book_cover": {
+            "post": {
+                "tags": [
+                    "Book Cover"
+                ],
+                "summary": "Creates a book cover",
+                "description": "",
+                "operationId": "create_book_cover",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "data",
+                        "in": "body",
+                        "description": "book json input <br> Sample JSON to create book http://jsoneditoronline.org/?id=bcddc70528339bf6e057c113c68f1ee5",
+                        "required": true,
+                        "schema": {}
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "400": {
+                        "description": "Invalid data"
+                    }
+                },
+                "security": [
+                    {
+                        "token": []
+                    }
+                ]
+            }
+        },
         "/bulk_upload": {
             "post": {
                 "tags": [

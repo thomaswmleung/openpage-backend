@@ -604,6 +604,34 @@ class BookController extends Controller {
         Pdf_helper::generate_book(json_encode($temp_array));
     }
     
+    /**
+     * @SWG\Post(path="/book_cover",
+     *   tags={"Book Cover"},
+     *   summary="Creates a book cover",
+     *   description="",
+     *   operationId="create_book_cover",
+     *   consumes={"application/json"},
+     *   produces={"application/json"},
+     *   @SWG\Parameter(
+     *     in="body",
+     *     name="data",
+     *     description="book json input <br> Sample JSON to create book http://jsoneditoronline.org/?id=4a74fde7e4cdde2271774e27a7aa38c9",
+     *     required=true,
+     *     @SWG\Schema()
+     *   ),
+     *   @SWG\Response(
+     *     response=200,
+     *     description="successful operation"
+     *   ),
+     *   @SWG\Response(response=400, description="Invalid data"),
+     *   security={{
+     *     "token":{}
+     *   }}
+     * )
+     */
+
+   
+     
     
     public function create_book_cover(Request $request){
         
@@ -619,7 +647,7 @@ class BookController extends Controller {
 
         $response_json = Pdf_helper::generate_book_cover($book_json);
         
-        
+        return response($response_json, 200)->header('Content-Type', 'application/json');
         
         
         

@@ -3487,6 +3487,44 @@ class Pdf_helper {
                 $fpdf->SetXY(5, $tocy);
             }
         }
+        // Generate Back Cover
+
+        $fpdf->AddPage();
+        if (isset($book_data_array['back_cover']['back_cover_image'])) {
+
+            $cover_img_url = $book_data_array['back_cover']['back_cover_image'];
+            if (getimagesize($cover_img_url) === false) {
+                return response(json_encode(array("error" => "Invalid cover image")))->header('Content-Type', 'application/json');
+            }
+            $fpdf->Image($cover_img_url, 5, 5, 205, 287);
+        }
+
+
+
+
+
+       
+//        $pdf_name = "book-cover.pdf";
+        $pdf_name = "book-" . uniqid() . ".pdf";
+        if (!file_exists(public_path('pdfs'))) {
+            mkdir(public_path('pdfs'), 0777, true);
+        }
+        $pdf_path = public_path('pdfs' . DIRECTORY_SEPARATOR . $pdf_name);
+//        $pdf_path = public_path('pdfs' . DIRECTORY_SEPARATOR . $pdf_name);
+        $fpdf->Output($pdf_path, 'F');
+        
+        // upload to GCS
+        $gcs_result = GCS_helper::upload_to_gcs('pdfs/' . $pdf_name);
+        if (!$gcs_result) {
+            $responseArray['error'] = "Error in upload of GCS";
+            return $responseArray;
+        }
+        // delete your local pdf file here
+        unlink($pdf_path);
+        
+        $pdf_url = "https://storage.googleapis.com/" . Config::get('constants.gcs_bucket_name') . "/" . $pdf_name;
+        $responseArray['preview_url'] = $pdf_url;
+        return json_encode($responseArray);
     }
 
 }

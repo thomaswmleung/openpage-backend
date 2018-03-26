@@ -25,7 +25,7 @@ class BulkPageGroupUploadController extends Controller {
      *   tags={"Bulk Upload Page Group"},
      *   consumes={"multipart/form-data"},
      *   summary="Bulk upload api for creating page groups",
-     *   description="Bulk upload api for creating page groups",
+     *   description="Bulk upload api for creating page groups. Please follow the .xlsx format mentioned in https://drive.google.com/open?id=1JlTCLfujzrq8_KMm4NMyZkV3W63eOokf",
      *   operationId="bulk_upload",
      *   produces={"application/json"},
      *    @SWG\Parameter(
