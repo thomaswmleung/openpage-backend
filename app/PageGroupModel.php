@@ -14,7 +14,7 @@ class PageGroupModel extends Eloquent {
         'student_preview_image_array', 'preview_image_array', 'created_by', 'layout', 'syllabus', 'level_of_difficulty', 'level_of_scaffolding',
         'codex', 'area', 'author', 'remark', 'particulars', 'learning_objective','syllabus_code','knowledge_unit',
         'copyright_content','copyright_artwork','copyright_photo','linkage','version_number',
-        'row_reference','metadata');
+        'row_reference','metadata','keywords');
 
     public function add_page_group($insert_data) {
         $result = PageGroupModel::create($insert_data);
