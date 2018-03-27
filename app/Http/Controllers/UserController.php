@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use App\Helpers\GCS_helper;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
+use App\Helpers\Oodo_helper;
 
 class UserController extends Controller {
     /**
@@ -167,6 +168,12 @@ class UserController extends Controller {
      *     type="string"
      *   ),
      *   @SWG\Parameter(
+     *     name="user_type",
+     *     in="query",
+     *     description="User type - Specify 'online_user' for oodo client",
+     *     type="string"
+     *   ),
+     *   @SWG\Parameter(
      *     name="organization_id",
      *     in="query",
      *     description="Organization id",
@@ -186,8 +193,8 @@ class UserController extends Controller {
      * )
      */
     public function register(Request $request) {
-        $organization_id="";
-        if(isset($request->organization_id)){
+        $organization_id = "";
+        if (isset($request->organization_id)) {
             $organization_id = trim($request->organization_id);
         }
         $user_data = array(
@@ -196,6 +203,7 @@ class UserController extends Controller {
             'last_name' => trim($request->last_name),
             'email' => strtolower(trim($request->email)),
             'password' => trim($request->password),
+            'user_type' => trim($request->user_type),
             'organization_id' => $organization_id,
         );
         $rules = array(
@@ -204,7 +212,7 @@ class UserController extends Controller {
             'password' => 'required',
             'email' => 'min:3|required|email|unique:users,email'
         );
-        if($organization_id != ""){
+        if ($organization_id != "") {
             $rules['organization_id'] = "exists:organization,_id";
         }
         if ($request->hasFile('profile_image')) {
@@ -252,12 +260,29 @@ class UserController extends Controller {
                 $user_data['profile_image'] = $image_url;
             }
             $user_data['username'] = strtolower(trim($request->email));
-            $json_meta_data =json_decode($request->metadata);
+            $json_meta_data = json_decode($request->metadata);
             $user_data['metadata'] = $json_meta_data;
             // generate activation code
             $user_data['activation_key'] = rand(123456789, 987456321);
             $user_data['is_verified'] = FALSE;
             $data = UsersModel::create($user_data);
+            $user_id = $data->_id;
+            $oodoHelper = new Oodo_helper();
+            $oodo_api_result = $oodoHelper->token_generate();
+            $token_object = json_decode($oodo_api_result);
+            $oodo_token = $token_object->access_token;
+            // Associate user to oodo 
+            $oodo_client_result = $this->associate_user_to_oodo($oodo_token, $user_id);
+            if($oodo_client_result){
+                $client_object = json_decode($oodo_client_result);
+                $oodo_client_id = $client_object->id;
+                $user_data['oodo_client_id']=$oodo_client_id;
+                $usersModel = new UsersModel();
+                $update_result = $usersModel->update_user($user_id,$user_data);
+                Log::info("update completed");
+            }
+            
+//            Log::info("Access Token".$oodo_access_token);
             // Send an email
             $activation_url = url('activate') . "?username=" . $user_data['username'] . "&key=" . $user_data['activation_key'];
             $content = "Please click the link to activate your <a target='new' href='" . $activation_url . "'> account</a><br>$activation_url";
@@ -270,11 +295,40 @@ class UserController extends Controller {
             );
             //Need SMTP credentials to send Email from instance
             EmailController::send_activation_mail($email_data);
-            $responseArray = array("success" => TRUE, "data" => array("_id" => $data->_id), "message" => "User created successfully.");
+            $responseArray = array("success" => TRUE, "data" => array("_id" => $user_id), "message" => "User created successfully.");
             return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
     }
-    
+
+    public function associate_user_to_oodo($token, $user_id) {
+        $userModel = new UsersModel();
+        $user_details = $userModel->find_user_details($user_id);
+        $data_array = array(
+          'name'=>  $user_details['first_name']." ".$user_details['last_name'],
+          'email'=>  $user_details['email']
+        );
+        
+        if (!isset($user_details->oodo_client_id) && $user_details->user_type == "online_user") {
+            // Call oodo API
+            $api_url = "https://54.202.141.25/api/res.partner/";
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $api_url);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data_array));
+            $headers = [
+                'Content-Type: text/html',
+                'access_token: '.$token
+            ];
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            $result = curl_exec($ch);
+            return $result;
+        }
+        return false;
+    }
+
     /**
      * @SWG\Put(path="/user",
      * tags={"User"},
@@ -327,8 +381,8 @@ class UserController extends Controller {
      * )
      */
     public function user_profile(Request $request) {
-        $organization_id="";
-        if(isset($request->organization_id)){
+        $organization_id = "";
+        if (isset($request->organization_id)) {
             $organization_id = trim($request->organization_id);
         }
         $user_data = array(
@@ -341,7 +395,7 @@ class UserController extends Controller {
             'first_name' => 'required',
             'last_name' => 'required',
         );
-        if($organization_id != ""){
+        if ($organization_id != "") {
             $rules['organization_id'] = "exists:organization,_id";
         }
         if ($request->hasFile('profile_image')) {
@@ -364,7 +418,7 @@ class UserController extends Controller {
             $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
-            
+
             if ($request->hasFile('profile_image')) {
                 dd("Ddd");
                 $image = $request->file('profile_image');
@@ -387,14 +441,14 @@ class UserController extends Controller {
                 $user_data['profile_image'] = $image_url;
             }
             $user_id = Token_helper::fetch_user_id_from_token($request->header('token'));
-            
-            $json_meta_data =json_decode($request->metadata);
+
+            $json_meta_data = json_decode($request->metadata);
             Log::error(json_encode($json_meta_data));
             $user_data['metadata'] = $json_meta_data;
             $usersModel = new UsersModel();
-            $data = $usersModel->update_user($user_id,$user_data);
-         
-       
+            $data = $usersModel->update_user($user_id, $user_data);
+
+
             $responseArray = array("success" => TRUE, "data" => array("_id" => $user_id), "message" => "User updated successfully.");
             return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
@@ -457,7 +511,7 @@ class UserController extends Controller {
 //            $responseArray = array("success" => FALSE, "errors" => $response_error_array);
             $error = $response_error_array[0]['ERR_MSG'];
             $url_encode_msg = urlencode($error);
-            return Redirect::to('http://anyonebook.stagingapps.net/#/verify-confirmation?success=false&msg='.$url_encode_msg);
+            return Redirect::to('http://anyonebook.stagingapps.net/#/verify-confirmation?success=false&msg=' . $url_encode_msg);
 //            return response(json_encode($responseArray), 400)->header('Content-Type', 'application/json');
         } else {
             $this->activate_user($user_data);
@@ -525,7 +579,7 @@ class UserController extends Controller {
             $mail_data = array(
                 'first_name' => $first_name,
                 'last_name' => $last_name,
-                'email'=>$user_info->email,
+                'email' => $user_info->email,
 //                'email' => 'surajde16@gmail.com',
                 'reset_url' => $reset_url,
             );
@@ -660,7 +714,7 @@ class UserController extends Controller {
                 $link_expired = FALSE;
                 $result = TRUE;
             }
-            $responseArray = array("success"=>$result,"is_link_expired" => $link_expired);
+            $responseArray = array("success" => $result, "is_link_expired" => $link_expired);
             return response(json_encode($responseArray), 200)->header('Content-Type', 'application/json');
         }
     }

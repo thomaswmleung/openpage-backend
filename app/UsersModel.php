@@ -9,7 +9,8 @@ class UsersModel extends Eloquent {
 
     protected $collection = 'users';
     protected $fillable = array('username', 'first_name', 'last_name', 'password', 'email','metadata',
-        'activation_key', 'is_active', 'profile_image', 'is_forgot_initiated', 'is_verified','organization_id');
+        'activation_key', 'is_active', 'profile_image', 'is_forgot_initiated', 'is_verified','organization_id',
+        'user_type','oodo_client_id');
 
     use SoftDeletes;
 

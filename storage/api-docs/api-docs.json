@@ -5335,6 +5335,12 @@
                         "type": "string"
                     },
                     {
+                        "name": "user_type",
+                        "in": "query",
+                        "description": "User type - Specify 'online_user' for oodo client",
+                        "type": "string"
+                    },
+                    {
                         "name": "organization_id",
                         "in": "query",
                         "description": "Organization id",
