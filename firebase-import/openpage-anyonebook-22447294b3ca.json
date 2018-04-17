@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "openpage-anyonebook",
+  "private_key_id": "22447294b3ca6cd8ba0712b37ff7598acec99a77",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC08Q4mL00/ZfZo\nAqy+uWRDrcZd7UWjhH2H/HYozL6Oza1dFDgP4FDs6SWyeNVHbETSqPf0z0jW6kcw\n3hMYOPMM31TbBlATJ81J/MsLqahpknUcAVNBuR1dd3g/xbe9zgU20rYgpqOI95ig\nLl02P15sfHs5G8HVDRP9pGcimAwtAkgPq1CK78Zjn19pRpL/n6Mi+O8mfpEhXf5/\nELdWqaFPe7gPyq+5QrOPYIdr8tKe4YRJMPWNehUqXEGk5M5fsMZ4zJt2NZf63XMJ\n2gPrKkeqUGx+xAzYp2hIHHUcPFjVzyeJa9NiM1dpQ9FjmdgqKPGO4zV2R1M7fpDt\nRdyOkgiVAgMBAAECggEAOzH7p4llE78nUFrDqffb8fpJgdQMqtS+/ryc6XcmRnDK\nbT+eoa8IuqEB6LP4TpAAqgyGZkxkL49gr/+PLqb++PCdgbQ8gS/NzQ1LXirognVc\nI8fZNZC6pyfdKrvkA1ABy7A+zkrGCJq8D3drnkI4AXTuGT5X+Pv41MuyxBILNbPS\n2Pwt5oqqPPMCwWF4tJce/8PFwvGyOFriDX9orAi9jj0plro97L5Fi6f/Z3dd2YTu\noiTzKN+nxboc1Kt/+g3zCY+PdNeZXqAzSCpwM08RPqXGXKotilxq4UrzaBqMPx1V\nC/xI6B2OLithT8eZG+Vdgl6li4A5EPEEsEsctzPfRwKBgQDjLokHZs/TsN23m0Hl\nOHySQMKg6X2od/aZ8UGQtVB2DYr6zgONye4dLbAh3vK8rx5BeSF5fa15L1w69bqX\nMAUz+dwG5GnhZMm6xBdpaKzc3IfQGyb+EWh8xxNokpRKTn45SoemokiFLrhEFCb9\nzsORNBrFFCpPrDNPLuwyqTB4IwKBgQDL5OywNfBDIX9HSfV9djvEzyWKoNo7r6Ee\nL9XxV7cbI4hTbAMBBDSH715qcM6E1jtKzLjl3syz/L6l2OjDvM1X75e6ff+gO1mW\ng4Fe8CHFXEBw2b3awVLz0ViPqAnUUzP2VMwa4fPnbnWpAmB8DICsIpdj8iqeZuTW\n+OBrKlVr5wKBgQCFY71xaxx7301PkQmP3SrHdN7SPEZbtJRGrzEgFlW3+xuvR2cu\nyXHWEA1q1c0QnIHXT5goDXLdxMESnVWBj+B+NCbMpTDF9re7wYc9jQhyZcoYlti+\nNNp06S6sJ+SJ/KyAVxJu9Lo/+L6YunxqagzKJR3SuZReU22NALAOzuh2oQKBgHvd\nDWCa0+OkRNME/gqCuhp8kNzfjNP3hNR20Ox1kfn9owKyujxy1orCAsR81SjjkE+H\ngMe8ivTIlPThib3nQ4OpPK6BfrpTc8A5EW2gSZPA0DD+RhTPntoZkkhrF9WR2h5K\nM1gdbfNpKjdLB1w0qDJqLTf9VKC390sVFBhmNlB/AoGBAL48kfr414+t/GAu289R\nXSdNBnzcdkQz4lMwgaA9VcK5Hv6iZfu1L+vnMm+ENtXFZT9DOZO5fdT+JTe5dDzY\nm3KqU59vzM3oyK/tPaneWOnZCSPfkPuSddxcwb1ieGtc0eqME0nnMJRJqUAJ8KpA\nsUKsmw1U9DDNkro6PAs/vseT\n-----END PRIVATE KEY-----\n",
+  "client_email": "bulk-data-import@openpage-anyonebook.iam.gserviceaccount.com",
+  "client_id": "115676206751411918577",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://accounts.google.com/o/oauth2/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/bulk-data-import%40openpage-anyonebook.iam.gserviceaccount.com"
+}

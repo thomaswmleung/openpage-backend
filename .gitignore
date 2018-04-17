@@ -4,6 +4,7 @@
 /storage/*.key
 /.idea
 /.vagrant
+/firebase-import/node_modules
 Homestead.json
 Homestead.yaml
 npm-debug.log
